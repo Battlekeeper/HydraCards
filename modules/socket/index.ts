@@ -1,9 +1,9 @@
 import { defineNuxtModule } from '@nuxt/kit'
-import { Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 
 const { instrument } = require("@socket.io/admin-ui");
 
-export var io: Server
+let io: Server
 
 export default defineNuxtModule({
 	setup(options, nuxt) {
@@ -26,7 +26,24 @@ export default defineNuxtModule({
 			});
 
 			nuxt.hook('close', () => io.close())
-		})
 
+			io.on("connect", (socket) => {
+				socket.on("joinSocketRoom", (roomId:string)=> {
+					socket.join(roomId);
+				})
+				socket.on("leaveSocketRoom", (roomId:string)=> {
+					socket.leave(roomId);
+				})
+				/*
+				socket.on("syncUserSocketId", (user:HCUser, roomId:string)=> {
+					console.log(user)
+					let room:HCRoom = getRoom(roomId)
+					user.socketId = socket.id
+					room.members[room.members.findIndex((usr:HCUser) => {usr === user})] = user
+					room.update()
+				})
+				*/
+			})
+		})
 	}
 })

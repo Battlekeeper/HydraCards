@@ -20,9 +20,13 @@
   "dependencies": {
     "@socket.io/admin-ui": "^0.5.1",
     "@types/socket.io": "^3.0.2",
+    "@types/uuid": "^9.0.2",
     "editorconfig": "^2.0.0",
     "eslint": "^8.44.0",
+    "simple-json-db": "^2.0.0",
     "socket.io": "^4.7.1",
-    "typescript": "^5.1.6"
+    "socket.io-client": "^4.7.1",
+    "typescript": "^5.1.6",
+    "uuid": "^9.0.0"
   }
 }
