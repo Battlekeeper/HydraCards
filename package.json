@@ -26,6 +26,7 @@
 		"@types/uuid": "^9.0.2",
 		"editorconfig": "^2.0.0",
 		"eslint": "^8.44.0",
+		"nuxt-socket-io": "^3.0.12",
 		"simple-json-db": "^2.0.0",
 		"socket.io": "^4.7.1",
 		"socket.io-client": "^4.7.1",

@@ -6,20 +6,23 @@ import { v4 as uuidv4 } from 'uuid'
 
 
 var io:Server
-console.log("IO Variable set")
+//console.log("IO Variable set")
 const db = new JSONdb('database.json');
 
 export default defineNuxtModule({
 	setup(options, nuxt) {
 		nuxt.hook('listen', (server) => {
+			/*
 			console.log('Socket listen', server.address(), server.eventNames())
 
-		 	io = new Server(server, {
+		 	var io = new Server(server, {
 				cors: {
 					origin: ["https://admin.socket.io"],
 					credentials: true
 				}
 			})
+			//const nuxtApp = useNuxtApp()
+			//nuxtApp.provide('testSocket', io)
 			//https://admin.socket.io/#/
 			instrument(io, {
 				auth: {
@@ -42,6 +45,7 @@ export default defineNuxtModule({
 					io.to(roomId).emit("roomMemberUpdate", roomInstance.members)
 				})
 			})
+			*/
 		})
 	}
 })
