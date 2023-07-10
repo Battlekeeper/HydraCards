@@ -2,7 +2,6 @@
 export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: [
-		'@nuxtjs/tailwindcss',
-		'./modules/socket'
+		'@nuxtjs/tailwindcss'
 	]
 })
