@@ -3,8 +3,9 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "devold": "nuxt dev",
-		"dev": "concurrently \"nuxt dev\" \"cd backend && npx tsc && node dist/index.js\"",
+    "devoldold": "nuxt dev",
+		"devold": "concurrently \"nuxt dev\" \"cd backend && npx tsc && node dist/index.js\"",
+		"dev": "concurrently \"nuxt dev\" \"cd backend && npm run start:nodemon\"",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
