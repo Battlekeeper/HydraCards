@@ -1,4 +1,4 @@
-import { HCUser, createRoom } from "../plugins/rooms"
+import { HCUser, createRoom } from "../../modules/socket"
 
 export default defineEventHandler((event) => {
 	var room = createRoom()

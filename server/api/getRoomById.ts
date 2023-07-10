@@ -1,4 +1,4 @@
-import { getRoom } from "../plugins/rooms";
+import { getRoom } from "../../modules/socket"
 
 export default defineEventHandler((event) => {
 	const query = getQuery(event)

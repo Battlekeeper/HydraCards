@@ -1,4 +1,4 @@
-import { HCUser, getRoom } from "../plugins/rooms"
+import { HCUser, getRoom } from "../../modules/socket"
 
 export default defineEventHandler((event) => {
 	const query = getQuery(event)
