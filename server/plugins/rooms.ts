@@ -1,3 +1,4 @@
+/*
 import JSONdb from 'simple-json-db'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -82,6 +83,9 @@ export function getRoom(roomId:string){
 	return db.get(roomId)
 }
 export default defineNitroPlugin((nitroApp) => {
+	io.on("connect", (socket) => {
+		console.log("CONNECTION TO SOCKET HAS BEEN MADE")
+	})
 	
 })
-
+*/

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HCRoom, HCUser } from "server/plugins/rooms"
+import { HCRoom, HCUser } from "modules/socket";
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 const router = useRouter()

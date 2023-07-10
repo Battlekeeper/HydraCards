@@ -69,5 +69,22 @@
             }
         ],
         "status": 0
+    },
+    "319899652": {
+        "id": 319899652,
+        "topicName": "",
+        "members": [
+            {
+                "id": "aa995269-57be-4e10-8264-be8637317b59",
+                "socketId": "",
+                "displayName": "",
+                "currentRoom": 319899652,
+                "userStatus": 0,
+                "permissions": {
+                    "host": true
+                }
+            }
+        ],
+        "status": 0
     }
 }
