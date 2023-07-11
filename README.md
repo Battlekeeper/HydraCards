@@ -8,7 +8,7 @@ Make sure to install the dependencies:
 
 ```bash
 # npm
-npm install 
+npm run setup 
 ```
 
 ## Development Server
@@ -26,6 +26,7 @@ Build the application for production:
 
 ```bash
 # npm
+# WILL NOT BUILD BACKEND TODO: Add to build script
 npm run build
 ```
 
