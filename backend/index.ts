@@ -1,36 +1,42 @@
 import { Socket } from 'socket.io';
-import { instrument } from '@socket.io/admin-ui';
 import * as express from "express";
+import HCServer from './models/HCServer';
+import HCRoom from './models/HCRoom';
+import HCUser from './models/HCUser';
+
 require("dotenv").config();
 
 var app = express()
 var http = require('http').Server(app);
 var proxy = require('express-http-proxy');
-var io = require('socket.io')(http, {
-	cors: {
-		origin: ["https://admin.socket.io"],
-		credentials: true
-	}
-});
+new HCServer(http, app)
 
-instrument(io, {
-	auth: {
-		type: "basic",
-		username: "admin",
-		password: "$2a$12$QhnvivG8actfqZaISb2Hs.DPAaej/gDuYsMN/ZKUthn1SRkbqiFPq" // "password" encrypted with bcrypt (https://bcrypt-generator.com/)
-	},
-});
 
-app.get('/test', (req, res) => {
-  res.send('Hello World!')
+HCServer.app.get("/api/createroom", (req, res) => {
+	var room:HCRoom = new HCRoom()
+	var user:HCUser = new HCUser
+	user.permissions.host = true
+	room.addMember(user)
+	res.send({room, user})
 })
 
+HCServer.app.get("/api/getroombyid", (req, res) => {
+	var id:string = req.query.id as string
 
+	var room:HCRoom = HCRoom.rooms.get(Number.parseInt(id))
+	res.send(room)
+})
 
-io.on('connection', function (socket: Socket) {
-	console.log('a user connected');
-});
+HCServer.app.get("/api/joinRoom", (req, res) => {
+	var id:string = req.query.id as string
+	var room:HCRoom = HCRoom.rooms.get(Number.parseInt(id))
+	var user:HCUser = new HCUser
+	room.addMember(user)
+	res.send({room, user})
+})
+
 app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
 http.listen(process.env.BACKEND_PORT, function () {
 	console.log(`app running on http://localhost:${process.env.BACKEND_PORT}`);
 });
+
