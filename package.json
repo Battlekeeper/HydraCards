@@ -6,6 +6,7 @@
     "devoldold": "nuxt dev",
     "devold": "concurrently \"nuxt dev\" \"cd backend && npx tsc && node dist/index.js\"",
     "dev": "concurrently \"nuxt dev\" \"cd backend && npm run start:nodemon\"",
+		"setup": "npm install && cd backend && npm install",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
