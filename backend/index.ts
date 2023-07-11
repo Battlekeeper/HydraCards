@@ -1,9 +1,9 @@
 import { Socket } from 'socket.io';
 import { instrument } from '@socket.io/admin-ui';
-
+import * as express from "express";
 require("dotenv").config();
 
-var app = require('express')();
+var app = express()
 var http = require('http').Server(app);
 var proxy = require('express-http-proxy');
 var io = require('socket.io')(http, {
@@ -21,12 +21,16 @@ instrument(io, {
 	},
 });
 
-app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
+app.get('/test', (req, res) => {
+  res.send('Hello World!')
+})
+
+
 
 io.on('connection', function (socket: Socket) {
 	console.log('a user connected');
 });
-
+app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
 http.listen(process.env.BACKEND_PORT, function () {
 	console.log(`app running on http://localhost:${process.env.BACKEND_PORT}`);
 });
