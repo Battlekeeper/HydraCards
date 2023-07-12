@@ -7,7 +7,7 @@ export function generateRoomId() {
 		newRoomId *= 10
 	}
 
-	if (HCRoom.rooms.has(newRoomId)){
+	if (HCRoom.exists(newRoomId)){
 		return generateRoomId()
 	}
 	

@@ -40,7 +40,7 @@ function isInRoom() {
 	return true
 }
 async function apiSetDisplayName(){
-	await useFetch("/api/setname?name=" + displayName.value,{credentials: "include"})
+	await useFetch("/api/user/setname?name=" + displayName.value,{credentials: "include"})
 }
 
 const roomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
@@ -61,12 +61,13 @@ watch(displayName, apiSetDisplayName)
 	<div v-if="isInRoom()">
 		<p class="text-center">{{ room }}</p>
 		<input class="border-2 border-green-500" type="text" placeholder="insert name here" v-model="displayName">
-		<button @click="apiSetDisplayName()">Set name</button>
+		<button @click="apiSetDisplayName">Set name</button>
 		<br>
 		<roomMemberDisplay :members=roomMembers></roomMemberDisplay>
 		<button @click="socketLeaveRoom">Leave Room</button>
+
 	</div>
 	<div v-else>
-		<button @click="apiJoinRoom()">Join Room</button>
+		<button @click="apiJoinRoom">Join Room</button>
 	</div>
 </template>
