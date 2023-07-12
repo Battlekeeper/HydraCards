@@ -42,6 +42,7 @@ export default class HCRoom {
                     HCRoom.rooms.delete(this.id)
                 }
 			}
+			user.permissions.host = false
 			HCSocketIO.io.to(this.id.toString()).emit("roomMemberUpdate", this.getMembersUserArray())
 		}
 	}

@@ -79,15 +79,17 @@ HCServer.app.get("/api/setname", (req, res) => {
 
 HCServer.app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
 http.listen(process.env.BACKEND_PORT, function () {
-	console.log(`app running on http://localhost:${process.env.BACKEND_PORT}`);
+	console.log(`app running on \x1b[43m\x1b[31mhttp://localhost:${process.env.BACKEND_PORT}\x1b[0m`);
 });
 
 
 HCServer.io.on("connect", (socket) => {
-	socket.on("joinSocketRoom", (id: number) => {
-		if (id == undefined) {
+	var socketUserId:string
+	socket.on("joinSocketRoom", (id: number, userId:string) => {
+		if (id == undefined || userId == undefined) {
 			return
 		}
+		socketUserId = userId;
 		socket.join(id.toString())
 		var room: HCRoom = HCRoom.rooms.get(id)
 		if (room == undefined) {
@@ -98,7 +100,17 @@ HCServer.io.on("connect", (socket) => {
 	//leaveRoom
 	socket.on("leaveRoom", (roomId: number, userId: string) => {
 		var room: HCRoom = HCRoom.rooms.get(roomId)
-		room.removeMember(userId)
-		socket.leave(roomId.toString())
+		if (room !== undefined){
+			room.removeMember(userId)
+			socket.leave(roomId.toString())
+		}
+	})
+	socket.on("disconnect", () => {
+		var user:HCUser | undefined = HCUser.getUserById(socketUserId)
+		if (typeof user !== typeof undefined){
+			if (!user?.permissions.host){
+				user?.leaveRoom()
+			}
+		}
 	})
 })

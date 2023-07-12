@@ -6,11 +6,6 @@ import HCUser from "backend/models/HCUser";
 const joinCode = ref("")
 
 onMounted(()=> {
-	const url = useRuntimeConfig().public.socketUrl || window.location.origin;
-	const socket = io(url);
-	socket.on("connect",() => {
-		console.log("Client Side Connected")
-	});
 });
 
 async function apiCreateRoom(){
@@ -23,6 +18,7 @@ async function apiCreateRoom(){
 async function apiJoinRoom(){
 	var response = await useFetch("/api/joinRoom?id=" + joinCode.value, { credentials: "include"})
 	
+	// @ts-ignore
 	let room:HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect

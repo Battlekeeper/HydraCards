@@ -12,20 +12,20 @@ const displayName = ref("")
 
 var roomId: string = route.currentRoute.value.query.id as string
 const { data: room } = await useFetch("http://localhost:3000/api/getRoomById?id=" + roomId)
-console.log(room.value)
 
 async function apiJoinRoom() {
 	var response = await useFetch("/api/joinRoom?id=" + roomId, { credentials: "include" })
 
+	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
 	window.location.href = "/room?id=" + room.id
 }
 async function socketLeaveRoom() {
+	// @ts-ignore
 	socket.emit("leaveRoom", room.value?.id as Number, useCookie('_id').value as string)
 	window.location.href = "/"
-
 }
 
 function isInRoom() {
@@ -33,6 +33,7 @@ function isInRoom() {
 	{
 		return false
 	}
+	// @ts-ignore
 	if (room.value!.members.findIndex((id) => useCookie('_id').value as string == id) == -1){
 		return false
 	}
@@ -44,15 +45,16 @@ async function apiSetDisplayName(){
 
 const roomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
 
-onMounted(async () => {
+onMounted(() => {
 	socket.on("connect", () => {
-		socket.emit("joinSocketRoom", Number.parseInt(roomId))
+		socket.emit("joinSocketRoom", Number.parseInt(roomId), useCookie('_id').value as string)
 	})
 	socket.on("roomMemberUpdate", (members: Array<HCUser>) => {
 		roomMembers.value = members
-		console.log(members)
 	})
 })
+
+watch(displayName, apiSetDisplayName)
 
 </script>
 <template>

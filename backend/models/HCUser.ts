@@ -2,6 +2,7 @@ import { HCVotingStatus } from "./HCVotingStatus"
 import { HCRoomPermissions } from "./HCRoomPermissions"
 import { generateUserId } from "../utility"
 import { TSMap } from "typescript-map"
+import HCRoom from "./HCRoom"
 
 export default class HCUser{
 	id: string = generateUserId()
@@ -22,5 +23,10 @@ export default class HCUser{
 			return undefined
 		}
 		return HCUser.users.get(id as string)
+	}
+	public leaveRoom(){
+		if (this.currentRoom != 0){
+			HCRoom.rooms.get(this.currentRoom).removeMember(this.id)
+		}
 	}
 }
