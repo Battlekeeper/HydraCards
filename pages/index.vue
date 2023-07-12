@@ -14,20 +14,16 @@ onMounted(()=> {
 });
 
 async function apiCreateRoom(){
-	var response = await useFetch("/api/createRoom")
+	var response = await useFetch("/api/createRoom", { credentials: "include"})
 	let room:HCRoom = response.data.value?.room as unknown as HCRoom
-	let user:HCUser = response.data.value?.user as unknown as HCUser
-	localStorage.setItem("HCActiveUser", JSON.stringify(user));
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
 	window.location.href = "/room?id=" + room.id
 }
 async function apiJoinRoom(){
-	var response = await useFetch("/api/joinRoom?id=" + joinCode.value)
+	var response = await useFetch("/api/joinRoom?id=" + joinCode.value, { credentials: "include"})
 	
 	let room:HCRoom = response.data.value?.room as unknown as HCRoom
-	let user:HCUser = response.data.value?.user as unknown as HCUser
-	localStorage.setItem("HCActiveUser", JSON.stringify(user));
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
 	window.location.href = "/room?id=" + room.id
@@ -39,6 +35,6 @@ async function apiJoinRoom(){
 	<button @click="apiCreateRoom()">Create Room</button>
 	<div class="flex">
 		<input class="border-2 border-red-500" type="text" v-model="joinCode">
-		<button @click="apiJoinRoom">Join</button>
+		<button @click="apiJoinRoom()">Join</button>
 	</div>
 </template>
