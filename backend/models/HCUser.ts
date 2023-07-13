@@ -26,4 +26,8 @@ export default class HCUser{
 			HCRoom.get(this.currentRoom).removeMember(this.id)
 		}
 	}
+	public reset(){
+		this.permissions.host = false;
+		this.userVotingStatus = HCVotingStatus.voting
+	}
 }

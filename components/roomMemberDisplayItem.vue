@@ -17,10 +17,14 @@ if (props.member.permissions.host)
 </script>
 
 <template>
-	<p v-if="member.userVotingStatus !== 0" :class="hostClass">
-		{{ member.displayName }} ✔
+	<p v-if="member.userVotingStatus == 0" :class="hostClass">
+		{{ member.displayName }} ❌
 	</p>
-	<p v-else :class="hostClass">
-		{{ member.displayName }} X
+	<p v-if="member.userVotingStatus == 1" :class="hostClass">
+		{{ member.displayName }}  👀
 	</p>
+	<p v-if="member.userVotingStatus == 2" :class="hostClass">
+		{{ member.displayName }}  ✅
+	</p>
+	
 </template>

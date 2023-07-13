@@ -3,6 +3,8 @@ import * as express from "express";
 import HCServer from './models/HCServer';
 import HCRoom from './models/HCRoom';
 import HCUser from './models/HCUser';
+import { HCVotingStatus } from './models/HCVotingStatus';
+import { HCRoomStatus } from './models/HCRoomStatus';
 const userRouter = require("./routes/user")
 const roomRouter = require("./routes/room")
 
@@ -31,16 +33,17 @@ http.listen(process.env.BACKEND_PORT, function () {
 HCServer.io.on("connect", (socket) => {
 	var socketUserId:string
 	socket.on("joinSocketRoom", (roomId: number, userId:string) => {
-		if (roomId == undefined || userId == undefined) {
-			return
-		}
-		socketUserId = userId;
-		socket.join(roomId.toString())
+		var user = HCUser.get(userId)
 		var room: HCRoom = HCRoom.get(roomId)
-		if (room == undefined) {
+
+		if (roomId == undefined || userId == undefined || user == undefined || room == undefined) {
 			return
 		}
-		socket.emit("roomMemberUpdate", room.getMembersUserArray())
+		
+		socketUserId = user.id;
+		socket.join(roomId.toString())
+		
+		room.emitRoomStateUpdate()
 	})
 	//leaveRoom
 	socket.on("leaveRoom", (roomId: number, userId: string) => {
@@ -61,6 +64,51 @@ HCServer.io.on("connect", (socket) => {
 	})
 	*/
 	socket.on("submitVote", (roomId:number, userId: string, vote:number) => {
-		HCRoom.get(roomId).setVote(userId, vote)
+		var room:HCRoom = HCRoom.get(roomId)
+		var user:HCUser | undefined= HCUser.get(userId);
+		if (room == undefined || user == undefined){
+			return
+		}
+		room.setVote(userId, vote)
+		user!.userVotingStatus = HCVotingStatus.voted
+		room.emitRoomStateUpdate()
+	})
+	socket.on("displayResults", (roomId:number, userId:string) =>{
+
+		var room:HCRoom = HCRoom.get(roomId)
+		var user:HCUser|undefined = HCUser.get(userId)
+
+		if (room == undefined || user == undefined){
+			return
+		}
+
+		if (!user.permissions.host){
+			return
+		}
+		room.status = HCRoomStatus.reviewing
+		room.emitRoomStateUpdate()
+
+	})
+	socket.on("revote", (roomId:number, userId:string) =>{
+
+		var room:HCRoom = HCRoom.get(roomId)
+		var user:HCUser|undefined = HCUser.get(userId)
+
+		if (room == undefined || user == undefined){
+			return
+		}
+
+		if (!user.permissions.host){
+			return
+		}
+		room.status = HCRoomStatus.voting
+		room.votes.clear()
+		room.getMembersUserArray().forEach(member => {
+			if (member.userVotingStatus == HCVotingStatus.voted){
+				member.userVotingStatus = HCVotingStatus.voting
+			}
+		});
+		room.emitRoomStateUpdate()
+
 	})
 })

@@ -31,12 +31,12 @@ export default class HCRoom {
 		if (user.currentRoom !== 0){
 			let room:HCRoom = HCRoom.get(user.currentRoom);
 			room.removeMember(id)
-			room.emitRoomMemberUpdate()
+			room.emitRoomStateUpdate()
 		}
 		this.members.push(id)
 		user.currentRoom = this.id
 		
-		this.emitRoomMemberUpdate()
+		this.emitRoomStateUpdate()
 	}
 	public removeMember(id:string){
 		var user:HCUser = HCUser.get(id) as HCUser
@@ -51,8 +51,7 @@ export default class HCRoom {
                     HCRoom.rooms.delete(this.id)
                 }
 			}
-			user.permissions.host = false
-			this.emitRoomMemberUpdate()
+			this.emitRoomStateUpdate()
 		}
 	}
 	public setVote(id:string, vote:number)
@@ -66,7 +65,7 @@ export default class HCRoom {
 		});
 		return users
 	}
-	public emitRoomMemberUpdate(){
-		HCSocketIO.io.to(this.id.toString()).emit("roomMemberUpdate", this.getMembersUserArray())
+	public emitRoomStateUpdate(){
+		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", this,this.getMembersUserArray() )
 	}
 }
