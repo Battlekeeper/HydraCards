@@ -11,10 +11,10 @@ const socket = io("ws://localhost:3000");
 const displayName = ref("")
 
 var roomId: string = route.currentRoute.value.query.id as string
-const { data: room } = await useFetch("http://localhost:3000/api/getRoomById?id=" + roomId)
+const { data: room } = await useFetch("http://localhost:3000/api/room/getRoomById?id=" + roomId)
 
 async function apiJoinRoom() {
-	var response = await useFetch("/api/joinRoom?id=" + roomId, { credentials: "include" })
+	var response = await useFetch("/api/room/joinRoom?id=" + roomId, { credentials: "include" })
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
