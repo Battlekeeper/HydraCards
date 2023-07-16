@@ -14,5 +14,9 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: [
 		'@nuxtjs/tailwindcss'
-	]
+	],
+	router: {
+		//@ts-ignore
+		middleware: ['nullroomredirect'],
+	},
 })
