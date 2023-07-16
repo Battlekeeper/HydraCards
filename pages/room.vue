@@ -9,6 +9,28 @@ import roomMemberDisplayItem from "../components/roomMemberDisplayItem.vue";
 import { HCRoomStatus } from "../backend/models/HCRoomStatus";
 import { HCVotingStatus } from "../backend/models/HCVotingStatus";
 import voteResultNameDisplay from "../components/voteResultNameDisplay.vue";
+import { TSMap } from "typescript-map"
+
+
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
+//@ts-ignore
+import { Pie } from 'vue-chartjs'
+ChartJS.register(ArcElement, Tooltip, Legend)
+
+const data = ref({
+  labels: [''],
+  datasets: [
+    {
+      backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+      data: [1]
+    }
+  ]
+})
+
+const options = {
+  responsive: false,
+  maintainAspectRatio: false
+}
 
 
 const route = useRouter()
@@ -87,6 +109,27 @@ onMounted(() => {
 		currentRoom.value = room
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
+
+		var votes:TSMap<string, number> = new TSMap<string, number>
+
+		Object.values(room.votes).forEach((vote:number)=>{
+
+			var curr:number = votes.get(vote.toString())
+			if (curr == undefined){
+				curr = 0
+			}
+
+			votes.set(vote.toString(),  curr + 1)
+		})
+
+		data.value.labels = votes.keys()
+		data.value.datasets[0].data = votes.values()
+
+		console.log(data.value.labels)
+		console.log(data.value.datasets[0].data)
+
+
+		//data.value.datasets[0].data =  as number[]
 	})
 })
 
@@ -123,6 +166,7 @@ watch(displayName, apiSetDisplayName)
 			<p class="text-center">Here Are The Results:</p>
 			<voteResultNameDisplay v-for="(vote, userId) in currentRoom.votes" :vote=vote :userId=userId></voteResultNameDisplay>
 			<button v-if="currentUser.permissions.host" @click ="socketRevote()" class="px-5 py-2 m-5 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg">Revote</button>
+			<Pie :data="data" :options="options" />
 		</div>
 	</div>
 	<div v-else>
