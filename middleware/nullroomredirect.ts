@@ -1,10 +1,12 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (to.query.id != undefined) {
-		const { data: room } = await useFetch("http://localhost:3000/api/room/getRoomById?id=" + to.query.id )
+		const config = useRuntimeConfig()
+
+		const { data: room } = await useFetch("api/room/getRoomById?id=" + to.query.id, {baseURL: config.public.serverUrl})
 		if (typeof room.value != typeof "")
 		{
 			return;
 		}
 	}
-	return navigateTo("/")
+	return navigateTo("/error?errormsg=Sorry, that room does not exist.")
 })

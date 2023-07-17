@@ -8,9 +8,9 @@ const router=express.Router()
 
 router.get("/setname", (req, res) => {
 	var name: string = req.query.name as string
-	var user: HCUser | undefined = HCUser.get(req.cookies["_id"])
+	var user: HCUser = HCUser.get(req.cookies["_id"])
 
-	if (typeof user !== typeof undefined) {
+	if (user !== undefined) {
 		user!.displayName = name
 		if (user?.currentRoom != 0){
 			var room: HCRoom = HCRoom.get(user!.currentRoom)
@@ -23,7 +23,7 @@ router.get("/setname", (req, res) => {
 
 router.get("/setspectatormode", (req, res) => {
 	var mode: string = req.query.mode as unknown as string
-	var user: HCUser | undefined = HCUser.get(req.cookies["_id"])
+	var user: HCUser = HCUser.get(req.cookies["_id"])
 
 	if (mode != undefined && user != undefined) {
 		if (user?.currentRoom != 0){
@@ -43,7 +43,7 @@ router.get("/setspectatormode", (req, res) => {
 
 router.get("/getUserById", (req, res) => {
 	var id: string = req.query.id as unknown as string
-	var user: HCUser | undefined = HCUser.get(id)
+	var user: HCUser = HCUser.get(id)
 	res.send(user)
 })
 

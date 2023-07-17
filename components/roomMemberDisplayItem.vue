@@ -1,30 +1,55 @@
 <script setup>
 import { ref } from "vue"
 import { useRouter } from "vue-router";
-import { io } from "socket.io-client";
 
 const route = useRouter()
-//const socket = io("ws://localhost:3000");
 
 const props = defineProps(['member'])
 const hostClass = ref("")
+const statusIcon = ref("❌")
 
 if (props.member.permissions.host)
-{
-	hostClass.value = "text-red-500"
-}
+	{
+		hostClass.value = "text-red-500"
+	}
 
+	switch (props.member.userVotingStatus) {
+		case 0:
+			statusIcon.value = "❌"
+			break;
+		case 1:
+			statusIcon.value = "👀"
+			break;
+		case 2:	
+			statusIcon.value = "✅"
+			break;
+	}
+
+
+watch(props, () => {
+	if (props.member.permissions.host)
+	{
+		hostClass.value = "text-red-500"
+	}
+
+	switch (props.member.userVotingStatus) {
+		case 0:
+			statusIcon.value = "❌"
+			break;
+		case 1:
+			statusIcon.value = "👀"
+			break;
+		case 2:	
+			statusIcon.value = "✅"
+			break;
+	}
+})
 </script>
 
 <template>
-	<p v-if="member.userVotingStatus == 0" :class="hostClass">
-		{{ member.displayName }} ❌
+	<p :class="hostClass">
+		<div class="flex">
+			<img :src="member.avatar" alt="Avatar" class="mr-2" /> {{ member.displayName }} {{statusIcon}}
+		</div>
 	</p>
-	<p v-if="member.userVotingStatus == 1" :class="hostClass">
-		{{ member.displayName }}  👀
-	</p>
-	<p v-if="member.userVotingStatus == 2" :class="hostClass">
-		{{ member.displayName }}  ✅
-	</p>
-	
 </template>

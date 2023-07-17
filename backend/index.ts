@@ -5,6 +5,7 @@ import HCRoom from './models/HCRoom';
 import HCUser from './models/HCUser';
 import { HCVotingStatus } from './models/HCVotingStatus';
 import { HCRoomStatus } from './models/HCRoomStatus';
+var cors = require('cors');
 const userRouter = require("./routes/user")
 const roomRouter = require("./routes/room")
 
@@ -19,10 +20,13 @@ var http = require('http').Server(expressApp);
 var proxy = require('express-http-proxy');
 new HCServer(http, expressApp)
 HCServer.app.use(cookieParser());
+HCServer.app.use(cors({
+	origin: "*",
+	optionsSuccessStatus: 200
+}))
 
 HCServer.app.use("/api/user", userRouter)
 HCServer.app.use("/api/room", roomRouter)
-
 
 HCServer.app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
 http.listen(process.env.BACKEND_PORT, function () {
@@ -53,24 +57,15 @@ HCServer.io.on("connect", (socket) => {
 			socket.leave(roomId.toString())
 		}
 	})
-	/*
-	socket.on("disconnect", () => {
-		var user:HCUser | undefined = HCUser.get(socketUserId)
-		if (typeof user !== typeof undefined){
-			if (!user?.permissions.host){
-				user?.leaveRoom()
-			}
-		}
-	})
-	*/
 	socket.on("submitVote", (roomId:number, userId: string, vote:number) => {
 		var room:HCRoom = HCRoom.get(roomId)
-		var user:HCUser | undefined= HCUser.get(userId);
+		var user:HCUser = HCUser.get(userId);
 		if (room == undefined || user == undefined){
 			return
 		}
 		room.setVote(userId, vote)
 		user!.userVotingStatus = HCVotingStatus.voted
+
 		room.emitRoomStateUpdate()
 	})
 	socket.on("displayResults", (roomId:number, userId:string) =>{
@@ -85,6 +80,13 @@ HCServer.io.on("connect", (socket) => {
 		if (!user.permissions.host){
 			return
 		}
+		room.members.forEach((userId:string) => {
+			if (!room.votes.has(userId)){
+				room.votes.set(userId, -1)
+			}
+		});
+
+
 		room.status = HCRoomStatus.reviewing
 		room.emitRoomStateUpdate()
 
@@ -115,6 +117,39 @@ HCServer.io.on("connect", (socket) => {
 		var room:HCRoom = HCRoom.get(roomId)
 		if (room != undefined){
 			room.emitRoomStateUpdate()
+		}
+	})
+	socket.on("setMemberName", (roomId:number, userId:string, name:string) => {
+		var user:HCUser = HCUser.get(userId);
+
+		if (user !== undefined) {
+			user!.displayName = name
+			if (user?.currentRoom != 0){
+				var room: HCRoom = HCRoom.get(roomId)
+				room.emitRoomStateUpdate()
+			}
+		}
+	})
+	socket.on("setRoomTopicName",(roomId:number, userId:string, topicName:string) => {
+		var user:HCUser = HCUser.get(userId);
+		var room:HCRoom = HCRoom.get(roomId)
+		
+		if (typeof user !== typeof undefined && room !== undefined){
+			if (user.permissions.host){
+				room.topicName = topicName
+				room.emitRoomStateUpdate()
+			}
+		}
+	})
+	socket.on("startCount",(roomId:number, userId:string, count:number) => {
+		var user:HCUser = HCUser.get(userId);
+		var room:HCRoom = HCRoom.get(roomId)
+		
+		if (typeof user !== typeof undefined && room !== undefined){
+			if (user.permissions.host){
+				room.startCounter(count)
+				room.emitRoomStateUpdate()
+			}
 		}
 	})
 })

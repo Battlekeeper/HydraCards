@@ -1,8 +1,10 @@
-import { generateRoomId } from "../utility"
+import { delayMs, generateRoomId } from "../utility"
 import HCUser from "./HCUser"
 import { HCRoomStatus } from "./HCRoomStatus"
 import HCSocketIO from "./HCServer"
 import { TSMap } from "typescript-map"
+import  HCCounter  from "./HCCounter"
+import { HCVotingStatus } from "./HCVotingStatus"
 
 export default class HCRoom {
 	id: number = generateRoomId()
@@ -10,6 +12,7 @@ export default class HCRoom {
 	members: Array<string> = new Array<string>
 	status: HCRoomStatus = 0
 	votes: TSMap<string, number> = new TSMap<string, number>
+	counter:HCCounter = new HCCounter
 	private static rooms:TSMap<number, HCRoom> = new TSMap<number, HCRoom>
 
 	public static get(id:number){
@@ -67,5 +70,29 @@ export default class HCRoom {
 	}
 	public emitRoomStateUpdate(){
 		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", this,this.getMembersUserArray() )
+	}
+	public allMembersHaveVoted(){
+		return this.getMembersUserArray().filter(member => member.userVotingStatus == HCVotingStatus.voting).length == 0
+	}
+
+	public async startCounter(count:number){
+		this.counter.count = count
+		this.counter.active = true
+
+		while (this.counter.count > 0 && this.counter.active && !this.allMembersHaveVoted())
+		{
+			await delayMs(1000)
+			this.counter.count--
+			this.emitRoomStateUpdate()
+		}
+		this.counter.active = false
+		if (this.counter.count == 0 || this.allMembersHaveVoted()){
+			this.status = HCRoomStatus.reviewing
+			this.emitRoomStateUpdate()
+		}
+	}
+	public async stopCounter(){
+		this.counter.count = 0
+		this.counter.active = false
 	}
 }

@@ -6,6 +6,8 @@ export default defineNuxtConfig({
 		// Will be available in both server and client
 		public: {
 			socketUrl: '',
+			baseUrl: process.env.BASE_URL,
+			serverUrl: process.env.SERVER_URL
 		},
 	},
 	devServer: {
@@ -19,4 +21,5 @@ export default defineNuxtConfig({
 		//@ts-ignore
 		middleware: ['nullroomredirect'],
 	},
+	ssr: true
 })

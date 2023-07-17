@@ -6,9 +6,9 @@ export default class HCServer{
 	static io:Server
 	static app:Express
 	constructor(http: any, app:Express) {
-		var io = require('socket.io')(http, {
+		var io:Server = require('socket.io')(http, {
 			cors: {
-				origin: ["https://admin.socket.io"],
+				origin: ["https://admin.socket.io", process.env.BASE_URL],
 				credentials: true
 			}
 		});

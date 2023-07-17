@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import HCRoom from "backend/models/HCRoom";
 import ErrorMessage from "../components/errorMessage.vue";
+import Config from "chart.js/dist/core/core.config";
 
 const joinCode = ref("")
 const showRoom404Message = ref(false)
+const config = useRuntimeConfig()
 
 onMounted(() => {
 });
 
 async function apiCreateRoom() {
-	var response = await useFetch("/api/room/createRoom", { credentials: "include" })
+	var response = await useFetch("api/room/createRoom", { credentials: "include", baseURL:  config.public.baseUrl})
 	//@ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
@@ -17,7 +19,7 @@ async function apiCreateRoom() {
 	window.location.href = "/room?id=" + room.id
 }
 async function apiJoinRoom() {
-	var response = await useFetch("/api/room/joinRoom?id=" + joinCode.value, { credentials: "include" })
+	var response = await useFetch("api/room/joinRoom?id=" + joinCode.value, { credentials: "include", baseURL:  config.public.baseUrl})
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom

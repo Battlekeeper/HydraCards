@@ -9,9 +9,9 @@ const router=express.Router()
 router.get("/createroom", (req, res) => {
 	var room: HCRoom = new HCRoom()
 
-	var user: HCUser | undefined = HCUser.get(req.cookies["_id"])
+	var user: HCUser = HCUser.get(req.cookies["_id"])
 
-	if (typeof user == typeof undefined) {
+	if (user == undefined) {
 		user = new HCUser
 	}
 	
@@ -39,9 +39,9 @@ router.get("/getroommembersstring", (req, res) => {
 
 router.get("/joinRoom", (req, res) => {
 	var id: string = req.query.id as string
-	var user: HCUser | undefined = HCUser.get(req.cookies["_id"])
+	var user: HCUser = HCUser.get(req.cookies["_id"])
 
-	if (typeof user == typeof undefined) {
+	if (user == undefined) {
 		user = new HCUser
 	}
 
