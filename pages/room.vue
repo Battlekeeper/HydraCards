@@ -59,7 +59,7 @@ pieData.value.datasets[0].data = votes.values()
 
 const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, {baseURL: config.public.serverUrl})
 currentUser.value = user.value as HCUser
-displayName.value = currentUser.value.displayName
+
 
 async function apiJoinRoom() {
 	var response = await useFetch(`api/room/joinRoom?id=` + roomId, {credentials: "include", baseURL: config.public.baseUrl})
@@ -146,6 +146,7 @@ onMounted(async () => {
 		currentRoom.value = room
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
+		displayName.value = currentUser.value.displayName
 
 		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 
