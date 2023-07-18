@@ -49,7 +49,7 @@ watch(props, () => {
 <template>
 	<p :class="hostClass">
 		<div class="flex">
-			<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" /> {{ member.displayName }} {{statusIcon}}
+			<img :src="member.avatar" alt="Avatar" class="mr-2" /> {{ member.displayName }} {{statusIcon}}
 		</div>
 	</p>
 </template>

@@ -31,7 +31,6 @@ async function apiJoinRoom() {
 		window.location.href = "/room?id=" + room.id
 	}
 }
-const file = ref()
 
 </script>
 <template>
