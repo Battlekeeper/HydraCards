@@ -82,14 +82,13 @@ function socketRevote() {
 	socket.emit("revote", Number.parseInt(roomId), userId.value)
 }
 function isInRoom() {
-	if (userId.value == undefined) {
-		return false
+	const roomExists = currentRoom.value != undefined
+	const userExists = currentUser.value != undefined
+	const userInRoom = currentRoom.value?.members.findIndex((id) => userId.value == id) != -1
+	if (roomExists && userExists && userInRoom) {
+		return true
 	}
-	// @ts-ignore
-	if (currentRoom.value!.members.findIndex((id) => userId.value == id) == -1) {
-		return false
-	}
-	return true
+	return false
 }
 async function apiSetDisplayName() {
 	await useFetch(`api/user/setname?name=` + displayName.value, {credentials: "include", baseURL: config.public.baseUrl})
@@ -108,9 +107,11 @@ async function switchSpectatorMode(mode: boolean) {
 	selectedCard.value = -1
 }
 function getRoomVotesMap(room: HCRoom) {
-	
 	var votes: TSMap<string, number> = new TSMap<string, number>
 
+	if (!room) {
+		return votes
+	}
 	Object.values(room.votes).forEach((vote: number) => {
 
 		var curr: number = votes.get(vote.toString())
@@ -124,7 +125,7 @@ function getRoomVotesMap(room: HCRoom) {
 }
 function socketSetTopicName(){
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
-	
+
 }
 function socketStartCount(){
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, countDownTime.value)
@@ -148,6 +149,9 @@ onMounted(async () => {
 		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
 	})
 	socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
+		if (!room || !members) {
+			return
+		}
 		currentRoom.value = room
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
@@ -209,7 +213,7 @@ watch(displayName, socketSetName)
 				<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
 					:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
 			</div>
-			
+
 			<p class="text-center text-xs">{{ currentRoom }}</p>
 		</div>
 		<div v-else>

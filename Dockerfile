@@ -6,13 +6,6 @@ COPY . .
 
 RUN npm install
 
-ENV FRONTEND_PORT=3001
-ENV BACKEND_PORT=3000
-ENV NITRO_PORT=3001
-ENV BASE_URL="http://localhost:3000"
-ENV SERVER_URL="http://localhost:3000"
-EXPOSE 3000
-
-
+RUN npm run frontend:build
 
 CMD ["npm", "start"]
