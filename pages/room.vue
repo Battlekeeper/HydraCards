@@ -11,6 +11,7 @@ import { HCVotingStatus } from "../backend/models/HCVotingStatus";
 import voteResultNameDisplay from "../components/voteResultNameDisplay.vue";
 import { TSMap } from "typescript-map"
 
+
 //@ts-ignore
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
 //@ts-ignore
@@ -37,6 +38,7 @@ const chartOptions = {
 
 const config = useRuntimeConfig()
 const route = useRouter()
+
 const socket = io(config.public.baseUrl.replace("http", "ws"));
 const displayName = ref("")
 const roomTopicName = ref("")
@@ -131,8 +133,7 @@ function socketStartCount(){
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, countDownTime.value)
 }
 function copy(){
-	const url = window.location.href
-	navigator.clipboard.writeText(url)
+	navigator.clipboard.writeText(window.location.href)
 }
 async function uploadProfile(event:any){
 	const formData = new FormData();
@@ -169,10 +170,14 @@ definePageMeta({
 })
 
 watch(displayName, socketSetName)
+
+if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.displayName == undefined){
+	route.push({ path: "/name", query: {id: currentRoom.value.id}  });
+}
 </script>
 
 <template>
-	<div v-if="isInRoom()">
+	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined">
 		<div>
 			<button @click="copy()" class="my-4">
 				<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Copy URL</span>
@@ -194,6 +199,7 @@ watch(displayName, socketSetName)
 				<button @click="socketStartCount" class="px-3 py-1 m-1 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg text-sm">Start Countdown</button>
 			</div>
 			<h1 v-if="currentRoom.counter.active">{{currentRoom.counter.count}} seconds left to vote</h1>
+		
 			<br>
 			<div v-for="member in  currentRoomMembers">
 				<roomMemberDisplayItem :member=member></roomMemberDisplayItem>
@@ -227,11 +233,5 @@ watch(displayName, socketSetName)
 			<Pie :data="pieData" :options="chartOptions" />
 			<Bar :data="pieData" :options="chartOptions" />
 		</div>
-	</div>
-	<div v-else>
-		<input class="border-2 border-green-500" type="text" placeholder="insert name here" v-model="displayName">
-		<!--<button @click="socketSetName" class="px-3 py-1 m-1 hover:bg-purple-700 text-white bg-purple-500 rounded-lg text-sm">Set name</button>
-		<button @click="apiJoinRoom();socketSetName()" class="px-5 py-2 m-5 hover:bg-orange-700 text-white bg-orange-500 rounded-lg">set name</button>
-		-->
 	</div>
 </template>
