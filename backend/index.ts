@@ -100,7 +100,7 @@ HCServer.io.on("connect", (socket) => {
 		room.emitRoomStateUpdate()
 
 	})
-	socket.on("revote", (roomId:number, userId:string) => {
+	socket.on("revote", (roomId:number, userId:string, revote:boolean) => {
 
 		var room:HCRoom = HCRoom.get(roomId)
 		var user:HCUser|undefined = HCUser.get(userId)
@@ -113,6 +113,7 @@ HCServer.io.on("connect", (socket) => {
 			return
 		}
 		room.status = HCRoomStatus.voting
+		room.revote = revote
 		room.votes.clear()
 		room.getMembersUserArray().forEach(member => {
 			if (member.userVotingStatus == HCVotingStatus.voted){
@@ -122,6 +123,7 @@ HCServer.io.on("connect", (socket) => {
 		room.emitRoomStateUpdate()
 
 	})
+	
 	socket.on("broadcastRoomStateUpdate", (roomId: number) => {
 		var room:HCRoom = HCRoom.get(roomId)
 		if (room != undefined){

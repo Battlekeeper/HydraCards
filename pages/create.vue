@@ -7,7 +7,7 @@ async function apiCreateRoom() {
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
-	window.location.href = "/room?id=" + room.id
+	window.location.href = "/name?id=" + room.id
 }
 </script>
 

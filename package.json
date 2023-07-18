@@ -6,7 +6,7 @@
 		"frontend:generate": "nuxt generate",
 		"frontend:preview": "nuxt preview",
 		"frontend:dev": "nuxt dev",
-		"frontend:start": "PORT=3001 node .output/server/index.mjs",
+		"frontend:start": "set PORT=3001 node .output/server/index.mjs",
 		"backend:dev": "nodemon ts-node backend",
 		"backend:start": "ts-node backend/index.ts",
 		"postinstall": "nuxt prepare",

@@ -13,6 +13,7 @@ export default class HCRoom {
 	status: HCRoomStatus = 0
 	votes: TSMap<string, number> = new TSMap<string, number>
 	counter:HCCounter = new HCCounter
+	revote:boolean = false
 	private static rooms:TSMap<number, HCRoom> = new TSMap<number, HCRoom>
 
 	public static get(id:number){

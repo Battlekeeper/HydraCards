@@ -16,9 +16,9 @@ logs
 .DS_Store
 .fleet
 .idea
+public/profile
 
 # Local env files
 .env
 .env.*
 !.env.example
-public/profile

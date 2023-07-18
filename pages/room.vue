@@ -45,6 +45,7 @@ const roomTopicName = ref("")
 const countDownTime = ref()
 const cards = ref([0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100])
 const selectedCard = ref(-1)
+const selectedCardLast = ref(-1)
 const currentUser = ref(new HCUser)
 const currentRoom = ref(new HCRoom)
 const currentRoomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
@@ -81,7 +82,12 @@ function socketDisplayResults() {
 	socket.emit("displayResults", Number.parseInt(roomId), userId.value)
 }
 function socketRevote() {
-	socket.emit("revote", Number.parseInt(roomId), userId.value)
+	socket.emit("revote", currentRoom.value.id, userId.value, true)
+}
+function socketNewTopic(){
+	socket.emit("revote", currentRoom.value.id, userId.value, false)
+	roomTopicName.value = ""
+	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, "")
 }
 function isInRoom() {
 	const roomExists = currentRoom.value != undefined
@@ -127,7 +133,6 @@ function getRoomVotesMap(room: HCRoom) {
 }
 function socketSetTopicName(){
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
-
 }
 function socketStartCount(){
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, countDownTime.value)
@@ -135,16 +140,6 @@ function socketStartCount(){
 function copy(){
 	navigator.clipboard.writeText(window.location.href)
 }
-async function uploadProfile(event:any){
-	const formData = new FormData();
-  	formData.append('profileImage', event.srcElement.files[0]);
-	await fetch("api/user/profileupload", {method: "POST", body: formData})
-}
-function click(){
-	//@ts-ignore
-	document.getElementById('fileInput').click()
-}
-
 onMounted(async () => {
 	socket.on("connect", () => {
 		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
@@ -153,15 +148,25 @@ onMounted(async () => {
 		if (!room || !members) {
 			return
 		}
+		var oldRoom:HCRoom = currentRoom.value
 		currentRoom.value = room
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
+		roomTopicName.value = currentRoom.value.topicName
 
 		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
-
 		pieData.value.labels = votes.keys()
 		pieData.value.datasets[0].data = votes.values()
+		if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote){
+			var temp = selectedCard.value
+			nextTick(()=>{
+				setCardActive(-1)
+				nextTick(()=>{
+					setCardActive(temp)
+				})
+			})
+		}
 	})
 })
 
@@ -181,10 +186,6 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 		<div>
 			<button @click="copy()" class="my-4">
 				<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Copy URL</span>
-			</button>
-			<input hidden id="fileInput"  @change="uploadProfile($event)" type="file" accept="image/*">
-			<button @click="click">
-				<span class="px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Upload Profile Image</span>
 			</button>
 			<span class="ml-2 px-2 py-2 m-2hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">{{currentRoom.id}}</span>
 		</div>
@@ -228,8 +229,10 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 			<button v-if="currentUser.permissions.host" @click="socketRevote()"
 				class="px-5 py-2 m-5 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg">Revote</button>
 			<button @click="socketLeaveRoom"
-				class="px-5 py-2 m-5 hover:bg-blue-700 text-white bg-blue-500 rounded-lg">Leave
+				class="px-5 py-2 m-5 hoveextr:bg-blue-700 text-white bg-blue-500 rounded-lg">Leave
 			Room</button>
+			<button @click="socketNewTopic()"
+				v-show="currentUser.permissions.host" class="px-5 py-2 m-5 hover:bg-orange-700 text-white bg-orange-500 rounded-lg">New Topic</button>
 			<Pie :data="pieData" :options="chartOptions" />
 			<Bar :data="pieData" :options="chartOptions" />
 		</div>
