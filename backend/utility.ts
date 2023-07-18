@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid"
 import HCRoom from "./models/HCRoom"
+import * as fs from 'fs';
+import * as path from 'path';
 
 export function generateRoomId() {
 	let newRoomId: number = Math.floor(Math.random() * 100000000)
@@ -35,4 +37,17 @@ export function randomAvatar(){
 
 	var url:string = `https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${uuidv4()}&size=32&scale=${scale}&radius=${radius}&translateX=${tranx}&translateY=${trany}&rotate=${rotate}`
 	return url
+}
+
+export function deleteAllFilesWithName(filename:string, directory:string ){
+	fs.readdir(directory, (err, files) => {
+
+		files.forEach((file:any) => {
+		  // Check if the file name matches 'filename' (ignoring the extension)
+		  if (path.parse(file).name === filename) {
+			const filePath = path.join(directory, file);
+			fs.unlink(filePath, (err:any) => {});
+		  }
+		});
+	  });
 }
