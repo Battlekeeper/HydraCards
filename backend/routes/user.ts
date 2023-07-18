@@ -2,6 +2,7 @@ import * as express from "express";
 import HCRoom from "../models/HCRoom"
 import HCUser from "../models/HCUser"
 import { HCVotingStatus } from "../models/HCVotingStatus";
+import { deleteAllFilesWithName } from "../utility";
 
 
 const router=express.Router()
@@ -47,6 +48,22 @@ router.get("/getUserById", (req, res) => {
 	res.send(user)
 })
 
+router.post("/profileupload", (req, res) => {
+	//@ts-ignore
+	if (!req.files || Object.keys(req.files).length === 0) {
+		return res.status(400).send('No files were uploaded.');
+	}
+	var user: HCUser = HCUser.get(req.cookies["_id"])
+	if (user != undefined && HCRoom.get(user.currentRoom) != undefined){
+		//@ts-ignore
+		var filename:string = user.id + "." + (req.files.profileImage.name as string).split(".").slice(-1)[0];
+		user.avatar = "/profile/" + filename
+		deleteAllFilesWithName(user.id,'public/profile/')
+		//@ts-ignore
+		req.files.profileImage.mv("public/profile/" + filename)
+		HCRoom.get(user.currentRoom).emitRoomStateUpdate()
+	}
+})
 
 
 module.exports=router;

@@ -34,6 +34,7 @@
 		"dotenv": "^16.3.1",
 		"editorconfig": "^2.0.0",
 		"eslint": "^8.44.0",
+		"express-fileupload": "^1.4.0",
 		"express-http-proxy": "^1.6.3",
 		"nodemon": "^3.0.1",
 		"socket.io": "^4.7.1",

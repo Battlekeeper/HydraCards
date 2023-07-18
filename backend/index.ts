@@ -5,10 +5,11 @@ import HCRoom from './models/HCRoom';
 import HCUser from './models/HCUser';
 import { HCVotingStatus } from './models/HCVotingStatus';
 import { HCRoomStatus } from './models/HCRoomStatus';
+import * as fs from 'fs';
+import * as path from 'path';
 var cors = require('cors');
 const userRouter = require("./routes/user")
 const roomRouter = require("./routes/room")
-
 
 
 const cookieParser = require("cookie-parser");
@@ -18,12 +19,14 @@ require("dotenv").config();
 var expressApp = express()
 var http = require('http').Server(expressApp);
 var proxy = require('express-http-proxy');
+const fileUpload = require('express-fileupload');
 new HCServer(http, expressApp)
 HCServer.app.use(cookieParser());
 HCServer.app.use(cors({
 	origin: "*",
 	optionsSuccessStatus: 200
 }))
+HCServer.app.use(fileUpload())
 
 HCServer.app.use("/api/user", userRouter)
 HCServer.app.use("/api/room", roomRouter)
@@ -33,6 +36,12 @@ http.listen(process.env.BACKEND_PORT, function () {
 	console.log(`app running on \x1b[43m\x1b[31mhttp://localhost:${process.env.BACKEND_PORT}\x1b[0m`);
 });
 
+fs.readdir("public/profile", (err, files) => {
+	files.forEach((file:any) => {
+		const filePath = path.join("public/profile", file);
+		fs.unlink(filePath, (err:any) => {});
+	});
+});
 
 HCServer.io.on("connect", (socket) => {
 	var socketUserId:string

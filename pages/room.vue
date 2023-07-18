@@ -134,6 +134,15 @@ function copy(){
 	const url = window.location.href
 	navigator.clipboard.writeText(url)
 }
+async function uploadProfile(event:any){
+	const formData = new FormData();
+  	formData.append('profileImage', event.srcElement.files[0]);
+	await fetch("api/user/profileupload", {method: "POST", body: formData})
+}
+function click(){
+	//@ts-ignore
+	document.getElementById('fileInput').click()
+}
 
 onMounted(async () => {
 	socket.on("connect", () => {
@@ -168,6 +177,11 @@ watch(displayName, socketSetName)
 			<button @click="copy()" class="my-4">
 				<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Copy URL</span>
 			</button>
+			<input hidden id="fileInput"  @change="uploadProfile($event)" type="file" accept="image/*">
+			<button @click="click">
+				<span class="px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Upload Profile Image</span>
+			</button>
+			<span class="ml-2 px-2 py-2 m-2hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">{{currentRoom.id}}</span>
 		</div>
 		<div v-if="currentRoom.status == HCRoomStatus.voting">
 			<div class="flex flex-col items-center justify-center">
@@ -180,8 +194,6 @@ watch(displayName, socketSetName)
 				<button @click="socketStartCount" class="px-3 py-1 m-1 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg text-sm">Start Countdown</button>
 			</div>
 			<h1 v-if="currentRoom.counter.active">{{currentRoom.counter.count}} seconds left to vote</h1>
-			<input class="border-2 border-green-500" type="text" placeholder="insert name here" v-model="displayName">
-			<button @click="socketSetName" class="px-3 py-1 m-1 hover:bg-purple-700 text-white bg-purple-500 rounded-lg text-sm">Set name</button>
 			<br>
 			<div v-for="member in  currentRoomMembers">
 				<roomMemberDisplayItem :member=member></roomMemberDisplayItem>
@@ -217,7 +229,9 @@ watch(displayName, socketSetName)
 		</div>
 	</div>
 	<div v-else>
-		<button @click="apiJoinRoom" class="px-5 py-2 m-5 hover:bg-orange-700 text-white bg-orange-500 rounded-lg">Join
-			Room</button>
+		<input class="border-2 border-green-500" type="text" placeholder="insert name here" v-model="displayName">
+		<!--<button @click="socketSetName" class="px-3 py-1 m-1 hover:bg-purple-700 text-white bg-purple-500 rounded-lg text-sm">Set name</button>
+		<button @click="apiJoinRoom();socketSetName()" class="px-5 py-2 m-5 hover:bg-orange-700 text-white bg-orange-500 rounded-lg">set name</button>
+		-->
 	</div>
 </template>

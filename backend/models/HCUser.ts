@@ -25,9 +25,10 @@ export default class HCUser{
 		}
 	}
 	public reset(){
-		this.avatar = randomAvatar()
+		if (!this.avatar.startsWith("/profile/")){
+			this.avatar = randomAvatar()
+		}
 		this.permissions.host = false;
 		this.userVotingStatus = HCVotingStatus.voting
 	}
-	
 }
