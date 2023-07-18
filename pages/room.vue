@@ -59,6 +59,7 @@ pieData.value.datasets[0].data = votes.values()
 
 const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, {baseURL: config.public.serverUrl})
 currentUser.value = user.value as HCUser
+displayName.value = currentUser.value.displayName
 
 async function apiJoinRoom() {
 	var response = await useFetch(`api/room/joinRoom?id=` + roomId, {credentials: "include", baseURL: config.public.baseUrl})
@@ -163,10 +164,10 @@ watch(displayName, socketSetName)
 <template>
 	<div v-if="isInRoom()">
 		<div>
-				<button @click="copy()" class="my-4">
-					<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Copy URL</span>
-				</button>
-			</div>
+			<button @click="copy()" class="my-4">
+				<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Copy URL</span>
+			</button>
+		</div>
 		<div v-if="currentRoom.status == HCRoomStatus.voting">
 			<div class="flex flex-col items-center justify-center">
 				<input type="text" v-show="currentUser.permissions.host" placeholder="Insert topic title" v-model="roomTopicName" class="h-20 text-4xl text-center"/>
