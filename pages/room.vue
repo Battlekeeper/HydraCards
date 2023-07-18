@@ -51,6 +51,7 @@ const currentRoom = ref(new HCRoom)
 const currentRoomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 var roomId: string = route.currentRoute.value.query.id as string
+const sortedVotes = ref()
 
 const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, {baseURL: config.public.serverUrl})
 currentRoom.value = room.value as HCRoom
@@ -140,6 +141,7 @@ function socketStartCount(){
 function copy(){
 	navigator.clipboard.writeText(window.location.href)
 }
+
 onMounted(async () => {
 	socket.on("connect", () => {
 		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
@@ -154,7 +156,9 @@ onMounted(async () => {
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
 		roomTopicName.value = currentRoom.value.topicName
-		console.log()
+
+		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
+		sortedVotes.value.sort((a:any, b:any) => a.vote - b.vote);
 		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 		pieData.value.labels = votes.keys()
 		pieData.value.datasets[0].data = votes.values()
@@ -224,7 +228,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 		</div>
 		<div v-else>
 			<p class="text-center">Here Are The Results for Topic: {{ currentRoom.topicName }}</p>
-			<voteResultNameDisplay v-for="(vote, userId) in currentRoom.votes" :vote=vote :userId=userId>
+			<voteResultNameDisplay v-for="voteObj in sortedVotes" :voteObj=voteObj>
 			</voteResultNameDisplay>
 			<button v-if="currentUser.permissions.host" @click="socketRevote()"
 				class="px-5 py-2 m-5 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg">Revote</button>
