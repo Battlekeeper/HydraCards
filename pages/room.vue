@@ -154,7 +154,7 @@ onMounted(async () => {
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
 		roomTopicName.value = currentRoom.value.topicName
-
+		console.log()
 		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 		pieData.value.labels = votes.keys()
 		pieData.value.datasets[0].data = votes.values()
