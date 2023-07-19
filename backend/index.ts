@@ -36,6 +36,8 @@ http.listen(process.env.BACKEND_PORT, function () {
 	console.log(`app running on \x1b[43m\x1b[31mhttp://localhost:${process.env.BACKEND_PORT}\x1b[0m`);
 });
 
+fs.mkdir("public/profile", (err:any) => {})
+
 fs.readdir("public/profile", (err, files) => {
 	files.forEach((file:any) => {
 		const filePath = path.join("public/profile", file);
