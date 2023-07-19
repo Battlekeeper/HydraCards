@@ -7,6 +7,8 @@ import { HCVotingStatus } from './models/HCVotingStatus';
 import { HCRoomStatus } from './models/HCRoomStatus';
 import * as fs from 'fs';
 import * as path from 'path';
+import HistoricalVote from './models/HistoricalVote';
+
 var cors = require('cors');
 const userRouter = require("./routes/user")
 const roomRouter = require("./routes/room")
@@ -47,6 +49,20 @@ fs.readdir("public/profile", (err, files) => {
 
 HCServer.io.on("connect", (socket) => {
 	var socketUserId:string
+
+	socket.on("disconnect", () => {
+		var user:HCUser = HCUser.get(socketUserId)
+		if (user != undefined){
+			user.online = false
+			var room:HCRoom = HCRoom.get(user.currentRoom)
+			if (room != undefined){
+				room.emitRoomStateUpdate()
+			}
+		}
+	})
+	socket.on("setSocketId", (userId:string)=>{
+		socketUserId = userId
+	})
 	socket.on("joinSocketRoom", (roomId: number, userId:string) => {
 		var user = HCUser.get(userId)
 		var room: HCRoom = HCRoom.get(roomId)
@@ -116,6 +132,18 @@ HCServer.io.on("connect", (socket) => {
 		}
 		room.status = HCRoomStatus.voting
 		room.revote = revote
+		if (room.history.length == 0)
+		{
+			room.history.push(new HistoricalVote)
+		}
+		var HistoricalVoteData:HistoricalVote = room.history[room.history.length - 1]
+		HistoricalVoteData.TopicName = room.topicName
+		HistoricalVoteData.Revotes.push(JSON.parse(JSON.stringify(room.votes)))
+
+		if (!revote){
+			room.history.push(new HistoricalVote)
+		}
+
 		room.votes.clear()
 		room.getMembersUserArray().forEach(member => {
 			if (member.userVotingStatus == HCVotingStatus.voted){
@@ -123,7 +151,6 @@ HCServer.io.on("connect", (socket) => {
 			}
 		});
 		room.emitRoomStateUpdate()
-
 	})
 	
 	socket.on("broadcastRoomStateUpdate", (roomId: number) => {
@@ -163,6 +190,21 @@ HCServer.io.on("connect", (socket) => {
 				room.startCounter(count)
 				room.emitRoomStateUpdate()
 			}
+		}
+	})
+	socket.on("onlinePing", (userId:string) => {
+		var user:HCUser = HCUser.get(userId)
+		if (user != undefined){
+			if (user.online){
+				user.online = true
+			} else {
+				user.online = true
+				var room:HCRoom = HCRoom.get(user.currentRoom)
+				if (room != undefined){
+					room.emitRoomStateUpdate()
+				}
+			}
+			
 		}
 	})
 })

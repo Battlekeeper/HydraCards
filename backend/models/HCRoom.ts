@@ -5,6 +5,7 @@ import HCSocketIO from "./HCServer"
 import { TSMap } from "typescript-map"
 import  HCCounter  from "./HCCounter"
 import { HCVotingStatus } from "./HCVotingStatus"
+import HistoricalVote from "./HistoricalVote"
 
 export default class HCRoom {
 	id: number = generateRoomId()
@@ -14,6 +15,8 @@ export default class HCRoom {
 	votes: TSMap<string, number> = new TSMap<string, number>
 	counter:HCCounter = new HCCounter
 	revote:boolean = false
+	history: Array<HistoricalVote> = new Array<HistoricalVote>
+
 	private static rooms:TSMap<number, HCRoom> = new TSMap<number, HCRoom>
 
 	public static get(id:number){
@@ -27,7 +30,9 @@ export default class HCRoom {
 	}
 
 	constructor() {
-		HCRoom.rooms.set(this.id, this)
+		if (!HCRoom.rooms.has(this.id)){
+			HCRoom.rooms.set(this.id, this)
+		}
 	}
 	public addMember(id:string){
 		var user:HCUser = HCUser.get(id) as HCUser
@@ -70,7 +75,12 @@ export default class HCRoom {
 		return users
 	}
 	public emitRoomStateUpdate(){
-		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", this,this.getMembersUserArray() )
+		var tempRoom:HCRoom = JSON.parse(JSON.stringify(this))
+		tempRoom.history.forEach((val) => {
+			val.Revotes = new Array<TSMap<string, number>>
+		})
+		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom,this.getMembersUserArray())
+
 	}
 	public allMembersHaveVoted(){
 		return this.getMembersUserArray().filter(member => member.userVotingStatus == HCVotingStatus.voting).length == 0

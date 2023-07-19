@@ -2,6 +2,7 @@
 import HCRoom from "backend/models/HCRoom";
 import ErrorMessage from "../components/errorMessage.vue";
 import Config from "chart.js/dist/core/core.config";
+import ModalPopup from "../components/modalPopup.vue";
 
 const joinCode = ref("")
 const config = useRuntimeConfig()
