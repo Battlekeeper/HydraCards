@@ -264,7 +264,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 				<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
 					:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
 			</div>
-			<div class="border-2 border-indigo-600">
+			<div class="border-2 border-indigo-600 w-80 rounded-lg">
 			<p>Room History:</p>
 				<topicHistoryItem v-for="(topic, index) in currentRoom.history" @downloadClick="downloadTopicCSV(index, topic.TopicName)" class="flex ">
 					{{ topic.TopicName }}</topicHistoryItem>
