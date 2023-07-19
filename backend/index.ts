@@ -41,10 +41,12 @@ http.listen(process.env.BACKEND_PORT, function () {
 fs.mkdir("public/profile", (err:any) => {})
 
 fs.readdir("public/profile", (err, files) => {
-	files.forEach((file:any) => {
-		const filePath = path.join("public/profile", file);
-		fs.unlink(filePath, (err:any) => {});
-	});
+	if (files != undefined){
+		files.forEach((file:any) => {
+			const filePath = path.join("public/profile", file);
+			fs.unlink(filePath, (err:any) => {});
+		});
+	}
 });
 
 HCServer.io.on("connect", (socket) => {
