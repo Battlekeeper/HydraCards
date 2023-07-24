@@ -12,6 +12,7 @@ import voteResultNameDisplay from "../components/voteResultNameDisplay.vue";
 import { TSMap } from "typescript-map"
 import topicHistoryItem from "../components/topicHistoryItem.vue";
 import qrCode from "../components/qrCode.vue";
+import { useDark } from "@vueuse/core"
 
 //@ts-ignore
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
@@ -35,6 +36,7 @@ const chartOptions = {
 	responsive: false,
 	maintainAspectRatio: false
 }
+const isDark = useDark()
 
 const config = useRuntimeConfig()
 const route = useRouter()
@@ -213,7 +215,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 </script>
 <template>
 	<permenantHeader></permenantHeader>
-	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined">
+	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined" class="h-screen dark:bg-DarkGrey">
 		<div class="flex">
 			<button @click="showQRCodeModal = !showQRCodeModal" class="my-4">
 				<span class="px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Show QR Code</span>
@@ -231,7 +233,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 		<div v-if="currentRoom.status == HCRoomStatus.voting">
 			<div class="flex flex-col items-center justify-center">
 				<input type="text" v-show="currentUser.permissions.host" placeholder="Insert topic title"
-					v-model="roomTopicName" class="h-20 text-4xl text-center" />
+					v-model="roomTopicName" class="h-20 text-4xl text-center dark:bg-DarkGrey" />
 				<button
 					class="place-content-center px-3 py-1 m-1 hover:bg-green-700 text-white bg-green-500 rounded-lg text-sm"
 					v-show="currentUser.permissions.host" @click="socketSetTopicName()">Set Title</button>
@@ -239,7 +241,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 					class="text-4xl md:text-5xl text-center">{{ currentRoom.topicName }}</h1>
 			</div>
 			<div v-if="!currentRoom.counter.active && currentUser.permissions.host">
-				<input type="text" placeholder="Countdown in seconds" v-model="countDownTime" class="border-2 border-black">
+				<input type="text" placeholder="Countdown in seconds" v-model="countDownTime" class="border-2 border-black  dark:bg-DarkGrey">
 				<button @click="socketStartCount"
 					class="px-3 py-1 m-1 hover:bg-yellow-700 text-white bg-yellow-500 rounded-lg text-sm">Start
 					Countdown</button>
@@ -261,16 +263,18 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 				mode</button>
 			<button v-else @click="switchSpectatorMode(false)"
 				class="px-5 py-2 m-5 hover:bg-red-700 text-white bg-red-500 rounded-lg">Switch to voting mode</button>
-			<div>
+			<div class=" dark:bg-DarkGrey">
+				<div>
 				<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
 					:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
 			</div>
-			<div class="border-2 border-indigo-600 w-80 rounded-lg">
+			<div class="border-2 border-indigo-600 w-80 rounded-lg  dark:bg-DarkGrey">
 			<p>Room History:</p>
 				<topicHistoryItem v-for="(topic, index) in currentRoom.history" @downloadClick="downloadTopicCSV(index, topic.TopicName)" class="flex ">
 					{{ topic.TopicName }}</topicHistoryItem>
 			</div>
 			<p class="text-center text-xs">{{ currentRoom }}</p> 
+		</div>
 		</div>
 		<div v-else>
 			<p class="text-center">Here Are The Results for Topic: {{ currentRoom.topicName }}</p>

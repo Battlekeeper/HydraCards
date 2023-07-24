@@ -2,6 +2,8 @@
 import { ref } from "vue"
 import HCRoom from "../backend/models/HCRoom";
 import HCUser from "../backend/models/HCUser";
+import { useDark } from "@vueuse/core"
+const isDark = useDark()
 const route = useRoute()
 const name = ref("")
 const config = useRuntimeConfig()
@@ -48,14 +50,16 @@ function click() {
 
 <template>
 	<permenantHeader></permenantHeader>
-	<input class="border-2 border-green-600" placeholder="Enter your name" type="text" v-model="name">
-	<button @click="setNameAndProfileAndJoin" class="my-4">
-		<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Enter Room</span>
-	</button>
+	<div class="h-screen dark:bg-DarkGrey">
+		<input class="border-2 border-green-600 dark:bg-DarkGrey" placeholder="Enter your name" type="text" v-model="name">
+		<button @click="setNameAndProfileAndJoin" class="my-4">
+			<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Enter Room</span>
+		</button>
 
-	<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
-	<button @click="click">
-		<span class="px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Upload Profile Image</span>
-	</button>
-	<img width="128" height="128" :src="fileUrl">
+		<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
+		<button @click="click">
+			<span class="px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Upload Profile Image</span>
+		</button>
+		<img width="128" height="128" :src="fileUrl">
+	</div>
 </template>

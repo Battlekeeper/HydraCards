@@ -5,6 +5,8 @@ const route = useRoute()
 </script>
 
 <template>
-	<permenantHeader></permenantHeader>
-	<h1 class="font-sans bold text-4xl text-center">About Us page</h1>
+	<div class="h-screen dark:bg-DarkGrey dark:text-white">
+		<permenantHeader></permenantHeader>
+		<h1 class="font-sans bold text-4xl text-center">About Us</h1>
+	</div>
 </template>
