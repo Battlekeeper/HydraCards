@@ -1,7 +1,7 @@
-import * as express from "express";
+import * as express from "express"
 import HCRoom from "../models/HCRoom"
 import HCUser from "../models/HCUser"
-import { HCVotingStatus } from "../../backend/models/HCVotingStatus";
+import { HCVotingStatus } from "../../backend/models/HCVotingStatus"
 import * as papa from "papaparse"
 import { TSMap } from "typescript-map";
 
