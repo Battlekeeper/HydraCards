@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDark } from "@vueuse/core"
+const isDark = useDark()
 const config = useRuntimeConfig()
 
 async function apiCreateRoom() {
@@ -12,9 +14,10 @@ async function apiCreateRoom() {
 </script>
 
 <template>
-	<permenantHeader></permenantHeader>
-	<p class="text-black text-center">Create Room</p>
-	<button @click="apiCreateRoom" class="text-center text-5xl text-rose-400 font-mono">
+	<div class="h-screen dark:bg-DarkGrey">
+	  <p class="text-black text-center">Create Room</p>
+	  <button @click="apiCreateRoom" class="text-center text-5xl text-rose-400 font-mono">
 		<p class="text-center text-5xl text-rose-400 font-mono">Create This Room</p>
-	</button>
-</template>
+	  </button>
+	</div>
+  </template>
