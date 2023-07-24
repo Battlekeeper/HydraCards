@@ -47,6 +47,7 @@ function click() {
 </script>
 
 <template>
+	<permenantHeader></permenantHeader>
 	<input class="border-2 border-green-600" placeholder="Enter your name" type="text" v-model="name">
 	<button @click="setNameAndProfileAndJoin" class="my-4">
 		<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-white bg-gray-500 rounded-lg text-sm">Enter Room</span>

@@ -12,8 +12,9 @@ async function apiCreateRoom() {
 </script>
 
 <template>
+	<permenantHeader></permenantHeader>
 	<p class="text-black text-center">Create Room</p>
-	<button @click="apiCreateRoom">
+	<button @click="apiCreateRoom" class="text-center text-5xl text-rose-400 font-mono">
 		<p class="text-center text-5xl text-rose-400 font-mono">Create This Room</p>
 	</button>
 </template>

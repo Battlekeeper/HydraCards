@@ -12,7 +12,9 @@ onMounted(() => {
 
 </script>
 <template>
+	<permenantHeader></permenantHeader>
 	<p class="text-7xl text-cyan-700 font-medium text-center italic">Welcome!</p>
+	<button class="bg-orange">hi</button>
 	<div class="flex flex-row justify-between m-10 absolute w-1/2" style="left: 50%; top:50%; transform: translate(-50%, -50%);">
 		<a class="text-5xl text-rose-400 font-mono" href="/create">Create Room</a>
 		<div>

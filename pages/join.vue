@@ -22,6 +22,7 @@ async function apiJoinRoom() {
 </script>
 
 <template>
+	<permenantHeader></permenantHeader>
 	<p class="text-black text-center">Join Room</p>
 	<input class="text-center border-2 border-green-600" placeholder="Enter room code" type="text" v-model="joinCode">
 	<button @click="apiJoinRoom">

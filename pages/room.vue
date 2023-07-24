@@ -212,6 +212,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 }
 </script>
 <template>
+	<permenantHeader></permenantHeader>
 	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined">
 		<div class="flex">
 			<button @click="showQRCodeModal = !showQRCodeModal" class="my-4">
