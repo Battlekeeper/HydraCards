@@ -15,13 +15,16 @@ onMounted(() => {
 </script>
 <template>
 	<permenantHeader></permenantHeader>
-	<div class="h-screen dark:bg-DarkGrey">
-		<p class="text-7xl text-cyan-700 font-medium text-center italic">Welcome!</p>
-		<div class="flex flex-row justify-between m-10 absolute w-1/2" style="left: 50%; top:50%; transform: translate(-50%, -50%);">
-			<a class="text-5xl text-rose-400 font-mono" href="/create">Create Room</a>
-			<div>
-				<a class="text-5xl text-rose-400 font-mono" href="/join">Join Room</a>
-			</div>
-	</div>
-</div>
+	<div class="h-screen dark:bg-DarkGrey p-40">
+		<div class="w-[513px]  text-white text-6xl pb-4 font-bold leading-[72px]">Agile Planning Poker for badass agile teams.</div>
+		<div class="w-[513px] text-gray-300 text-xl pb-8 font-medium leading-[30px]">We’re different. Hydracards is the best choice for the better and badass teams.</div>
+		<div class="w-[171px] h-14 bg-HCOrange justify-start items-start inline-flex">
+ 			<div class="w-[171px] h-14 px-7 py-4 bg-HCOrange rounded-md shadow justify-center items-center gap-2 flex">
+   				<a href="/create" class="text-white text-lg font-medium leading-7">Get Started</a>
+  			</div>
+		</div>
+		<div class="flex absolute bottom-10 right-48">
+			<img src="@/logos/card_logo.png" alt="My Image" style="width: 554px; height: 606px"/>
+		</div>
+		</div>
 </template>

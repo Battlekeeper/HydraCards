@@ -18,6 +18,10 @@ async function apiCreateRoom() {
 	  <p class="text-black text-center">Create Room</p>
 	  <button @click="apiCreateRoom" class="text-center text-5xl text-rose-400 font-mono">
 		<p class="text-center text-5xl text-rose-400 font-mono">Create This Room</p>
+		<div class="flex flex-row justify-between m-10 absolute w-1/2" style="left: 50%; top:50%; transform: translate(-50%, -50%);">
+		</div>
+	
 	  </button>
+	  <a class="text-5xl text-rose-400 font-mono" href="/join">Join Room</a>
 	</div>
   </template>
