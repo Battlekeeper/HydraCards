@@ -3,9 +3,10 @@ import PermenantHeader from '../components/permenantHeader.vue';
 import { useDark, useToggle } from "@vueuse/core"
 
 const isDark = useDark()
+isDark.value = true //default to dark mode for now
 const toggleDark = useToggle(isDark)
-console.log("isDark:", isDark); 
-console.log("toggleDark:", toggleDark);
+//console.log("isDark:", isDark); 
+//console.log("toggleDark:", toggleDark);
 
 </script>
 

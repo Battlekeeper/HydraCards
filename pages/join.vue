@@ -22,11 +22,15 @@ async function apiJoinRoom() {
 </script>
 
 <template>
+	<div class="h-screen bg-DarkGrey dark:text-white">
 	<permenantHeader></permenantHeader>
+	
+	
 	<p class="text-black text-center">Join Room</p>
-	<input class="text-center border-2 border-green-600" placeholder="Enter room code" type="text" v-model="joinCode">
+	<input class="text-center border-2 border-green-600" placeholder="12345678" type="text" v-model="joinCode">
 	<button @click="apiJoinRoom">
 		<p class="text-center text-5xl text-rose-400 font-mono">Join</p>
 	</button>
 	<ErrorMessage v-show="showRoom404Message">That room does not exist</ErrorMessage>
-</template>
+
+</div></template>
