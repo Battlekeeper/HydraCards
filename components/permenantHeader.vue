@@ -2,11 +2,16 @@
 import qrCode from "../components/qrCode.vue";
 import HCRoom from "../backend/models/HCRoom";
 import HCUser from "../backend/models/HCUser";
+import { useDark, useToggle } from "@vueuse/core"
+import Toggle from '@vueform/toggle'
+
+const isDark = useDark()
 
 const showQRCodeModal = ref(false)
 const currentUser = ref(new HCUser)
 const currentRoom = ref(new HCRoom)
 const userId: Ref<string> = ref(useCookie('_id').value as string)
+const value = ref(true)
 
 function isInRoom() {
 	const roomExists = currentRoom.value != undefined
@@ -26,19 +31,19 @@ console.log(isInRoom())
 		<router-link to="/" >
 			<div class="flex pt-4
 			">
-				<img src="@/logos/poker_chip.png" alt="My Image" style="width: 40px; height: 39px" class="ml-32"/>
-				<p class="text-white text-2xl font-bold">HydraCards</p>
+				<img v-show="isDark" src="@/logos/poker_chip.png" alt="My Image" style="width: 40px; height: 39px" class="ml-32"/>
+				<img v-show="!isDark" src="@/logos/poker_chip_blue.png" alt="My Image" style="width: 40px; height: 39px" class="ml-32"/>
+				<p class="text-black dark:text-white text-2xl font-bold">HydraCards</p>
 			</div>
 		</router-link>
-		<div class="py-3 px-80 items-center w-full flex">
-			<router-link to="/aboutUs" class="py-2 px-5 text-gray-100 text-base font-medium leading-normal">About Us</router-link>
-			<router-link to="/features" class="py-2 px-5 text-gray-100 text-base font-medium leading-normal">Features</router-link>
-			<router-link to="/settings" class="py-2 px-5 text-gray-100 text-base font-medium leading-normal">Settings</router-link>
+		<div class="py-3 px-80 items-center flex">
+			<router-link to="/aboutUs" class="py-2 px-5 text-black dark:text-gray-100 text-base font-medium leading-normal">About Us</router-link>
+			<router-link to="/features" class="py-2 px-5 text-black dark:text-gray-100 text-base font-medium leading-normal">Features</router-link>
 		</div>
 		<!--v-if="isInRoom()"-->
 		<div class="flex">
 			<button @click="showQRCodeModal = !showQRCodeModal" class="w-28 h-9">
-				<span class="text-white text-sm font-medium absolute right-48 top-6">Show QR Code</span>
+				<span class="dark:text-white text-black text-sm font-medium absolute right-48 top-6">Show QR Code</span>
 			</button>
 			<div v-show="showQRCodeModal" @click="showQRCodeModal = false">
 				<ModalPopup><qrCode :size="256" :pagelink="true"></qrCode></ModalPopup>
@@ -47,9 +52,13 @@ console.log(isInRoom())
 			<button>
 				<span class="text-orange-500 text-m font-medium absolute right-16 top-6">⚙︎ Settings</span>
 			</button>
+
+			<Toggle @change="isDark = !isDark" offLabel="light" onLabel="dark" v-model="value" class="absolute right-80 top-6"/>
 			
 			<!--show current room id?-->
 		</div>
 		
 	</div>
 </template>
+
+<style src="@vueform/toggle/themes/default.css"></style>
