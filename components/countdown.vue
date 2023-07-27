@@ -60,9 +60,9 @@
 	  <div class="font-md cursor-pointer relative">
 		<div class="flex justify-center">
 		  <div v-if="!countdownRunning" class="flex items-center space-x-2 absolute left-24 -top-4">
-			<input type="number" v-model.number="minutes" @input="updateTime" :disabled="countdownRunning" min="0" class="w-20 flex justify-end px-2 py-1 bg-slate-600 rounded-md "/>
+			<input type="number" v-model.number="minutes" @input="updateTime" :disabled="countdownRunning" min="0" class="w-20 flex justify-end px-2 py-1 bg-gray-300 dark:bg-slate-600 rounded-md "/>
 			<span class="font-bold">:</span>
-			<input type="number" v-model.number="seconds" @input="updateTime" :disabled="countdownRunning" min="0" max="59" class="w-20 px-2 py-1 bg-slate-600 rounded-md text-left" />
+			<input type="number" v-model.number="seconds" @input="updateTime" :disabled="countdownRunning" min="0" max="59" class="w-20 px-2 py-1 bg-gray-300 dark:bg-slate-600 rounded-md text-left" />
 		  </div>
 		  <div v-else class="flex justify-center">
 			<span class="flex items-center space-x-2 absolute left-24 -top-3">{{ formatNumber(displayMinutes) }}</span>
@@ -72,7 +72,7 @@
 		</div>
   
 		<div v-if="!countdownRunning">
-		  <button @click="startTimer" class="w-20 h-10 mr-2 bg-orange-500 rounded-md cursor-pointer absolute left-64 -top-5 text-white">
+		  <button @click="startTimer" class="bg-blue-800 dark:bg-orange-500 hover:border hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 dark:hover:bg-slate-600 dark:hover:border-orange-600 hover:text-blue-800 w-20 h-10 mr-2 rounded-md cursor-pointer absolute left-64 -top-5 text-slate-50">
 			Start Timer
 		  </button>
 		</div>

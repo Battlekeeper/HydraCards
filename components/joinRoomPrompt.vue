@@ -15,9 +15,9 @@ currentUser.value = user.value as HCUser
 const joinCode = ref("")
 const file:Ref<any> = ref()
 const fileUrl:Ref<any> = ref()
+const props = defineProps(["content", "pagelink", "size"])
 
 //CLEAN FILE
-
 console.log(await useFetch("api/room/joinRoom?id=" + route.query.id, { credentials: "include", baseURL: config.public.baseUrl }))
 definePageMeta({
 	//middleware: ["nullroomredirect"]
@@ -63,7 +63,6 @@ function click() {
 	//@ts-ignore
 	document.getElementById('fileInput').click()
 }
-const props = defineProps(["content", "pagelink", "size"])
 
 </script>
 
@@ -72,20 +71,20 @@ const props = defineProps(["content", "pagelink", "size"])
 		<div> 
 			<div class="w-96 h-36 justify-center items-center gap-3 inline-flex">
 	<div class="w-96 relative">
-		<div class="w-96 top-0 absolute left-28 text-white text-4xl font-bold leading-10">Choose a Nickname</div>
-		<div class="w-96 left-[85px] top-[44.11px] absolute text-center text-gray-300 text-xl font-medium leading-loose">What would you like to be called?</div>
+		<div class="w-96 top-0 absolute left-28 datext-slate-50 text-4xl font-bold leading-10">Choose a Nickname</div>
+		<div class="w-96 left-[85px] top-[44.11px] absolute text-center text-black dark:text-gray-300 text-xl font-medium leading-loose">What would you like to be called?</div>
 	</div>
 		<div class="w-80 h-11 gap-1.5 absolute bottom-20 left-24">
-			<div class="h-11 px-3.5 py-2.5 bg-white rounded-lg shadow border border-gray-300">
+			<div class="h-11 px-3.5 py-2.5 text-black dark:bg-slate-50 rounded-lg shadow border border-gray-300">
 			<div class="h-6 justify-start items-center gap-">
 			<input placeholder="Enter your name" class="grow shrink basis-0 text-gray-500 text-base font-normal leading-normal">
 				<div class="w-6 h-6 relative"></div>
 		</div>
-		<button @click="apiJoinRoom" class="my-4">
-			<span class="text-orange-500 text-base font-medium leading-normal w-16 px-4 py-3 rounded-md shadow border border-orange-500 absolute -bottom-1 -right-20">Join</span>
+		<button @click="setNameAndProfileAndJoin" class="my-4">
+			<span class="text-blue-800 dark:text-orange-500 text-base font-medium leading-normal w-16 px-4 py-3 rounded-md shadow border border-blue-800 dark:border-orange-500 absolute -bottom-1 -right-20">Join</span>
 		</button>
 
-  <div class="w-40 px-4 py-3 rounded-md shadow border relative bottom-4 left-10 border-orange-500 text-orange-500 font-medium">
+  <div class="w-40 px-4 py-3 rounded-md shadow border relative bottom-4 left-10 border-blue-800 dark:border-orange-500 text-blue-800 dark:text-orange-500 font-medium">
 		<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
 			<button @click="click">
 				<span>Upload Avatar</span>
@@ -94,7 +93,7 @@ const props = defineProps(["content", "pagelink", "size"])
 		<img class="relative bottom-16 left-56" width="64" height="64" :src="fileUrl">
 		</div>
 		</div>
-		<input type="text" v-model="joinCode">
+		<input type="text" v-model="joinCode" class="relative bottom-16 border border-black">
 	</div>
 </div>
 </div>

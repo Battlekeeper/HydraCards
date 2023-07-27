@@ -27,13 +27,13 @@ console.log(isInRoom())
 </script>
 
 <template>
-	<div class="flex dark:bg-DarkGrey">
+	<div class="flex bg-slate-50 dark:bg-DarkGrey">
 		<router-link to="/" >
 			<div class="flex pt-4
 			">
-				<img v-show="isDark" src="@/logos/poker_chip.png" alt="My Image" style="width: 40px; height: 39px" class="ml-32"/>
-				<img v-show="!isDark" src="@/logos/poker_chip_blue.png" alt="My Image" style="width: 40px; height: 39px" class="ml-32"/>
-				<p class="text-black dark:text-white text-2xl font-bold">HydraCards</p>
+				<img v-show="isDark" src="@/images/poker_chip.png" style="width: 40px; height: 39px" class="ml-32"/>
+				<img v-show="!isDark" src="@/images/poker_chip_blue.png" style="width: 40px; height: 39px" class="ml-32"/>
+				<p class="text-black dark:text-slate-50 text-2xl font-bold">HydraCards</p>
 			</div>
 		</router-link>
 		<div class="py-3 px-80 items-center flex">
@@ -43,7 +43,7 @@ console.log(isInRoom())
 		<!--v-if="isInRoom()"-->
 		<div class="flex">
 			<button @click="showQRCodeModal = !showQRCodeModal" class="w-28 h-9">
-				<span class="dark:text-white text-black text-sm font-medium absolute right-48 top-6">Show QR Code</span>
+				<span class="dark:text-slate-50 text-black text-sm font-medium absolute right-48 top-6">Show QR Code</span>
 			</button>
 			<div v-show="showQRCodeModal" @click="showQRCodeModal = false">
 				<ModalPopup><qrCode :size="256" :pagelink="true"></qrCode></ModalPopup>

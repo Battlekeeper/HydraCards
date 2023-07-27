@@ -7,7 +7,7 @@ const route = useRoute()
 
 
 <template>
-	<div class="h-screen dark:bg-DarkGrey dark:text-gray-100 text-black">
+	<div class="h-full dark:bg-DarkGrey dark:text-gray-100 text-black">
 	  <permenantHeader></permenantHeader>
 	  <div class="mx-auto text-center text-5xl font-bold leading-10">Why HydraCards?</div>
 	  <div class="p-8 mx-auto text-center text-xl font-medium leading-loose">HydraCards is the best choice for your team on the market for free. So why choose us?</div>
@@ -15,7 +15,7 @@ const route = useRoute()
 		<div class="dark:text-gray-100">
 	  <div class="grid grid-cols-3 gap-8 ml-16 mt-10 mx-auto">
 		<div class="w-96 h-60 rounded-md shadow dark:bg-slate-600 bg-gray-300">
-		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-white dark:border-slate-800">
+		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-slate-50 dark:border-slate-800">
 			<div class="w-12 relative right-1 text-gray-100 dark:text-slate-600 text-center text-xl font-semibold leading-loose">1</div>
 		  </div>
 		  <div class="w-64 mx-auto relative -left-4 text-xl font-bold leading-loose">Save Your Stories</div>
@@ -23,7 +23,7 @@ const route = useRoute()
 		</div>
   
 		<div class="w-96 h-60 rounded-md dark:bg-slate-600 bg-gray-300 shadow">
-		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-white dark:border-slate-800">
+		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-slate-50 dark:border-slate-800">
 			<div class="w-12 relative right-1 text-center text-gray-100 dark:text-slate-600 text-xl font-semibold leading-loose">2</div>
 		  </div>
 		  <div class="w-64 mx-auto text-xl relative -left-4 font-bold leading-loose">Easy To Read Charts</div>
@@ -31,7 +31,7 @@ const route = useRoute()
 		</div>
   
 		<div class="w-96 h-60 rounded-md dark:bg-slate-600 bg-gray-300 shadow">
-		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-white dark:border-slate-800">
+		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-slate-50 dark:border-slate-800">
 			<div class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-slate-600 leading-loose">3</div>
 		  </div>
 		  <div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">Easy To Use Mod Controls</div>
@@ -39,7 +39,7 @@ const route = useRoute()
 		</div>
   
 		<div class="w-96 h-60 rounded-md dark:bg-slate-600 bg-gray-300 shadow">
-		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-white dark:border-slate-800">
+		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-slate-50 dark:border-slate-800">
 			<div class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-slate-600 leading-loose">4</div>
 		  </div>
 		  <div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">Export Data</div>
@@ -47,7 +47,7 @@ const route = useRoute()
 		</div>
   
 		<div class="w-96 h-60 rounded-md dark:bg-slate-600 bg-gray-300 shadow">
-		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-white dark:border-slate-800">
+		  <div class="w-12 h-12 dark:bg-orange-500 bg-blue-800 relative -top-5 rounded-full mx-auto border-4 border-slate-50 dark:border-slate-800">
 			<div class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-slate-600 leading-loose">5</div>
 		  </div>
 		  <div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">It Is Free!</div>

@@ -15,6 +15,6 @@ function returnHome(){
 <template>
 	<permenantHeader></permenantHeader>
 	<ErrorMessageComp>{{errorMessage}}</ErrorMessageComp>
-    <button @click="returnHome()" class="px-5 py-2 m-5 hover:bg-red-700 text-white bg-red-500 rounded-lg">Return Home</button>
+    <button @click="returnHome()" class="px-5 py-2 m-5 hover:bg-red-700 text-slate-50 bg-red-500 rounded-lg">Return Home</button>
 </template>
 

@@ -22,7 +22,7 @@ async function apiJoinRoom() {
 </script>
 
 <template>
-	<div class="h-screen bg-DarkGrey dark:text-white">
+	<div class="h-full bg-DarkGrey dark:text-slate-50">
 	<permenantHeader></permenantHeader>
 	
 	

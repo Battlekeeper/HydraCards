@@ -9,7 +9,7 @@ defineEmits(['downloadClick'])
 		<p class="flex text-center items-center">
 			<slot></slot>
 		</p>
-		<button @click="$emit('downloadClick')" class="ml-2 px-2 py-2 m-2 hover:bg-indigo-600 text-white bg-indigo-400 rounded-lg text-sm">
+		<button @click="$emit('downloadClick')" class="ml-2 px-2 py-2 m-2 hover:bg-indigo-600 text-slate-50 bg-indigo-400 rounded-lg text-sm">
 			Download CSV
 		</button>
 	</div>

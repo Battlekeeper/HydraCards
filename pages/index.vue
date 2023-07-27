@@ -15,11 +15,11 @@ onMounted(() => {
 </script>
 <template>
 	<permenantHeader></permenantHeader>
-	<div class="h-screen dark:bg-DarkGrey text-black dark:text-gray-300 p-40 flex flex-col">
-		<div class="w-[513px] text-6xl pb-4 font-bold leading-[72px]">Agile Planning Poker for badass agile teams.</div>
+	<div class="h-screen dark:bg-DarkGrey text-black dark:text-gray-300 pl-40 pt-20 flex flex-col">
+		<div class="w-[513px] text-6xl pb-4 font-bold">Agile Planning Poker for badass agile teams.</div>
 		<div class="w-[513px] text-xl pb-8 font-medium leading-[30px]">We’re different. Hydracards is the best choice for the better and badass teams.</div>
    		<a href="/create" class="text-lg font-medium leading-7  dark:text-gray-100 text-black w-[171px] h-14 px-7 py-4 bg-blue-800 dark:bg-HCOrange shadow justify-center items-center gap-2 flex">Get Started</a>
-		<img v-show="isDark" src="@/logos/card_logo.png" alt="My Image" style="width: 554px; height: 606px"  class="flex xl:absolute xl:bottom-30 xl:right-72"/>
-		<img v-show="!isDark" src="@/logos/card_logo_blue.png" alt="My Image" style="width: 554px; height: 606px"  class="flex xl:absolute xl:bottom-30 xl:right-72"/>
+		<img v-show="isDark" src="@/images/card_logo.png" alt="My Image" style="width: 434px; height: 486px"  class="flex xl:absolute xl:top-20 xl:right-60"/>
+		<img v-show="!isDark" src="@/images/card_logo_blue.png" alt="My Image" style="width: 434px; height: 486px"  class="flex xl:absolute xl:top-20 xl:right-60"/>
 	</div>
 </template>
