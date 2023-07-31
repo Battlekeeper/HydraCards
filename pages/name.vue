@@ -2,8 +2,7 @@
 import { ref } from "vue"
 import HCRoom from "../backend/models/HCRoom";
 import HCUser from "../backend/models/HCUser";
-import { useDark } from "@vueuse/core"
-const isDark = useDark()
+
 const route = useRoute()
 const name = ref("")
 const config = useRuntimeConfig()
@@ -15,9 +14,6 @@ name.value = currentUser.value.displayName
 const file:Ref<any> = ref()
 const fileUrl:Ref<any> = ref()
 
-definePageMeta({
-	//middleware: ["nullroomredirect"]
-})
 
 async function setNameAndProfileAndJoin() {
 	var response;
@@ -50,7 +46,7 @@ function click() {
 
 <template>
 	<permenantHeader></permenantHeader>
-	<div class="h-full dark:bg-DarkGrey">
+	<div class="h-full">
 		<input class="border-2 border-green-600 dark:bg-DarkGrey" placeholder="Enter your name" type="text" v-model="name">
 		<button @click="setNameAndProfileAndJoin" class="my-4">
 			<span class=" px-2 py-2 m-2 hover:bg-gray-700 text-slate-50 bg-gray-500 rounded-lg text-sm">Enter Room</span>

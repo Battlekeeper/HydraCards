@@ -12,7 +12,6 @@ import voteResultNameDisplay from "../components/voteResultNameDisplay.vue";
 import { TSMap } from "typescript-map"
 import topicHistoryItem from "../components/topicHistoryItem.vue";
 import qrCode from "../components/qrCode.vue";
-import { useDark } from "@vueuse/core"
 
 //@ts-ignore
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
@@ -36,16 +35,17 @@ const chartOptions = {
 	responsive: false,
 	maintainAspectRatio: false
 }
-const isDark = useDark()
+
 
 const config = useRuntimeConfig()
 const route = useRouter()
+const colormode = useColorMode()
 
 const socket = io(config.public.baseUrl.replace("http", "ws"));
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()
-const cards = ref([0,0.5,1,2,3,5,8,13,20,40,100,0, 0])
+const cards = ref([0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100, 0, 0])
 const selectedCard = ref(-1)
 const selectedCardLast = ref(-1)
 const currentUser = ref(new HCUser)
@@ -167,12 +167,15 @@ async function downloadTopicCSV(topicIndex: number, topicName: string) {
 	link.click();
 	document.body.removeChild(link);
 }
+function copy() {
+	navigator.clipboard.writeText(window.location.href)
+}
 
 onMounted(async () => {
 	socket.on("connect", () => {
 		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
 		socket.emit("setSocketId", currentUser.value.id)
-		setInterval(()=>{socket.emit("onlinePing", currentUser.value.id)}, 1000)
+		setInterval(() => { socket.emit("onlinePing", currentUser.value.id) }, 1000)
 	})
 	socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
 		if (!room || !members) {
@@ -213,7 +216,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 }
 </script>
 <template>
-	<permenantHeader></permenantHeader>
+	<PermenantHeader :inRoom="true"></PermenantHeader>
 	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined" class="h-screen bg-slate-50 dark:bg-DarkGrey">
 		<!--<div class="flex">
 			<button @click="showQRCodeModal = !showQRCodeModal" class="my-4">
@@ -226,115 +229,148 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 			<button>
 				<span class="px-2 py-2 m-2 text-slate-50 bg-gray-500 rounded-lg text-sm">{{ currentRoom.id }}</span>
 			</button>
-		</div> qr code stuff-->
+		</div>-->
 		<div v-if="currentRoom.status == HCRoomStatus.voting">
-		<!--story name and two buttons-->
-
-<div>
-  <div class="absolute h-screen left-1/2 top-32">
-    <div class="text-slate-300 mb-2">Story Title</div>
-    <div class="gap-8 inline-flex">
-      <div v-show="currentRoom.topicName != '' && !currentUser.permissions.host" class="w-64 h-16 pl-4 pr-36 py-5 bg-gray-300 dark:bg-slate-600 rounded-md gap-2.5 flex">
-        <div class="text-slate-300 text-base font-normal leading-normal">
-			<input type="text" placeholder="Story Title" class="bg-gray-300 dark:bg-slate-600" v-model="roomTopicName" />
-	  </div>
-      </div>
-      <div class="justify-start items-start gap-9 flex">
-        <div class="justify-start items-start flex">
-          <div class="justify-start items-start flex">
-            <div class="w-40 h-11 justify-start items-start flex">
-              <div v-show="currentUser.permissions.host" class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 dark:hover:bg-slate-600 hover:border dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
-				<div class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
-					<button @click="socketSetTopicName()">Set Title</button>
+			<div>
+				<div class="absolute h-screen right-60 top-32">
+					<div class="text-slate-300 mb-2">Story Title</div>
+					<div class="gap-8 inline-flex">
+						<div v-show="currentUser.permissions.host"
+							class="w-64 h-16 pl-4 pr-36 py-5 bg-gray-300 dark:bg-slate-600 rounded-md gap-2.5 flex">
+							<div class="text-slate-300 text-base font-normal leading-normal">
+								<input type="text" placeholder="Story Title" class="bg-gray-300 dark:bg-slate-600"
+									v-model="roomTopicName" />
+							</div>
+						</div>
+						<div class="justify-start items-start gap-9 flex">
+							<div class="justify-start items-start flex">
+								<div class="justify-start items-start flex">
+									<div class="w-40 h-11 justify-start items-start flex">
+										<div v-show="currentUser.permissions.host"
+											class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 dark:hover:bg-slate-600 hover:border dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
+											<div
+												class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
+												<button @click="socketSetTopicName()">Set Title</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="justify-start items-start flex">
+								<div class="justify-start items-start flex">
+									<div class="w-40 h-11 justify-start items-start flex">
+										<div v-show="currentUser.permissions.host"
+											class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 hover:border dark:hover:bg-slate-600 dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
+											<div
+												class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
+												<h1 v-show="currentRoom.topicName != '' && !currentUser.permissions.host"
+													class="text-4xl md:text-5xl text-center">{{ currentRoom.topicName }}
+												</h1>
+												<button v-show="currentUser.permissions.host"
+													@click="socketDisplayResults">Reveal Votes</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="justify-start items-start flex">
-          <div class="justify-start items-start flex">
-            <div class="w-40 h-11 justify-start items-start flex">
-              <div v-show="currentUser.permissions.host" class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 hover:border dark:hover:bg-slate-600 dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
-                <div class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
-				<h1
-				v-show="currentRoom.topicName != '' && !currentUser.permissions.host" class="text-4xl md:text-5xl text-center">{{ currentRoom.topicName }}</h1>
-					<button v-show="currentUser.permissions.host" @click="socketDisplayResults">Reveal Votes</button>
-			  </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="">
-  <div class="place-items-center gap-2 grid gap-x-20 gap-y-8 grid-cols-5 grid-rows-3 absolute right-64 top-64">
-		<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
-					:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
+		
+				<div>
+					<div
+						class="gap-2 grid gap-x-20 gap-y-8 grid-cols-5 grid-rows-3 absolute top-64 right-64">
+						<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
+							:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
+					</div>
+				</div>
+			</div>
 		</div>
-	</div>
-	</div>
-</div>
-			<div v-if="!currentRoom.counter.active && currentUser.permissions.host">
+		<div v-if="!currentRoom.counter.active && currentUser.permissions.host">
 			<div class="w-80 h-11 justify-center items-center inline-flex absolute left-32 top-40">
 				<div class="flex-col justify-start items-start gap-1.5 inline-flex">
 					<div class="flex-col justify-start items-start gap-1.5 flex">
-					<div class="w-80 h-10 px-3.5 py-2.5 bg-gray-300 dark:bg-slate-600 rounded-lg justify-start items-center gap-2 inline-flex">
-						<div class="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
-							
-							<Countdown></Countdown>
-					
-							
-							<!--<input type="text" placeholder="Countdown in seconds" v-model="countDownTime" class="grow shrink basis-0 text-center text-gray-50 text-lg font-normal bg-slate-600 leading-loose">
+						<div
+							class="w-80 h-10 px-3.5 py-2.5 bg-gray-300 dark:bg-slate-600 rounded-lg justify-start items-center gap-2 inline-flex">
+							<div class="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
+
+								<Countdown></Countdown>
+
+
+								<!--<input type="text" placeholder="Countdown in seconds" v-model="countDownTime" class="grow shrink basis-0 text-center text-gray-50 text-lg font-normal bg-slate-600 leading-loose">
 								<button @click="socketStartCount"
 							class="px-3 py-0.5 m-1 hover:bg-orange-600 text-slate-50 bg-orange-500 rounded-lg text-sm">Start
 							Countdown</button>-->
-					
+
+							</div>
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+		<h1 v-if="currentRoom.counter.active">{{ currentRoom.counter.count }} seconds left to vote</h1>
+
+		<br>
+		<div class="w-96 h-96 flex-col items-center gap-5 inline-flex absolute top-56 left-24">
+			<div class="bg-gray-300 dark:bg-slate-600 rounded-2xl flex-">
+				<div class="pl-1 pr-2.5 py-2.5 inline-flex">
+					<div class="pl-11 items-center gap-44 flex">
+						<div class="p-2.5 ">
+							<div class="dark:text-slate-400 font-semibold">Name</div>
+						</div>
+						<div class="dark:text-slate-400 font-semibold">Vote</div>
 					</div>
 				</div>
+				<div class="border border-slate-400"></div>
+				<div class="px-6 py-4 flex-col justify-start items-start gap-4 flex">
+					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
-			<h1 v-if="currentRoom.counter.active">{{ currentRoom.counter.count }} seconds left to vote</h1>
 
-			<br>
-			<div v-for="member in  currentRoomMembers">
-				<roomMemberDisplayItem :member=member></roomMemberDisplayItem>
+			<div class="w-80 h-11 relative">
+				<div class="w-80 h-11 px-3.5 py-2.5 bg-gray-300 dark:bg-slate-600 rounded-lg">
+					<p class="dark:text-slate-300 text-base font-normal leading-normal">
+						localhost:3000/room?id={{ currentRoom.id }}
+					</p>
+					<img v-show="colormode.preference != 'dark'" @click="copy()" src="/images/copy_paste_black.png"
+						style="width: 25px; height: 25px" class="relative left-64 bottom-6 hover:bg-slate-700">
+					<img v-show="colormode.preference == 'dark'" @click="copy()" src="/images/copy_paste_white.png"
+						style="width: 25px; height: 25px" class="relative left-64 bottom-6 hover:bg-slate-700">
+				</div>
+				<div class="w-6 h-6 left-[286px] top-[10.91px] absolute"></div>
 			</div>
-			<!--<button @click="socketLeaveRoom"
+		</div>
+
+		<!--<button @click="socketLeaveRoom"
 				class="px-5 py-2 m-5 hover:bg-blue-700 text-slate-50 bg-blue-500 rounded-lg text-lg">Leave
 				Room</button>-->
-		
-			<!--<button v-if="currentUser.userVotingStatus != 1" @click="switchSpectatorMode(true)"
+
+		<!--<button v-if="currentUser.userVotingStatus != 1" @click="switchSpectatorMode(true)"
 				class="px-5 py-2 m-5 hover:bg-red-700 text-slate-50 bg-red-500 rounded-lg text-lg">Switch to spectator
 				mode</button>
 			<button v-else @click="switchSpectatorMode(false)"
 				class="px-5 py-2 m-5 hover:bg-red-700 text-slate-50 bg-red-500 rounded-lg">Switch to voting mode
 			</button>-->
-			<div class=" dark:bg-DarkGrey">
-				
+		<div class=" dark:bg-DarkGrey">
 			<!--<div class="border-2 border-indigo-600 w-80 rounded-lg  dark:bg-DarkGrey">
 			<p>Room History:</p>
 				<topicHistoryItem v-for="(topic, index) in currentRoom.history" @downloadClick="downloadTopicCSV(index, topic.TopicName)" class="flex ">
 					{{ topic.TopicName }}</topicHistoryItem>
 			</div>-->
 		</div>
-		</div>
-		<!--V-if should go till here I think-->
-		<div v-else>
-			<p class="text-center">Here Are The Results for Topic: {{ currentRoom.topicName }}</p>
-			<voteResultNameDisplay v-for="voteObj in sortedVotes" :voteObj=voteObj>
-			</voteResultNameDisplay>
-			<button v-if="currentUser.permissions.host" @click="socketRevote()"
-				class="px-5 py-2 m-5 hover:bg-yellow-700 text-slate-50 bg-yellow-500 rounded-lg">Revote</button>
-			<button @click="socketLeaveRoom" class="px-5 py-2 m-5 hover:bg-blue-700 text-slate-50 bg-blue-500 rounded-lg">Leave
-				Room</button>
-			<button @click="socketNewTopic()" v-show="currentUser.permissions.host"
-			class="px-5 py-2 m-5 hover:bg-orange-700 text-slate-50 bg-orange-500 rounded-lg">New Topic</button>
-		<Pie :data="pieData" :options="chartOptions" />
-		<Bar :data="pieData" :options="chartOptions" />
-		<button @click="downloadCharts"
-			class="px-5 py-2 m-5 hover:bg-gray-700 text-slate-50 bg-gray-500 rounded-lg">Download Chart PNG</button>
 	</div>
-</template>
+	<div v-else>
+		<p class="text-center">Here Are The Results for Topic: {{ currentRoom.topicName }}</p>
+		<voteResultNameDisplay v-for="voteObj in sortedVotes" :voteObj=voteObj>
+		</voteResultNameDisplay>
+		<button v-if="currentUser.permissions.host" @click="socketRevote()"
+		class="px-5 py-2 m-5 hover:bg-yellow-700 text-slate-50 bg-yellow-500 rounded-lg">Revote</button>
+	<button @click="socketLeaveRoom" class="px-5 py-2 m-5 hover:bg-blue-700 text-slate-50 bg-blue-500 rounded-lg">Leave
+		Room</button>
+	<button @click="socketNewTopic()" v-show="currentUser.permissions.host"
+		class="px-5 py-2 m-5 hover:bg-orange-700 text-slate-50 bg-orange-500 rounded-lg">New Topic</button>
+	<Pie :data="pieData" :options="chartOptions" />
+	<Bar :data="pieData" :options="chartOptions" />
+	<button @click="downloadCharts"
+		class="px-5 py-2 m-5 hover:bg-gray-700 text-slate-50 bg-gray-500 rounded-lg">Download Chart PNG</button>
+</div></template>
