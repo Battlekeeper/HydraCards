@@ -26,7 +26,7 @@ onMounted(() => {
 				Started</a>
 		</div>
 
-		<img v-show="colormode.preference == 'dark'" src="@/images/card_logo.png" alt="My Image" class="" />
-		<img v-show="colormode.preference != 'dark'" src="@/images/card_logo_blue.png" alt="My Image" class="" />
+		<img v-show="colormode.preference == 'dark'" src="/images/card_logo.png" alt="My Image" class="" />
+		<img v-show="colormode.preference != 'dark'" src="/images/card_logo_blue.png" alt="My Image" class="" />
 	</div>
 </template>

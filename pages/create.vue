@@ -156,8 +156,8 @@ const roomCode = ref(null)
 				<p
 					class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
 					Host Temporary Room</p>
-				<img v-if="colormode.preference == 'dark'" class="w-24 mt-6" src="@/images/server_icon_white.png" />
-				<img v-else="colormode.preference == 'light'" class="w-24 mt-6" src="@/images/server_icon_black.png" />
+				<img v-if="colormode.preference == 'dark'" class="w-24 mt-6" src="/images/server_icon_white.png" />
+				<img v-else="colormode.preference == 'light'" class="w-24 mt-6" src="/images/server_icon_black.png" />
 
 				<div class="w-full pl-8">
 					<div class="flex mt-[24px]">

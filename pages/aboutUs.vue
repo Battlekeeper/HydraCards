@@ -15,8 +15,8 @@ const route = useRoute()
 			undisclosed place, from there we ran it straight up to the top of the free category. From there we just kept
 			developing and kept striving for greatness.</p>
 		<img v-show="colormode.preference == 'dark'" class="w-96 h-auto"
-			src="@/images/poker_chip.png" />
+			src="/images/poker_chip.png" />
 		<img v-show="colormode.preference != 'dark'" class="w-96 h-auto"
-			src="@/images/poker_chip_blue.png" />
+			src="/images/poker_chip_blue.png" />
 	</div>
 </template>

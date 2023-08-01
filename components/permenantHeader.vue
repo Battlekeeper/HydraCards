@@ -44,9 +44,9 @@ const showQRCodeModal = ref(false)
 	<div class="flex items-center pl-16 pr-16 pt-5">
 		<router-link to="/">
 			<div class="flex w-[15em]">
-				<img v-show="colormode.preference == 'dark'" src="@/images/poker_chip.png" style="width: 40px; height: 39px"
+				<img v-show="colormode.preference == 'dark'" src="/images/poker_chip.png" style="width: 40px; height: 39px"
 					class="" />
-				<img v-show="colormode.preference != 'dark'" src="@/images/poker_chip_blue.png"
+				<img v-show="colormode.preference != 'dark'" src="/images/poker_chip_blue.png"
 					style="width: 40px; height: 39px" class="" />
 				<p class="text-black dark:text-slate-50 text-2xl font-bold">HydraCards</p>
 			</div>

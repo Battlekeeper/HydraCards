@@ -215,7 +215,6 @@ definePageMeta({
 })
 
 watch(displayName, socketSetName)
-console.log(currentRoom.value.status)
 </script>
 
 <template>
