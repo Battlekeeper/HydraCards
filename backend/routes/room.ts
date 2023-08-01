@@ -19,6 +19,7 @@ router.get("/createroom", (req, res) => {
 	user?.reset()
 	user!.permissions.host = true
 	room.addMember(user!.id)
+	room.topicName = req.query.topicName as string
 
 	res.cookie("_id", user?.id)
 	res.send({ room })

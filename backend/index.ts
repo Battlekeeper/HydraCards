@@ -86,7 +86,7 @@ HCServer.io.on("connect", (socket) => {
 			socket.leave(roomId.toString())
 		}
 	})
-	socket.on("submitVote", (roomId:number, userId: string, vote:number) => {
+	socket.on("submitVote", (roomId:number, userId: string, vote:string) => {
 		var room:HCRoom = HCRoom.get(roomId)
 		var user:HCUser = HCUser.get(userId);
 		if (room == undefined || user == undefined){
@@ -111,7 +111,7 @@ HCServer.io.on("connect", (socket) => {
 		}
 		room.members.forEach((userId:string) => {
 			if (!room.votes.has(userId)){
-				room.votes.set(userId, -1)
+				room.votes.set(userId, "")
 			}
 		});
 

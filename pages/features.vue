@@ -3,8 +3,9 @@ const route = useRoute()
 </script>
 
 <template>
-	<div class="h-full dark:bg-DarkGrey dark:text-gray-100 text-black">
-		<permenantHeader></permenantHeader>
+	<permenantHeader></permenantHeader>
+	
+		
 		<div class="mx-auto text-center text-5xl font-bold leading-10 mt-[38px]">Why HydraCards?</div>
 		<div class="p-8 mx-auto text-center text-xl font-medium leading-loose">HydraCards is the best choice for your team
 			on the market for free. So why choose us?</div>
@@ -73,5 +74,4 @@ const route = useRoute()
 				</div>
 			</div>
 		</div>
-	</div>
 </template>

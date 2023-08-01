@@ -16,7 +16,7 @@ import qrCode from "../components/qrCode.vue";
 //@ts-ignore
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
 //@ts-ignore
-import { Pie, Bar } from 'vue-chartjs'
+import { Pie, Bar, Doughnut } from 'vue-chartjs'
 ChartJS.register(ArcElement, Tooltip, Legend)
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
@@ -24,8 +24,8 @@ const pieData = ref({
 	labels: [''],
 	datasets: [
 		{
-			label: 'Data One',
-			backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
+			label: '',
+			backgroundColor: ['#CF551B', '#E46651', '#F16523', '#EEA684'],
 			data: [1]
 		}
 	]
@@ -41,13 +41,12 @@ const config = useRuntimeConfig()
 const route = useRouter()
 const colormode = useColorMode()
 
+const selectedChart = ref("pie")
 const socket = io(config.public.baseUrl.replace("http", "ws"));
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()
-const cards = ref([0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100, 0, 0])
-const selectedCard = ref(-1)
-const selectedCardLast = ref(-1)
+const selectedCard = ref()
 const currentUser = ref(new HCUser)
 const currentRoom = ref(new HCRoom)
 const currentRoomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
@@ -110,15 +109,26 @@ async function apiSetDisplayName() {
 function socketSetName() {
 	socket.emit("setMemberName", currentRoom.value.id, currentUser.value.id, displayName.value)
 }
-function submitVote(vote: number) {
+function submitVote(vote: string, event:any) {
+	var element = event.target
+
+	if (element.localName == 'p'){
+		element = element.parentElement
+	}
+
+	if (selectedCard.value != undefined){
+		selectedCard.value.classList.replace("bg-blue-800","bg-gray-300")
+		selectedCard.value.classList.replace("dark:bg-orange-500","dark:bg-gray-700")
+	}
+
 	socket.emit("submitVote", Number.parseInt(roomId), userId.value, vote)
-}
-function setCardActive(cardId: number) {
-	selectedCard.value = cardId
+	element.classList.replace("bg-gray-300","bg-blue-800")
+	element.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
+	selectedCard.value = element
+
 }
 async function switchSpectatorMode(mode: boolean) {
 	await useFetch(`api/user/setSpectatorMode?mode=` + mode, { baseURL: config.public.baseUrl })
-	selectedCard.value = -1
 }
 function getRoomVotesMap(room: HCRoom) {
 	var votes: TSMap<string, number> = new TSMap<string, number>
@@ -186,21 +196,16 @@ onMounted(async () => {
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
-		roomTopicName.value = currentRoom.value.topicName
 
+		roomTopicName.value = currentRoom.value.topicName
+		
 		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
 		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
 		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 		pieData.value.labels = votes.keys()
 		pieData.value.datasets[0].data = votes.values()
 		if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote) {
-			var temp = selectedCard.value
-			nextTick(() => {
-				setCardActive(-1)
-				nextTick(() => {
-					setCardActive(temp)
-				})
-			})
+			
 		}
 	})
 })
@@ -210,167 +215,202 @@ definePageMeta({
 })
 
 watch(displayName, socketSetName)
-
-if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.displayName == undefined) {
-	route.push({ path: "/name", query: { id: currentRoom.value.id } });
-}
+console.log(currentRoom.value.status)
 </script>
+
 <template>
 	<PermenantHeader :inRoom="true"></PermenantHeader>
-	<div v-if="isInRoom() && currentUser.displayName != '' && currentUser.displayName != undefined" class="h-screen bg-slate-50 dark:bg-DarkGrey">
-		<!--<div class="flex">
-			<button @click="showQRCodeModal = !showQRCodeModal" class="my-4">
-				<span class="px-2 py-2 m-2 hover:bg-gray-700 text-slate-50 bg-gray-500 rounded-lg text-sm">Show QR Code</span>
-			</button>
-			<div v-show="showQRCodeModal" @click="showQRCodeModal = false">
-				<ModalPopup><qrCode :size="256" :pagelink="true"></qrCode></ModalPopup>
-			</div>
-			
-			<button>
-				<span class="px-2 py-2 m-2 text-slate-50 bg-gray-500 rounded-lg text-sm">{{ currentRoom.id }}</span>
-			</button>
-		</div>-->
-		<div v-if="currentRoom.status == HCRoomStatus.voting">
-			<div>
-				<div class="absolute h-screen right-60 top-32">
-					<div class="text-slate-300 mb-2">Story Title</div>
-					<div class="gap-8 inline-flex">
-						<div v-show="currentUser.permissions.host"
-							class="w-64 h-16 pl-4 pr-36 py-5 bg-gray-300 dark:bg-slate-600 rounded-md gap-2.5 flex">
-							<div class="text-slate-300 text-base font-normal leading-normal">
-								<input type="text" placeholder="Story Title" class="bg-gray-300 dark:bg-slate-600"
-									v-model="roomTopicName" />
-							</div>
-						</div>
-						<div class="justify-start items-start gap-9 flex">
-							<div class="justify-start items-start flex">
-								<div class="justify-start items-start flex">
-									<div class="w-40 h-11 justify-start items-start flex">
-										<div v-show="currentUser.permissions.host"
-											class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 dark:hover:bg-slate-600 hover:border dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
-											<div
-												class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
-												<button @click="socketSetTopicName()">Set Title</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="justify-start items-start flex">
-								<div class="justify-start items-start flex">
-									<div class="w-40 h-11 justify-start items-start flex">
-										<div v-show="currentUser.permissions.host"
-											class="w-40 h-11 px-4 py-3 bg-blue-800 dark:bg-orange-500 hover:border dark:hover:bg-slate-600 dark:hover:border-orange-500 hover:border-blue-800 hover:bg-slate-50 dark:hover:text-orange-500 rounded-md shadow justify-center items-center gap-2 flex">
-											<div
-												class="dark:hover:text-orange-500 text-white hover:text-blue-800 text-base font-medium leading-normal">
-												<h1 v-show="currentRoom.topicName != '' && !currentUser.permissions.host"
-													class="text-4xl md:text-5xl text-center">{{ currentRoom.topicName }}
-												</h1>
-												<button v-show="currentUser.permissions.host"
-													@click="socketDisplayResults">Reveal Votes</button>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-		
+	
+	<div v-if="currentUser.permissions.host" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
+		<div>
+			<div class="flex justify-between" v-if="currentRoom.status == 0">
 				<div>
-					<div
-						class="gap-2 grid gap-x-20 gap-y-8 grid-cols-5 grid-rows-3 absolute top-64 right-64">
-						<voteCard v-for="card in cards" :cardId=card :userVotingStatus=currentUser.userVotingStatus
-							:selectedCard=selectedCard @click="submitVote(card); setCardActive(card)">{{ card }}</voteCard>
+					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
+						<input type="number"
+							class="w-12 h-12 text-center bg-transparent ext-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
+							value="00">
+						<p class="w-fit h-fit text-[30px] pl-2 pr-2 ext-black dark:text-gray-50">:</p>
+						<input type="number"
+							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
+							value="00">
 					</div>
 				</div>
+				<button class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
+					Timer</button>
 			</div>
-		</div>
-		<div v-if="!currentRoom.counter.active && currentUser.permissions.host">
-			<div class="w-80 h-11 justify-center items-center inline-flex absolute left-32 top-40">
-				<div class="flex-col justify-start items-start gap-1.5 inline-flex">
-					<div class="flex-col justify-start items-start gap-1.5 flex">
-						<div
-							class="w-80 h-10 px-3.5 py-2.5 bg-gray-300 dark:bg-slate-600 rounded-lg justify-start items-center gap-2 inline-flex">
-							<div class="grow shrink basis-0 h-6 justify-start items-center gap-2 flex">
-
-								<Countdown></Countdown>
-
-
-								<!--<input type="text" placeholder="Countdown in seconds" v-model="countDownTime" class="grow shrink basis-0 text-center text-gray-50 text-lg font-normal bg-slate-600 leading-loose">
-								<button @click="socketStartCount"
-							class="px-3 py-0.5 m-1 hover:bg-orange-600 text-slate-50 bg-orange-500 rounded-lg text-sm">Start
-							Countdown</button>-->
-
-							</div>
-						</div>
-					</div>
+			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
+				<div class="flex justify-between pt-5 pl-16 pr-16">
+					<p class="font-bold text-black dark:text-gray-300">Name</p>
+					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
-			</div>
-		</div>
-		<h1 v-if="currentRoom.counter.active">{{ currentRoom.counter.count }} seconds left to vote</h1>
-
-		<br>
-		<div class="w-96 h-96 flex-col items-center gap-5 inline-flex absolute top-56 left-24">
-			<div class="bg-gray-300 dark:bg-slate-600 rounded-2xl flex-">
-				<div class="pl-1 pr-2.5 py-2.5 inline-flex">
-					<div class="pl-11 items-center gap-44 flex">
-						<div class="p-2.5 ">
-							<div class="dark:text-slate-400 font-semibold">Name</div>
-						</div>
-						<div class="dark:text-slate-400 font-semibold">Vote</div>
-					</div>
-				</div>
-				<div class="border border-slate-400"></div>
-				<div class="px-6 py-4 flex-col justify-start items-start gap-4 flex">
+				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
 					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
-
-			<div class="w-80 h-11 relative">
-				<div class="w-80 h-11 px-3.5 py-2.5 bg-gray-300 dark:bg-slate-600 rounded-lg">
-					<p class="dark:text-slate-300 text-base font-normal leading-normal">
-						localhost:3000/room?id={{ currentRoom.id }}
-					</p>
-					<img v-show="colormode.preference != 'dark'" @click="copy()" src="/images/copy_paste_black.png"
-						style="width: 25px; height: 25px" class="relative left-64 bottom-6 hover:bg-slate-700">
-					<img v-show="colormode.preference == 'dark'" @click="copy()" src="/images/copy_paste_white.png"
-						style="width: 25px; height: 25px" class="relative left-64 bottom-6 hover:bg-slate-700">
+			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[95%] justify-between">
+					<p class="">http://localhost:3000/room?id={{ currentRoom.id }}</p>
+					<svg v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="white"/>
+					</svg>
+					<svg v-else width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="black"/>
+					</svg>
+			</div>
+		</div>
+		<div v-if="currentRoom.status == 0" class="m-[4.6rem]">
+			<input v-model="roomTopicName" placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">
+			<div class="mt-14 flex justify-between">
+				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-8 pl-8 shadow border border-blue-800 dark:border-orange-500">Set Story Name</button>
+				<div v-else></div>
+				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
+			</div>
+			<div class="grid grid-cols-5 grid-rows-3 mt-16 gap-8">
+				<div @click="submitVote('0', $event)" class=" dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl select-none">0</p>
 				</div>
-				<div class="w-6 h-6 left-[286px] top-[10.91px] absolute"></div>
+				<div @click="submitVote('1/2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">1/2</p>
+				</div>
+				<div @click="submitVote('Coffee Break', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 cursor-pointer dark:bg-gray-700 bg-gray-300 rounded-full text-center flex justify-center items-center" style="grid-column: span 3">
+					<p class="font-medium text-xl">Coffee Break</p>
+				</div>
+				<div @click="submitVote('1', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">1</p>
+				</div>
+				<div @click="submitVote('2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">2</p>
+				</div>
+				<div @click="submitVote('3', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">3</p>
+				</div>
+				<div @click="submitVote('5', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">5</p>
+				</div>
+				<div @click="submitVote('8', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">8</p>
+				</div>
+				<div @click="submitVote('13', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">13</p>
+				</div>
+				<div @click="submitVote('20', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">20</p>
+				</div>
+				<div @click="submitVote('40', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">40</p>
+				</div>
+				<div @click="submitVote('100', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">100</p>
+				</div>
+				<div @click="submitVote('?', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<p class="font-medium text-xl">?</p>
+				</div>
+			</div>
+		</div>
+		<div v-else class="m-[4.6rem] mt-0 flex justify-center flex-col">
+			<div class="flex justify-between mb-4">
+				<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
+				<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
+				<button @click="selectedChart = 'bar'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
+			</div>
+			<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
+			<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
+			<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+
+			<div class="flex justify-center gap-8 mt-10">
+				<button @click="socketRevote()" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Revote</button>
+				<button @click="socketNewTopic()" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow dark:bg-orange-500 bg-blue-800">New Story</button>
+			</div>
+		</div>
+	</div>
+	<div v-else class="flex m-36 mt-10 mb-0 justify-between">
+		<div>
+			<div class="flex justify-between" v-if="currentRoom.status == 0">
+				<div>
+					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
+						<input disabled type="number"
+							class="w-12 h-12 text-center bg-transparent ext-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
+							value="00">
+						<p class="w-fit h-fit text-[30px] pl-2 pr-2 ext-black dark:text-gray-50">:</p>
+						<input disabled type="number"
+							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
+							value="00">
+					</div>
+				</div>
+			</div>
+			<div class="w-[358px] bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
+				<div class="flex justify-between pt-5 pl-16 pr-16">
+					<p class="font-bold text-black dark:text-gray-300">Name</p>
+					<p class="font-bold text-black dark:text-gray-300">Status</p>
+				</div>
+				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
+					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
+				</div>
+			</div>
+			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[100%]">
+					<p class="pr-2">http://localhost:3000/room?id={{ currentRoom.id }}</p>
+					<svg v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="white"/>
+					</svg>
+					<svg v-else width="24" height="25" viewBox="0 0 24 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path d="M21 9.77369C20.9896 9.68259 20.9695 9.59284 20.94 9.50594V9.41669C20.8919 9.31473 20.8278 9.221 20.75 9.13903L14.75 3.1891C14.6673 3.11196 14.5728 3.04836 14.47 3.00068C14.4402 2.99648 14.4099 2.99648 14.38 3.00068C14.2784 2.94291 14.1662 2.90583 14.05 2.8916H10C9.20435 2.8916 8.44129 3.20503 7.87868 3.76295C7.31607 4.32086 7 5.07756 7 5.86657V6.85822H6C5.20435 6.85822 4.44129 7.17165 3.87868 7.72957C3.31607 8.28748 3 9.04418 3 9.83319V19.7497C3 20.5387 3.31607 21.2954 3.87868 21.8534C4.44129 22.4113 5.20435 22.7247 6 22.7247H14C14.7956 22.7247 15.5587 22.4113 16.1213 21.8534C16.6839 21.2954 17 20.5387 17 19.7497V18.7581H18C18.7956 18.7581 19.5587 18.4446 20.1213 17.8867C20.6839 17.3288 21 16.5721 21 15.7831V9.83319C21 9.83319 21 9.83319 21 9.77369ZM15 6.27315L17.59 8.84153H16C15.7348 8.84153 15.4804 8.73705 15.2929 8.55108C15.1054 8.36511 15 8.11288 15 7.84988V6.27315ZM15 19.7497C15 20.0127 14.8946 20.265 14.7071 20.4509C14.5196 20.6369 14.2652 20.7414 14 20.7414H6C5.73478 20.7414 5.48043 20.6369 5.29289 20.4509C5.10536 20.265 5 20.0127 5 19.7497V9.83319C5 9.57018 5.10536 9.31795 5.29289 9.13198C5.48043 8.94601 5.73478 8.84153 6 8.84153H7V15.7831C7 16.5721 7.31607 17.3288 7.87868 17.8867C8.44129 18.4446 9.20435 18.7581 10 18.7581H15V19.7497ZM19 15.7831C19 16.0461 18.8946 16.2984 18.7071 16.4843C18.5196 16.6703 18.2652 16.7748 18 16.7748H10C9.73478 16.7748 9.48043 16.6703 9.29289 16.4843C9.10536 16.2984 9 16.0461 9 15.7831V5.86657C9 5.60356 9.10536 5.35133 9.29289 5.16536C9.48043 4.97939 9.73478 4.87491 10 4.87491H13V7.84988C13 8.63889 13.3161 9.39558 13.8787 9.9535C14.4413 10.5114 15.2044 10.8248 16 10.8248H19V15.7831Z" fill="black"/>
+					</svg>
+			</div>
+		</div>
+		<div v-if="currentRoom.status == 0">
+			<p class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">{{ roomTopicName }}</p>
+			<div class="grid grid-cols-5 grid-rows-3 mt-6 gap-8">
+				<div @click="submitVote('0', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">0</p>
+				</div>
+				<div @click="submitVote('1/2', $event)" class="cursor-pointer  dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">1/2</p>
+				</div>
+				<div @click="submitVote('1', $event)" class="cursor-pointer  dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">1</p>
+				</div>
+				<div @click="submitVote('2', $event)" class="cursor-pointer  dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">2</p>
+				</div>
+				<div @click="submitVote('3', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">3</p>
+				</div>
+				<div @click="submitVote('5', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">5</p>
+				</div>
+				<div @click="submitVote('8', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">8</p>
+				</div>
+				<div @click="submitVote('13', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">13</p>
+				</div>
+				<div @click="submitVote('20', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">20</p>
+				</div>
+				<div @click="submitVote('40', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+					<p class="font-medium text-xl">40</p>
+				</div>
+				<div class="flex justify-center gap-8" style="grid-column: span 5;">
+					<div @click="submitVote('100', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+						<p class="font-medium text-xl">100</p>
+					</div>
+					<div @click="submitVote('?', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
+						<p class="font-medium text-xl">?</p>
+					</div>
+					<div @click="submitVote('Coffee Break', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 cursor-pointer dark:bg-gray-700 bg-gray-300 w-[102px] h-[171px] rounded-xl shadow text-center flex justify-center items-center" style="grid-column: span 3">
+						<p class="font-medium text-xl">☕︎</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div v-else class="mt-0 flex justify-center items-center">
+			<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
+			<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
+			<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+			<div class="flex flex-col mb-4 ml-20 gap-6">
+				<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
+				<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
+				<button @click="selectedChart = 'bar'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
 			</div>
 		</div>
 
-		<!--<button @click="socketLeaveRoom"
-				class="px-5 py-2 m-5 hover:bg-blue-700 text-slate-50 bg-blue-500 rounded-lg text-lg">Leave
-				Room</button>-->
-
-		<!--<button v-if="currentUser.userVotingStatus != 1" @click="switchSpectatorMode(true)"
-				class="px-5 py-2 m-5 hover:bg-red-700 text-slate-50 bg-red-500 rounded-lg text-lg">Switch to spectator
-				mode</button>
-			<button v-else @click="switchSpectatorMode(false)"
-				class="px-5 py-2 m-5 hover:bg-red-700 text-slate-50 bg-red-500 rounded-lg">Switch to voting mode
-			</button>-->
-		<div class=" dark:bg-DarkGrey">
-			<!--<div class="border-2 border-indigo-600 w-80 rounded-lg  dark:bg-DarkGrey">
-			<p>Room History:</p>
-				<topicHistoryItem v-for="(topic, index) in currentRoom.history" @downloadClick="downloadTopicCSV(index, topic.TopicName)" class="flex ">
-					{{ topic.TopicName }}</topicHistoryItem>
-			</div>-->
-		</div>
-	</div>
-	<div v-else>
-		<p class="text-center">Here Are The Results for Topic: {{ currentRoom.topicName }}</p>
-		<voteResultNameDisplay v-for="voteObj in sortedVotes" :voteObj=voteObj>
-		</voteResultNameDisplay>
-		<button v-if="currentUser.permissions.host" @click="socketRevote()"
-		class="px-5 py-2 m-5 hover:bg-yellow-700 text-slate-50 bg-yellow-500 rounded-lg">Revote</button>
-	<button @click="socketLeaveRoom" class="px-5 py-2 m-5 hover:bg-blue-700 text-slate-50 bg-blue-500 rounded-lg">Leave
-		Room</button>
-	<button @click="socketNewTopic()" v-show="currentUser.permissions.host"
-		class="px-5 py-2 m-5 hover:bg-orange-700 text-slate-50 bg-orange-500 rounded-lg">New Topic</button>
-	<Pie :data="pieData" :options="chartOptions" />
-	<Bar :data="pieData" :options="chartOptions" />
-	<button @click="downloadCharts"
-		class="px-5 py-2 m-5 hover:bg-gray-700 text-slate-50 bg-gray-500 rounded-lg">Download Chart PNG</button>
 </div></template>

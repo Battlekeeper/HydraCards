@@ -13,7 +13,7 @@ const roomCode = ref(null)
 	<p class="text-black dark:text-slate-50 text-5xl font-bold mt-10 ml-60">Joining a Room</p>
 	<p class="text-black dark:text-slate-400 text-xl font-normal mt-5 ml-60">Get a code from the host and input it here.</p>
 	<div class="flex w-full justify-center mt-7">
-		<div class="bg-gray-300 dark:bg-slate-700 rounded-md mr-4" style="aspect-ratio: 1/1.4066;">
+		<div class="bg-gray-300 dark:bg-gray-700 rounded-md mr-4" style="aspect-ratio: 1/1.4066;">
 			<div class="flex flex-col items-center">
 				<p
 					class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
@@ -146,12 +146,12 @@ const roomCode = ref(null)
 					</div>
 				</div>
 				<button @click="showJoinRoomPrompt = !showJoinRoomPrompt"
-					class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] mt-24">
+					class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] mt-24">
 					Join room
 				</button>
 			</div>
 		</div>
-		<div class="bg-gray-300 dark:bg-slate-700 rounded-md ml-4" style="aspect-ratio: 1/1.4066;">
+		<div class="bg-gray-300 dark:bg-gray-700 rounded-md ml-4" style="aspect-ratio: 1/1.4066;">
 			<div class="flex flex-col items-center">
 				<p
 					class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
@@ -284,7 +284,7 @@ const roomCode = ref(null)
 					</div>
 				</div>
 				<button @click="showCreateRoomPrompt = !showCreateRoomPrompt"
-					class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] mt-24">
+					class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] mt-24">
 					Create Room
 				</button>
 			</div>

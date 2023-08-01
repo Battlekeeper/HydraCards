@@ -28,7 +28,7 @@ const value = ref(true)
 fileUrl.value = currentUser.value.avatar
 
 async function apiCreateRoom() {
-	var response = await useFetch("api/room/createRoom", { credentials: "include", baseURL: config.public.baseUrl })
+	var response = await useFetch("api/room/createRoom?topicName=" + roomTopicName.value, { credentials: "include", baseURL: config.public.baseUrl })
 	//@ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
@@ -68,7 +68,7 @@ function click() {
 		style="width: 40svw; aspect-ratio: 1/0.46266666666;">
 		<div class="flex flex-col h-full p-8">
 			<p class="dark:text-slate-300 text-black text-base font-semibold pb-2">Story Title</p>
-			<input text="text" class="w-80 bg-gray-300 font-normal dark:bg-gray-700 p-4 rounded-md text-black"
+			<input v-model="roomTopicName" text="text" class="w-80 bg-gray-300 font-normal dark:bg-gray-700 p-4 rounded-md text-black"
 				placeholder="Enter Story Name">
 			<div class="flex dark:bg-gray-700 bg-gray-300 mt-5 w-80 rounded-md flex-col p-4 pb-8">
 				<p class="text-white-900 font-bold text-xl">Nickname</p>
@@ -93,13 +93,10 @@ function click() {
 					answers by a certain time.</p>
 			</div>
 			<div class="gap-8 inline-flex justify-center">
-				<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">HRS</div>
 				<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">MINS</div>
 				<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">SECS</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex justify-center pt-2 pb-2">
-				<input type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
-				<p class="w-fit h-fit text-[30px] pl-2 pr-2">:</p>
 				<input type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
 				<p class="w-fit h-fit text-[30px] pl-2 pr-2">:</p>
 				<input type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
@@ -108,7 +105,7 @@ function click() {
 				<button
 				@click="$emit('cancel');" class="text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Cancel</button>
 				<button
-          @click="apiCreateRoom()" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Create
+          			@click="apiCreateRoom()" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Create
 					Room</button>
 			</div>
 		</div>

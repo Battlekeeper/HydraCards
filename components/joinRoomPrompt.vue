@@ -35,6 +35,7 @@ async function apiJoinRoom() {
 
 async function setNameAndProfileAndJoin() {
 	var response;
+	/*
 	if (currentUser.value.currentRoom != undefined) {
 		if (currentUser.value.currentRoom.toString() != props.roomId) {
 			response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
@@ -46,6 +47,8 @@ async function setNameAndProfileAndJoin() {
 		//@ts-ignore
 		userId.value = response?.data.value.id
 	}
+	*/
+	response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
 	const formData = new FormData();
 	formData.append('profileImage', file.value);
 	fetch("api/user/profileupload", { method: "POST", body: formData })

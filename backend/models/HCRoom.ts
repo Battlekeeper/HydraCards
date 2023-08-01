@@ -12,7 +12,7 @@ export default class HCRoom {
 	topicName: string = ""
 	members: Array<string> = new Array<string>
 	status: HCRoomStatus = 0
-	votes: TSMap<string, number> = new TSMap<string, number>
+	votes: TSMap<string, string> = new TSMap<string, string>
 	counter:HCCounter = new HCCounter
 	revote:boolean = false
 	history: Array<HistoricalVote> = new Array<HistoricalVote>
@@ -63,7 +63,7 @@ export default class HCRoom {
 			this.emitRoomStateUpdate()
 		}
 	}
-	public setVote(id:string, vote:number)
+	public setVote(id:string, vote:string)
 	{
 		this.votes.set(id, vote)
 	}

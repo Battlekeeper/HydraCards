@@ -55,14 +55,18 @@ watch(props, () => {
 </script>
 
 <template>
-	<div class="w-80">
-		<div class="flex">
-			<p :class="hostClass"></p>
-			<div class="pl-6 dark:text-slate-400 font-semibold flex">
-				<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" /> {{ member.displayName }}
-				<div class="absolute right-32"> {{ onlineIcon }}</div>
-				<div class="absolute right-10"> {{ statusIcon }}</div>
+	<div class="flex">
+			<!--<p :class="hostClass"></p>-->
+			<div class="pl-6 pr-6 dark:text-slate-400 font-semibold flex w-full justify-between">
+				<div class="flex items-center">
+					<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" />
+					<p class="h-fit">{{ member.displayName }}</p>
+				</div>
+				<div class="flex gap-6 items-end">
+					<div class="" v-show="props.member.permissions.host">🌟</div>
+					<div class=""> {{ onlineIcon }}</div>
+					<div class=""> {{ statusIcon }}</div>
+				</div>
 			</div>
 		</div>
-	</div>
 </template>
