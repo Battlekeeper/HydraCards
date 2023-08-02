@@ -18,9 +18,8 @@ const route = useRoute()
 							class="w-12 relative right-1 text-gray-100 dark:text-gray-700 text-center text-xl font-semibold leading-loose">
 							1</div>
 					</div>
-					<div class="w-64 mx-auto relative -left-4 text-xl font-bold leading-loose">Save Your Stories</div>
-					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal">With a quick click you are
-						able to save your past votes on stories to your room.</div>
+					<div class="w-64 mx-auto relative -left-4 text-xl font-bold leading-loose text-center">Save Your Stories</div>
+					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal text-center">With a quick click you’re able to save your past votes on stories to your room.</div>
 				</div>
 
 				<div class="w-96 h-60 rounded-md dark:bg-gray-700 bg-gray-300 shadow">
@@ -30,8 +29,8 @@ const route = useRoute()
 							class="w-12 relative right-1 text-center text-gray-100 dark:text-gray-700 text-xl font-semibold leading-loose">
 							2</div>
 					</div>
-					<div class="w-64 mx-auto text-xl relative -left-4 font-bold leading-loose">Easy To Read Charts</div>
-					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal">Get fast and easy to read
+					<div class="w-64 mx-auto text-xl relative -left-4 font-bold leading-loose text-center">Easy To Read Charts</div>
+					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal text-center">Get fast and easy to read
 						data with our charts.</div>
 				</div>
 
@@ -42,9 +41,9 @@ const route = useRoute()
 							class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-gray-700 leading-loose">
 							3</div>
 					</div>
-					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">Easy To Use Mod Controls
+					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose text-center">Easy To Use Mod Controls
 					</div>
-					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal">Our moderator controls are
+					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal text-center">Our moderator controls are
 						super easy and efficient to use.</div>
 				</div>
 			</div>
@@ -56,8 +55,8 @@ const route = useRoute()
 							class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-gray-700 leading-loose">
 							4</div>
 					</div>
-					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">Export Data</div>
-					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal">When you are done saving
+					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose text-center">Export Data</div>
+					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal text-center">When you are done saving
 						your stories you are able to export all your data to a PDF.</div>
 				</div>
 
@@ -68,8 +67,8 @@ const route = useRoute()
 							class="w-12 relative right-1 text-center text-xl font-semibold text-gray-100 dark:text-gray-700 leading-loose">
 							5</div>
 					</div>
-					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose">It Is Free!</div>
-					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal">HydraCards is completely
+					<div class="w-64 mx-auto text-xl font-bold relative -left-4 leading-loose text-center">It Is Free!</div>
+					<div class="w-72 mx-auto text-base font-medium relative top-8 leading-normal text-center">HydraCards is completely
 						free at all times, no hidden charges or fees!</div>
 				</div>
 			</div>

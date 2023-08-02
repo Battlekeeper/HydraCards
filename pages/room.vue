@@ -151,7 +151,7 @@ function socketSetTopicName() {
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
 }
 function socketStartCount() {
-	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, countDownTime.value)
+	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, minutes.value * 60 + seconds.value)
 }
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
@@ -196,6 +196,9 @@ onMounted(async () => {
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
+		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
+		seconds.value = currentRoom.value.counter.count % 60
+
 
 		roomTopicName.value = currentRoom.value.topicName
 		
@@ -222,19 +225,17 @@ watch(displayName, socketSetName)
 	
 	<div v-if="currentUser.permissions.host" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
 		<div>
-			<div class="flex justify-between" v-if="currentRoom.status == 0">
+			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
 					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
-						<input type="number"
-							class="w-12 h-12 text-center bg-transparent ext-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
-							value="00">
-						<p class="w-fit h-fit text-[30px] pl-2 pr-2 ext-black dark:text-gray-50">:</p>
-						<input type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
-							value="00">
+						<input v-model="minutes" type="number"
+							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
+						<p class="w-fit h-fit text-[30px] pl-2 pr-2 text-black dark:text-gray-50">:</p>
+						<input v-model="seconds" type="number"
+							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 					</div>
 				</div>
-				<button class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
+				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
 					Timer</button>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
@@ -248,10 +249,10 @@ watch(displayName, socketSetName)
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[95%] justify-between">
 					<p class="">http://localhost:3000/room?id={{ currentRoom.id }}</p>
-					<svg v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg @click="copy()" class="cursor-pointer" v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="white"/>
 					</svg>
-					<svg v-else width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<svg @click="copy()" class="cursor-pointer" v-else width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="black"/>
 					</svg>
 			</div>

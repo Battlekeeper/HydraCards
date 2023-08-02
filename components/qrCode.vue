@@ -31,5 +31,5 @@ onMounted(() => {
 })
 </script>
 <template>
-	<img :width="size" :height="size" :src="url">
+	<img class="rounded-2xl" style=" max-width: none;" :width="size" :height="size" :src="url">
 </template>

@@ -12,6 +12,7 @@ const props = defineProps(["inRoom"])
 const config = useRuntimeConfig()
 const selectedTheme = ref(true)
 const colormode = useColorMode()
+const showWrestle = ref(false)
 colormode.preference = "light"
 const theme = useCookie("theme", { default: () => ("light") })
 colormode.preference = theme.value
@@ -81,9 +82,23 @@ const showQRCodeModal = ref(false)
 				<button @click="showQRCodeModal = !showQRCodeModal" class="w-28 h-9">
 					<span class="dark:text-slate-50 text-black text-sm font-medium">Show QR Code</span>
 				</button>
-				<div v-show="showQRCodeModal" @click="showQRCodeModal = false">
-					<ModalPopup>
-						<qrCode :size="256" :pagelink="true"></qrCode>
+				<div v-show="showQRCodeModal">
+					<ModalPopup @close="showQRCodeModal = false; showWrestle = false">
+						<div class="bg-gray-200 dark:bg-gray-700 flex">
+							<div class="p-10">
+								<qrCode v-show="!showWrestle" @click="showWrestle = true" :size="256" :pagelink="true"></qrCode>
+								<svg class="bg-white rounded-2xl" @click="showWrestle = false" v-show="showWrestle" width="256" height="256" viewBox="0 0 208 195" fill="none" xmlns="http://www.w3.org/2000/svg">
+								<path d="M134.159 2.23914C128.335 5.80479 126.463 9.26239 126.047 17.2581C125.631 25.794 127.815 30.116 134.055 33.4656C142.999 38.1117 154.751 34.7622 158.599 26.3343C160.887 21.1479 160.367 11.3153 157.559 7.31749C152.463 0.186187 141.439 -2.19091 134.159 2.23914Z" fill="black"/>
+								<path d="M94.0158 36.5992C88.7118 38.0038 84.5518 41.7856 82.5759 46.972C75.6079 66.0968 99.0078 81.4399 111.592 65.9888C122.72 52.1584 110.76 32.3852 94.0158 36.5992Z" fill="black"/>
+								<path d="M147.576 42.4331C145.496 43.8378 140.608 50.2127 135.72 57.8842C125.008 74.74 119.392 79.7103 107.224 83.1679C103.064 84.3565 102.856 84.4645 104.416 86.3014C106.912 89.1107 115.44 93.7568 120.432 94.8373C124.28 95.8098 125.216 95.5937 129.688 92.6763C132.496 90.9475 136.448 87.706 138.528 85.545C140.712 83.384 142.584 81.8713 142.792 82.1955C143 82.4116 144.248 88.1382 145.496 94.9454L147.888 107.263L138.944 116.555L130 125.848V159.667V193.379H138.84H147.68V166.583V139.894L156.416 130.818C164.632 122.282 165.256 121.85 165.88 124.335C166.192 125.74 169.52 140.975 173.264 158.263C177.008 175.443 180.232 190.462 180.544 191.434C181.064 193.055 182.416 193.379 190.424 193.379C198.848 193.379 199.784 193.163 199.264 191.434C198.224 187.76 175.656 67.7168 175.968 67.5007C176.176 67.3926 179.4 68.4731 183.352 70.0939L190.32 72.9032V88.2463V103.697H199.16H208V82.1955V60.6935L199.992 57.1279C157.456 38.6514 154.336 37.6789 147.576 42.4331Z" fill="black"/>
+								<path d="M61.3598 69.2298C58.1359 70.5264 25.3759 104.238 23.1919 108.452C20.5919 113.53 21.4239 119.581 26.4159 133.844C29.0159 141.299 31.1999 147.782 31.1999 148.43C31.1999 149.079 24.1279 156.858 15.6 165.827L0 182.034L6.23998 188.517L12.48 195L31.1999 175.551L49.8159 156.21L50.1279 146.918L50.4399 137.734L55.4319 142.488L60.3198 147.242V170.257V193.379H69.1598H77.9998V166.151V138.814L69.1598 129.63L60.3198 120.446L70.0958 110.289L79.8718 100.132L87.5678 106.939C91.7278 110.613 98.4878 115.367 102.44 117.312C109.616 120.878 121.368 124.119 127.192 124.227C130.416 124.227 130.52 123.363 129.376 111.585L128.648 105.102L123.032 104.454C112.528 103.266 105.248 98.6194 90.6878 83.8166C83.4078 76.3611 76.1278 69.8781 74.5678 69.2298C71.0318 67.8252 64.8958 67.8252 61.3598 69.2298Z" fill="black"/>
+								</svg>
+							</div>
+							<div class="flex flex-col justify-center items-center">
+								<div class="w-96 text-center text-4xl font-bold">Scan QR Code</div>
+								<div class="w-80 dark:text-gray-300 text-xl font-medium mt-2">Open your phone camera and point it at the QR code. Then click on the link and enter your nickname.</div>
+							</div>
+						</div>
 					</ModalPopup>
 				</div>
 			</div>

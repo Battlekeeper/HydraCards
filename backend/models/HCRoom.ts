@@ -14,6 +14,7 @@ export default class HCRoom {
 	status: HCRoomStatus = 0
 	votes: TSMap<string, string> = new TSMap<string, string>
 	counter:HCCounter = new HCCounter
+	roomCounterEnabled:boolean = false
 	revote:boolean = false
 	history: Array<HistoricalVote> = new Array<HistoricalVote>
 
