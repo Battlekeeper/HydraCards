@@ -7,6 +7,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (id != undefined){
 		const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
 		if (user.value != undefined){
+			//@ts-ignore
 			if (user.value.currentRoom != Number.parseInt(to.query.id as string)){
 				return navigateTo("/join?id="+to.query.id)
 			}
