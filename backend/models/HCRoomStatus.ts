@@ -1,4 +1,5 @@
 export enum HCRoomStatus {
 	voting,
-	reviewing
+	reviewing,
+	coffeebreak
 }

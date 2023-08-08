@@ -120,7 +120,7 @@ HCServer.io.on("connect", (socket) => {
 		room.emitRoomStateUpdate()
 
 	})
-	socket.on("revote", (roomId:number, userId:string, revote:boolean) => {
+	socket.on("revote", (roomId:number, userId:string, revote:boolean, points:number) => {
 
 		var room:HCRoom = HCRoom.get(roomId)
 		var user:HCUser|undefined = HCUser.get(userId)
@@ -140,6 +140,7 @@ HCServer.io.on("connect", (socket) => {
 		}
 		var HistoricalVoteData:HistoricalVote = room.history[room.history.length - 1]
 		HistoricalVoteData.TopicName = room.topicName
+		HistoricalVoteData.Points = points
 		HistoricalVoteData.Revotes.push(JSON.parse(JSON.stringify(room.votes)))
 
 		if (!revote){
@@ -155,7 +156,25 @@ HCServer.io.on("connect", (socket) => {
 		});
 		room.emitRoomStateUpdate()
 	})
-	
+	socket.on("coffeebreak", (roomId:number, userId:string, enabled:boolean) => {
+		var room:HCRoom = HCRoom.get(roomId)
+		var user:HCUser|undefined = HCUser.get(userId)
+
+		if (room == undefined || user == undefined){
+			return
+		}
+
+		if (!user.permissions.host){
+			return
+		}
+
+		if (enabled){
+			room.status = HCRoomStatus.coffeebreak
+		} else {
+			room.status = HCRoomStatus.voting
+		}
+		room.emitRoomStateUpdate()
+	})
 	socket.on("broadcastRoomStateUpdate", (roomId: number) => {
 		var room:HCRoom = HCRoom.get(roomId)
 		if (room != undefined){

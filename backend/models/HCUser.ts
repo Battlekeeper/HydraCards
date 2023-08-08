@@ -5,7 +5,7 @@ import { TSMap } from "typescript-map"
 import HCRoom from "./HCRoom"
 
 export default class HCUser{
-	id: string = generateUserId()
+	id: string = ""
 	socketId: string = ""
 	displayName: string = ""
 	currentRoom: number = 0
@@ -15,11 +15,12 @@ export default class HCUser{
 	online:boolean = false
 	anonymous:boolean = false
 	allowAnon:boolean = false
-	private static users:TSMap<string,HCUser> = new TSMap<string,HCUser>
+	static users:TSMap<string,HCUser> = new TSMap<string,HCUser>
 	public static get(id:string){
 		return HCUser.users.get(id)
 	}
 	constructor(){
+		this.id = generateUserId()
 		HCUser.users.set(this.id, this)
 	}
 	public leaveRoom(){

@@ -65,7 +65,6 @@ router.get("/joinRoom", (req, res) => {
 	if (spectatorMode == "true") {
 		user.userVotingStatus = HCVotingStatus.spectating
 	}
-
 	res.cookie("_id", user?.id)
 	res.send({ room })
 })

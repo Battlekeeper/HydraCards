@@ -41,6 +41,7 @@ const config = useRuntimeConfig()
 const route = useRouter()
 const colormode = useColorMode()
 
+const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
 const socket = io(config.public.baseUrl.replace("http", "ws"));
 const displayName = ref("")
@@ -90,10 +91,11 @@ function socketDisplayResults() {
 function socketRevote() {
 	socket.emit("revote", currentRoom.value.id, userId.value, true)
 }
-function socketNewTopic() {
-	socket.emit("revote", currentRoom.value.id, userId.value, false)
+function socketNewTopic(points:number) {
+	socket.emit("revote", currentRoom.value.id, userId.value, false, points)
 	roomTopicName.value = ""
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, "")
+	showStoryPointsPrompt.value = false
 }
 function isInRoom() {
 	const roomExists = currentRoom.value != undefined
@@ -178,6 +180,9 @@ async function downloadTopicCSV(topicIndex: number, topicName: string) {
 function copy() {
 	navigator.clipboard.writeText(window.location.href)
 }
+function socketSetCoffeeBreak(enabled:boolean){
+	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
+}
 
 onMounted(async () => {
 	socket.on("connect", () => {
@@ -221,7 +226,7 @@ watch(displayName, socketSetName)
 <template>
 	<PermenantHeader :inRoom="true" :roomId="currentRoom.id"></PermenantHeader>
 	
-	<div v-if="currentUser.permissions.host" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
+	<div v-if="currentUser.permissions.host && currentRoom.status != 2" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
 		<div>
 			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
@@ -269,7 +274,7 @@ watch(displayName, socketSetName)
 				<div @click="submitVote('1/2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">1/2</p>
 				</div>
-				<div @click="submitVote('Coffee Break', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 cursor-pointer dark:bg-gray-700 bg-gray-300 rounded-full text-center flex justify-center items-center" style="grid-column: span 3">
+				<div @click="socketSetCoffeeBreak(true)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 cursor-pointer dark:bg-gray-700 bg-gray-300 rounded-full text-center flex justify-center items-center" style="grid-column: span 3">
 					<p class="font-medium text-xl">Coffee Break</p>
 				</div>
 				<div @click="submitVote('1', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
@@ -304,7 +309,7 @@ watch(displayName, socketSetName)
 				</div>
 			</div>
 		</div>
-		<div v-else class="m-[4.6rem] mt-0 flex justify-center flex-col">
+		<div v-if="currentRoom.status == 1" class="m-[4.6rem] mt-0 flex justify-center flex-col">
 			<div class="flex justify-between mb-4">
 				<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
 				<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
@@ -316,11 +321,14 @@ watch(displayName, socketSetName)
 
 			<div class="flex justify-center gap-8 mt-10">
 				<button @click="socketRevote()" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Revote</button>
-				<button @click="socketNewTopic()" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow dark:bg-orange-500 bg-blue-800">New Story</button>
+				<button @click="showStoryPointsPrompt = true" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow dark:bg-orange-500 bg-blue-800">New Story</button>
+				<ModalPopup v-if="showStoryPointsPrompt">
+					<SetStoryPointsPromt @set-story-points="(points) => socketNewTopic(points)"></SetStoryPointsPromt>
+				</ModalPopup>
 			</div>
 		</div>
 	</div>
-	<div v-else class="flex m-36 mt-10 mb-0 justify-between">
+	<div v-if="!currentUser.permissions.host && currentRoom.status != 2" class="flex m-36 mt-10 mb-0 justify-between">
 		<div>
 			<div class="flex justify-between" v-if="currentRoom.status == 0">
 				<div>
@@ -411,4 +419,24 @@ watch(displayName, socketSetName)
 			</div>
 		</div>
 
-</div></template>
+	</div>
+	<div v-if="currentRoom.status == 2" class="flex items-center flex-col" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);">
+		<div v-if="!currentUser.permissions.host" class="flex items-center flex-col">
+			<h class="w-96 text-center text-black dark:text-gray-50 text-5xl font-bold">Coffee Break!</h>
+			<p class="w-96 text-center text-black dark:text-gray-50 text-xl font-medium leading-loose">Wait Here Till The Host Ends The Break...</p>
+			<svg width="358" height="358" viewBox="0 0 358 358" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path v-if="colormode.preference == 'dark'" d="M134.25 253.583H193.917C213.698 253.583 232.668 245.725 246.655 231.738C260.642 217.751 268.5 198.781 268.5 179V164.083H283.417C295.285 164.083 306.668 159.369 315.06 150.976C323.452 142.584 328.167 131.202 328.167 119.333C328.167 107.465 323.452 96.0826 315.06 87.6903C306.668 79.2981 295.285 74.5833 283.417 74.5833H268.5V59.6667C268.5 55.7105 266.929 51.9164 264.131 49.119C261.334 46.3216 257.54 44.75 253.583 44.75H74.5835C70.6273 44.75 66.8332 46.3216 64.0358 49.119C61.2384 51.9164 59.6668 55.7105 59.6668 59.6667V179C59.6668 198.781 67.5247 217.751 81.5118 231.738C95.4989 245.725 114.469 253.583 134.25 253.583ZM268.5 104.417H283.417C287.373 104.417 291.167 105.988 293.965 108.786C296.762 111.583 298.333 115.377 298.333 119.333C298.333 123.289 296.762 127.084 293.965 129.881C291.167 132.678 287.373 134.25 283.417 134.25H268.5V104.417ZM89.5002 74.5833H238.667V179C238.667 190.868 233.952 202.251 225.56 210.643C217.168 219.035 205.785 223.75 193.917 223.75H134.25C122.382 223.75 110.999 219.035 102.607 210.643C94.2149 202.251 89.5002 190.868 89.5002 179V74.5833ZM313.25 283.417H44.7502C40.794 283.417 36.9999 284.988 34.2025 287.786C31.4051 290.583 29.8335 294.377 29.8335 298.333C29.8335 302.289 31.4051 306.084 34.2025 308.881C36.9999 311.678 40.794 313.25 44.7502 313.25H313.25C317.206 313.25 321 311.678 323.798 308.881C326.595 306.084 328.167 302.289 328.167 298.333C328.167 294.377 326.595 290.583 323.798 287.786C321 284.988 317.206 283.417 313.25 283.417Z" fill="#F7F8F9"/>
+				<path v-if="colormode.preference == 'light'" d="M134.25 253.583H193.917C213.698 253.583 232.668 245.725 246.655 231.738C260.642 217.751 268.5 198.781 268.5 179V164.083H283.417C295.285 164.083 306.668 159.369 315.06 150.976C323.452 142.584 328.167 131.202 328.167 119.333C328.167 107.465 323.452 96.0826 315.06 87.6903C306.668 79.2981 295.285 74.5833 283.417 74.5833H268.5V59.6667C268.5 55.7105 266.929 51.9164 264.131 49.119C261.334 46.3216 257.54 44.75 253.583 44.75H74.5835C70.6273 44.75 66.8332 46.3216 64.0358 49.119C61.2384 51.9164 59.6668 55.7105 59.6668 59.6667V179C59.6668 198.781 67.5247 217.751 81.5118 231.738C95.4989 245.725 114.469 253.583 134.25 253.583ZM268.5 104.417H283.417C287.373 104.417 291.167 105.988 293.965 108.786C296.762 111.583 298.333 115.377 298.333 119.333C298.333 123.289 296.762 127.084 293.965 129.881C291.167 132.678 287.373 134.25 283.417 134.25H268.5V104.417ZM89.5002 74.5833H238.667V179C238.667 190.868 233.952 202.251 225.56 210.643C217.168 219.035 205.785 223.75 193.917 223.75H134.25C122.382 223.75 110.999 219.035 102.607 210.643C94.2149 202.251 89.5002 190.868 89.5002 179V74.5833ZM313.25 283.417H44.7502C40.794 283.417 36.9999 284.988 34.2025 287.786C31.4051 290.583 29.8335 294.377 29.8335 298.333C29.8335 302.289 31.4051 306.084 34.2025 308.881C36.9999 311.678 40.794 313.25 44.7502 313.25H313.25C317.206 313.25 321 311.678 323.798 308.881C326.595 306.084 328.167 302.289 328.167 298.333C328.167 294.377 326.595 290.583 323.798 287.786C321 284.988 317.206 283.417 313.25 283.417Z" fill="#000000"/>
+			</svg>
+		</div>
+		<div v-else class="flex items-center flex-col">
+			<h class="w-96 text-center text-black dark:text-gray-50 text-5xl font-bold">Coffee Break!</h>
+			<p class="w-96 text-center text-black dark:text-gray-50 text-xl font-medium leading-loose">Click The Button To Start Again...</p>
+			<svg width="358" height="358" viewBox="0 0 358 358" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path v-if="colormode.preference == 'dark'" d="M134.25 253.583H193.917C213.698 253.583 232.668 245.725 246.655 231.738C260.642 217.751 268.5 198.781 268.5 179V164.083H283.417C295.285 164.083 306.668 159.369 315.06 150.976C323.452 142.584 328.167 131.202 328.167 119.333C328.167 107.465 323.452 96.0826 315.06 87.6903C306.668 79.2981 295.285 74.5833 283.417 74.5833H268.5V59.6667C268.5 55.7105 266.929 51.9164 264.131 49.119C261.334 46.3216 257.54 44.75 253.583 44.75H74.5835C70.6273 44.75 66.8332 46.3216 64.0358 49.119C61.2384 51.9164 59.6668 55.7105 59.6668 59.6667V179C59.6668 198.781 67.5247 217.751 81.5118 231.738C95.4989 245.725 114.469 253.583 134.25 253.583ZM268.5 104.417H283.417C287.373 104.417 291.167 105.988 293.965 108.786C296.762 111.583 298.333 115.377 298.333 119.333C298.333 123.289 296.762 127.084 293.965 129.881C291.167 132.678 287.373 134.25 283.417 134.25H268.5V104.417ZM89.5002 74.5833H238.667V179C238.667 190.868 233.952 202.251 225.56 210.643C217.168 219.035 205.785 223.75 193.917 223.75H134.25C122.382 223.75 110.999 219.035 102.607 210.643C94.2149 202.251 89.5002 190.868 89.5002 179V74.5833ZM313.25 283.417H44.7502C40.794 283.417 36.9999 284.988 34.2025 287.786C31.4051 290.583 29.8335 294.377 29.8335 298.333C29.8335 302.289 31.4051 306.084 34.2025 308.881C36.9999 311.678 40.794 313.25 44.7502 313.25H313.25C317.206 313.25 321 311.678 323.798 308.881C326.595 306.084 328.167 302.289 328.167 298.333C328.167 294.377 326.595 290.583 323.798 287.786C321 284.988 317.206 283.417 313.25 283.417Z" fill="#F7F8F9"/>
+				<path v-if="colormode.preference == 'light'" d="M134.25 253.583H193.917C213.698 253.583 232.668 245.725 246.655 231.738C260.642 217.751 268.5 198.781 268.5 179V164.083H283.417C295.285 164.083 306.668 159.369 315.06 150.976C323.452 142.584 328.167 131.202 328.167 119.333C328.167 107.465 323.452 96.0826 315.06 87.6903C306.668 79.2981 295.285 74.5833 283.417 74.5833H268.5V59.6667C268.5 55.7105 266.929 51.9164 264.131 49.119C261.334 46.3216 257.54 44.75 253.583 44.75H74.5835C70.6273 44.75 66.8332 46.3216 64.0358 49.119C61.2384 51.9164 59.6668 55.7105 59.6668 59.6667V179C59.6668 198.781 67.5247 217.751 81.5118 231.738C95.4989 245.725 114.469 253.583 134.25 253.583ZM268.5 104.417H283.417C287.373 104.417 291.167 105.988 293.965 108.786C296.762 111.583 298.333 115.377 298.333 119.333C298.333 123.289 296.762 127.084 293.965 129.881C291.167 132.678 287.373 134.25 283.417 134.25H268.5V104.417ZM89.5002 74.5833H238.667V179C238.667 190.868 233.952 202.251 225.56 210.643C217.168 219.035 205.785 223.75 193.917 223.75H134.25C122.382 223.75 110.999 219.035 102.607 210.643C94.2149 202.251 89.5002 190.868 89.5002 179V74.5833ZM313.25 283.417H44.7502C40.794 283.417 36.9999 284.988 34.2025 287.786C31.4051 290.583 29.8335 294.377 29.8335 298.333C29.8335 302.289 31.4051 306.084 34.2025 308.881C36.9999 311.678 40.794 313.25 44.7502 313.25H313.25C317.206 313.25 321 311.678 323.798 308.881C326.595 306.084 328.167 302.289 328.167 298.333C328.167 294.377 326.595 290.583 323.798 287.786C321 284.988 317.206 283.417 313.25 283.417Z" fill="#000000"/>
+			</svg>
+			<button @click="socketSetCoffeeBreak(false)" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">End Coffee Break</button>
+		</div>
+	</div>
+</template>

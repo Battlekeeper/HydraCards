@@ -1,9 +1,16 @@
 import HCUser from "../backend/models/HCUser"
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-	const id = useCookie("_id").value
+	const id = useCookie("_id")
+	const config = useRuntimeConfig()
+
 	if (id != undefined){
-		if (HCUser.get(id) != undefined){
+		const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
+		if (user.value != undefined){
+			if (user.value.currentRoom != Number.parseInt(to.query.id as string)){
+				return navigateTo("/join?id="+to.query.id)
+			}
+		} else {
 			return navigateTo("/join?id="+to.query.id)
 		}
 	} else {

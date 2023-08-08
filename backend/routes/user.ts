@@ -20,8 +20,6 @@ router.get("/setname", (req, res) => {
 	}
 	res.send()
 })
-
-
 router.get("/setspectatormode", (req, res) => {
 	var mode: string = req.query.mode as unknown as string
 	var user: HCUser = HCUser.get(req.cookies["_id"])

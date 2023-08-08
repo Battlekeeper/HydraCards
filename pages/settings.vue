@@ -24,7 +24,7 @@ currentRoom.value.history.forEach((historicalVote) => {
 	if (story.name == "" || story.name == undefined){
 		story.name = "Unnamed"
 	}
-	story.points = 0
+	story.points = historicalVote.Points
 	story.numberOfVoters = historicalVote.Revotes.length
 	stories.value.push(story)
 })
