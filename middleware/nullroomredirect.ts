@@ -1,10 +1,10 @@
-import HCUser from "../backend/models/HCUser"
-
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	const id = useCookie("_id")
 	const config = useRuntimeConfig()
+	console.log(config.public.serverUrl)
 
 	if (id != undefined){
+		
 		const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
 		if (user.value != undefined){
 			//@ts-ignore

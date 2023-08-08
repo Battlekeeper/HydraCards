@@ -14,18 +14,20 @@ const config = useRuntimeConfig()
 const root = ref(null)
 const props = defineProps(["content", "pagelink", "size"])
 const url = ref("")
-const name = ref(null)
+const name = ref("")
 const roomTopicName = ref("")
 const route = useRoute()
 const userId = useCookie('_id')
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
-currentUser.value = user.value as HCUser
-//@ts-ignore
-name.value = currentUser.value.displayName
 const file: Ref<any> = ref()
 const fileUrl: Ref<any> = ref()
-const value = ref(true)
-fileUrl.value = currentUser.value.avatar
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
+currentUser.value = user.value as HCUser
+
+
+if (currentUser.value != undefined){
+	name.value = currentUser.value.displayName
+	fileUrl.value = currentUser.value.avatar
+}
 
 const timerMinutes = ref(0)
 const timerSeconds = ref(0)

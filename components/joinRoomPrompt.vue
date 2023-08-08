@@ -4,7 +4,7 @@ import HCRoom from "../backend/models/HCRoom";
 import HCUser from "../backend/models/HCUser";
 
 const route = useRoute()
-const name = ref(null)
+const name = ref("")
 const config = useRuntimeConfig()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const currentUser = ref(new HCUser)
@@ -15,9 +15,10 @@ const file: Ref<any> = ref()
 const fileUrl: Ref<any> = ref()
 const props = defineProps(["roomId"])
 
-fileUrl.value = currentUser.value.avatar
-//@ts-ignore
-name.value = currentUser.value.displayName
+if (currentUser.value != undefined){
+	name.value = currentUser.value.displayName
+	fileUrl.value = currentUser.value.avatar
+}
 
 async function apiJoinRoom() {
 	var response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
