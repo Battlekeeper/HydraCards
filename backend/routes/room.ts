@@ -47,6 +47,7 @@ router.get("/getroommembersstring", (req, res) => {
 router.get("/joinRoom", (req, res) => {
 	var id: string = req.query.id as string
 	var user: HCUser = HCUser.get(req.cookies["_id"])
+	var spectatorMode:string = req.query.spectatorMode as string
 
 	if (user == undefined) {
 		user = new HCUser
@@ -60,6 +61,10 @@ router.get("/joinRoom", (req, res) => {
 	user?.reset()
 	room.addMember(user!.id)
 	room.emitRoomStateUpdate()
+
+	if (spectatorMode == "true") {
+		user.userVotingStatus = HCVotingStatus.spectating
+	}
 
 	res.cookie("_id", user?.id)
 	res.send({ room })
@@ -76,6 +81,36 @@ router.get("/history", (req, res) => {
 		res.send()
 	}
 })
+
+router.get("/setTimerActive", (req, res) => {
+	var id: string = req.query.id as string
+	var enabled:string = req.query.enabled as string
+	var room: HCRoom = HCRoom.get(Number.parseInt(id))
+	if (room != undefined) {
+		if (enabled == "true"){
+			room.roomCounterEnabled = true
+		} else {
+			room.roomCounterEnabled = false
+		}
+		room.emitRoomStateUpdate()
+	}
+})
+
+router.get("/allowAnonymous", (req, res) => {
+	var id: string = req.query.id as string
+	var enabled:string = req.query.enabled as string
+	var room: HCRoom = HCRoom.get(Number.parseInt(id))
+	if (room != undefined) {
+		if (enabled == "true"){
+			room.allowAnonymousMode = true
+		} else {
+			room.allowAnonymousMode = false
+		}
+		room.emitRoomStateUpdate()
+	}
+})
+
+
 router.get("/csv", (req, res) => {
 	var id: string = req.query.id as string
 	var topic: string = req.query.topic as string

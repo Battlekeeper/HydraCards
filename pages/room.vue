@@ -56,6 +56,7 @@ const sortedVotes = ref()
 const showQRCodeModal = ref(false)
 const minutes = ref(0)
 const seconds = ref(0)
+const allowAnonymousMode = ref(true)
 
 const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.serverUrl })
 currentRoom.value = room.value as HCRoom
@@ -127,9 +128,6 @@ function submitVote(vote: string, event:any) {
 	selectedCard.value = element
 
 }
-async function switchSpectatorMode(mode: boolean) {
-	await useFetch(`api/user/setSpectatorMode?mode=` + mode, { baseURL: config.public.baseUrl })
-}
 function getRoomVotesMap(room: HCRoom) {
 	var votes: TSMap<string, number> = new TSMap<string, number>
 
@@ -193,12 +191,12 @@ onMounted(async () => {
 		}
 		var oldRoom: HCRoom = currentRoom.value
 		currentRoom.value = room
+		localStorage.setItem("room", JSON.stringify(currentRoom.value))
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
 		displayName.value = currentUser.value.displayName
 		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
 		seconds.value = currentRoom.value.counter.count % 60
-
 
 		roomTopicName.value = currentRoom.value.topicName
 		
@@ -221,7 +219,7 @@ watch(displayName, socketSetName)
 </script>
 
 <template>
-	<PermenantHeader :inRoom="true"></PermenantHeader>
+	<PermenantHeader :inRoom="true" :roomId="currentRoom.id"></PermenantHeader>
 	
 	<div v-if="currentUser.permissions.host" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
 		<div>
@@ -244,7 +242,7 @@ watch(displayName, socketSetName)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[95%] justify-between">
@@ -257,7 +255,7 @@ watch(displayName, socketSetName)
 					</svg>
 			</div>
 		</div>
-		<div v-if="currentRoom.status == 0" class="m-[4.6rem]">
+		<div v-if="currentRoom.status == 0 && currentUser.userVotingStatus != HCVotingStatus.spectating" class="m-[4.6rem]">
 			<input v-model="roomTopicName" placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">
 			<div class="mt-14 flex justify-between">
 				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-8 pl-8 shadow border border-blue-800 dark:border-orange-500">Set Story Name</button>
@@ -356,7 +354,7 @@ watch(displayName, socketSetName)
 					</svg>
 			</div>
 		</div>
-		<div v-if="currentRoom.status == 0">
+		<div v-if="currentRoom.status == 0 && currentUser.userVotingStatus != HCVotingStatus.spectating">
 			<p class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">{{ roomTopicName }}</p>
 			<div class="grid grid-cols-5 grid-rows-3 mt-6 gap-8">
 				<div @click="submitVote('0', $event)" class="cursor-pointer dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-[102px] h-[171px] bg-gray-300 dark:bg-gray-700 rounded-xl shadow text-center flex justify-center items-center">
@@ -402,7 +400,7 @@ watch(displayName, socketSetName)
 				</div>
 			</div>
 		</div>
-		<div v-else class="mt-0 flex justify-center items-center">
+		<div v-if="currentRoom.status == 1" class="mt-0 flex justify-center items-center">
 			<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
 			<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
 			<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />

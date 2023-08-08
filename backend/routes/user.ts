@@ -41,7 +41,20 @@ router.get("/setspectatormode", (req, res) => {
 	}
 	res.send()
 })
+router.get("/setAnonymousMode", (req, res) => {
+	var enabled: string = req.query.enabled as string
+	var user: HCUser = HCUser.get(req.cookies["_id"])
 
+	if (user != undefined){
+		if(enabled == "true"){
+			user.anonymous = true
+		} else {
+			user.anonymous = false
+		}
+		HCRoom.get(user.currentRoom).emitRoomStateUpdate()
+	}
+	res.send()
+})
 router.get("/getUserById", (req, res) => {
 	var id: string = req.query.id as unknown as string
 	var user: HCUser = HCUser.get(id)

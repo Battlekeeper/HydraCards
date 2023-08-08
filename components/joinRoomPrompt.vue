@@ -32,37 +32,32 @@ async function apiJoinRoom() {
 		window.location.href = "/room?id=" + room.id
 	}
 }
-
-async function setNameAndProfileAndJoin() {
+async function setNameAndProfileAndJoin(spectatorMode: boolean) {
 	var response;
-	/*
-	if (currentUser.value.currentRoom != undefined) {
-		if (currentUser.value.currentRoom.toString() != props.roomId) {
-			response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
-			//@ts-ignore
-			userId.value = response?.data.value.id
-		}
-	} else {
-		response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
-		//@ts-ignore
-		userId.value = response?.data.value.id
-	}
-	*/
-	response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
+	response = await useFetch("api/room/joinRoom", { query:{
+		id: props.roomId,
+		spectatorMode: spectatorMode
+	}, credentials: "include", baseURL: config.public.baseUrl })
 	const formData = new FormData();
 	formData.append('profileImage', file.value);
 	fetch("api/user/profileupload", { method: "POST", body: formData })
 	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.baseUrl })
 	window.location.href = "/room?id=" + props.roomId
 }
-function storeProfile(event: any) {
-	file.value = event.srcElement.files[0]
-	fileUrl.value = URL.createObjectURL(file.value)
-}
 function click() {
 	//@ts-ignore
 	document.getElementById('fileInput').click()
 }
+
+
+
+onMounted(()=>{
+	//@ts-ignore
+	document.getElementById('fileInput').addEventListener('change', function(event:any) {
+		file.value = event.srcElement.files[0]
+		fileUrl.value = URL.createObjectURL(file.value)
+	});
+})
 </script>
 
 <template>
@@ -73,15 +68,20 @@ function click() {
 		<span class="mt-3">
 			<input v-model="name" text="number" class="w-80 placeholder-current text-slate-800 border border-black text-base font-normal leading-normal p-2 rounded-md"
 				placeholder="Enter your name">
-			<button @click="setNameAndProfileAndJoin"
+			<button @click="setNameAndProfileAndJoin(false)"
 				class="ml-2 text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 pl-4 pr-4 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal">
 				Join
 			</button>
 		</span>
-		<span>
-			<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
-			<button @click="click" class="mt-9 text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
-			<img v-show="fileUrl != undefined" class="m-4 inline" width="64" height="64" :src="fileUrl">
-		</span>
+		<div class="flex flex-row mt-9">
+			<span class="flex gap-2 items-center">
+				<input id="fileInput" type="file" accept="image/*" class="hidden">
+				<button @click="click" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
+				<img v-show="fileUrl != undefined" class="inline" width="64" height="64" :src="fileUrl">
+				<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
+			</span>
+			<div>
+		</div>
+	</div>
 	</div>
 </template>

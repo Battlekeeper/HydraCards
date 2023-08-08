@@ -17,6 +17,7 @@ export default class HCRoom {
 	roomCounterEnabled:boolean = false
 	revote:boolean = false
 	history: Array<HistoricalVote> = new Array<HistoricalVote>
+	allowAnonymousMode:boolean = false
 
 	private static rooms:TSMap<number, HCRoom> = new TSMap<number, HCRoom>
 
@@ -80,6 +81,9 @@ export default class HCRoom {
 		tempRoom.history.forEach((val) => {
 			val.Revotes = new Array<TSMap<string, number>>
 		})
+		this.getMembersUserArray().forEach(member => {
+			member.allowAnon = this.allowAnonymousMode
+		});
 		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom,this.getMembersUserArray())
 
 	}

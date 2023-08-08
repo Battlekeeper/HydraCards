@@ -143,6 +143,7 @@ HCServer.io.on("connect", (socket) => {
 		HistoricalVoteData.Revotes.push(JSON.parse(JSON.stringify(room.votes)))
 
 		if (!revote){
+			room.counter.count = 0
 			room.history.push(new HistoricalVote)
 		}
 

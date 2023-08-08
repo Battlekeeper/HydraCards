@@ -13,6 +13,8 @@ export default class HCUser{
 	permissions: HCRoomPermissions = new HCRoomPermissions
 	avatar:string = randomAvatar()
 	online:boolean = false
+	anonymous:boolean = false
+	allowAnon:boolean = false
 	private static users:TSMap<string,HCUser> = new TSMap<string,HCUser>
 	public static get(id:string){
 		return HCUser.users.get(id)
