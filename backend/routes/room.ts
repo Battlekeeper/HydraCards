@@ -154,6 +154,7 @@ router.get("/promote", (req, res) => {
 	var room = HCRoom.get(user.currentRoom)
 
 	if (user != undefined && room != undefined){
+		user.userVotingStatus = HCVotingStatus.voting
 		if (promote == "true"){
 			user.permissions.host = true
 		} else {
