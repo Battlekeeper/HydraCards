@@ -43,7 +43,7 @@ const colormode = useColorMode()
 
 const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
-const socket = io(config.public.baseUrl.replace("http", "ws"));
+const socket = io(config.public.apiUrl.replace("http", "ws"));
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()
@@ -59,7 +59,7 @@ const minutes = ref(0)
 const seconds = ref(0)
 const allowAnonymousMode = ref(true)
 
-const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.baseUrl })
+const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.apiUrl })
 currentRoom.value = room.value as HCRoom
 
 var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
@@ -67,12 +67,12 @@ pieData.value.labels = votes.keys()
 pieData.value.datasets[0].data = votes.values()
 
 
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
 currentUser.value = user.value as HCUser
 
 
 async function apiJoinRoom() {
-	var response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.baseUrl })
+	var response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.apiUrl })
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
@@ -107,7 +107,7 @@ function isInRoom() {
 	return false
 }
 async function apiSetDisplayName() {
-	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
+	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.apiUrl })
 }
 function socketSetName() {
 	socket.emit("setMemberName", currentRoom.value.id, currentUser.value.id, displayName.value)
@@ -168,7 +168,7 @@ function downloadCharts() {
 	downloadBase64File(ChartJS.instances[1].toBase64Image(), "bar.png")
 }
 async function downloadTopicCSV(topicIndex: number, topicName: string) {
-	var response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
+	var response = await useFetch(`api/room/csv`, { baseURL: config.public.apiUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
 	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
 	const link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);
@@ -238,7 +238,7 @@ watch(displayName, socketSetName)
 							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 					</div>
 				</div>
-				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
+				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
 					Timer</button>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
@@ -263,9 +263,9 @@ watch(displayName, socketSetName)
 		<div v-if="currentRoom.status == 0 && currentUser.userVotingStatus != HCVotingStatus.spectating" class="m-[4.6rem]">
 			<input v-model="roomTopicName" placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">
 			<div class="mt-14 flex justify-between">
-				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-8 pl-8 shadow border border-blue-800 dark:border-orange-500">Set Story Name</button>
+				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-8 pl-8 shadow hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white border border-blue-800 dark:border-orange-500">Set Story Name</button>
 				<div v-else></div>
-				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
+				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
 			</div>
 			<div class="grid grid-cols-5 grid-rows-3 mt-16 gap-8">
 				<div @click="submitVote('0', $event)" class=" dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">

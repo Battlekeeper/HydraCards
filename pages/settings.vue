@@ -11,8 +11,8 @@ const route = useRoute()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const config = useRuntimeConfig()
 const name = ref(null)
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
-const { data: room } = await useFetch(`api/room/getRoomById?id=` + route.query.id, { baseURL: config.public.baseUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
+const { data: room } = await useFetch(`api/room/getRoomById?id=` + route.query.id, { baseURL: config.public.apiUrl })
 currentRoom.value = room.value as HCRoom
 currentUser.value = user.value as HCUser
 
@@ -37,27 +37,27 @@ const allowAnonymous = ref(currentRoom.value.allowAnonymousMode)
 const anonymousMode = ref(currentUser.value.anonymous)
 
 async function apiSetDisplayName() {
-	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
+	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.apiUrl })
 }
 
 watch(timerEnabled, async ()=>{
 	await useFetch(`api/room/setTimerActive` , { query:{
 		id: currentRoom.value.id,
 		enabled: timerEnabled.value
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.apiUrl })
 })
 watch(allowAnonymous, async ()=>{
 	currentRoom.value.allowAnonymousMode = allowAnonymous.value
 	await useFetch(`api/room/allowAnonymous` , { query:{
 		id: currentRoom.value.id,
 		enabled: allowAnonymous.value
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.apiUrl })
 })
 watch(anonymousMode, async ()=>{
 	await useFetch(`api/user/setAnonymousMode` , { query:{
 		id: currentUser.value.id,
 		enabled: anonymousMode.value
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.apiUrl })
 })
 
 </script>

@@ -8,7 +8,7 @@ const name = ref("")
 const config = useRuntimeConfig()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const currentUser = ref(new HCUser)
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
 currentUser.value = user.value as HCUser
 //name.value = currentUser.value.displayName
 const file: Ref<any> = ref()
@@ -21,7 +21,7 @@ if (currentUser.value != undefined){
 }
 
 async function apiJoinRoom() {
-	var response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
+	var response = await useFetch("api/room/joinRoom?id=" + props.roomId, { credentials: "include", baseURL: config.public.apiUrl })
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
@@ -38,11 +38,11 @@ async function setNameAndProfileAndJoin(spectatorMode: boolean) {
 	response = await useFetch("api/room/joinRoom", { query:{
 		id: props.roomId,
 		spectatorMode: spectatorMode
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.apiUrl })
 	const formData = new FormData();
 	formData.append('profileImage', file.value);
 	fetch("api/user/profileupload", { method: "POST", body: formData })
-	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.baseUrl })
+	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.apiUrl })
 	window.location.href = "/room?id=" + props.roomId
 }
 function click() {

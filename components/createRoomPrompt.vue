@@ -20,7 +20,7 @@ const route = useRoute()
 const userId = useCookie('_id')
 const file: Ref<any> = ref()
 const fileUrl: Ref<any> = ref()
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
 currentUser.value = user.value as HCUser
 
 
@@ -38,17 +38,17 @@ async function apiCreateRoom() {
 		topicName: roomTopicName.value,
 		timer: timerMinutes.value * 60 + timerSeconds.value,
 		timerEnabled: timerEnabled.value
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.apiUrl })
 	//@ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
 
-	response = await useFetch("api/room/joinRoom?id=" + route.query.id, { credentials: "include", baseURL: config.public.baseUrl })
+	response = await useFetch("api/room/joinRoom?id=" + route.query.id, { credentials: "include", baseURL: config.public.apiUrl })
 	const formData = new FormData();
 	formData.append('profileImage', file.value);
 	fetch("api/user/profileupload", { method: "POST", body: formData })
-	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.baseUrl })
+	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.apiUrl })
 	window.location.href = "/room?id=" + room.id
 }
 
@@ -88,7 +88,7 @@ watch(timerSeconds, () => {
 			<span>
 				<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
 				<button @click="click"
-					class="mt-7 text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change
+					class="mt-7 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change
 					Avatar</button>
 				<img v-show="fileUrl != undefined" class="m-4 inline " width="40" height="40" :src="fileUrl">
 			</span>
@@ -107,15 +107,14 @@ watch(timerSeconds, () => {
 				<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">SECS</div>
 			</div>
 			<div v-if="timerEnabled" class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex justify-center pt-2 pb-2">
-				<input v-model="timerMinutes" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
+				<input v-model="timerMinutes" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
 				<p class="w-fit h-fit text-[30px] pl-2 pr-2">:</p>
-				<input v-model="timerSeconds" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
+				<input v-model="timerSeconds" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
 			</div>
 			<div class="flex mt-6 gap-4">
 				<button
-				@click="$emit('cancel');" class="text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Cancel</button>
-				<button
-          			@click="apiCreateRoom()" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Create
+				@click="$emit('cancel');" class="text-blue-800 dark:text-orange-500 p-2 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Cancel</button>
+				<button @click="apiCreateRoom()" class="dark:bg-orange-500 bg-blue-800 hover:bg-white hover:text-blue-800 dark:hover:bg-white dark:hover:text-orange-500 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Create
 					Room</button>
 			</div>
 		</div>

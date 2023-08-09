@@ -25,17 +25,18 @@ const fileUpload = require('express-fileupload');
 new HCServer(http, expressApp)
 HCServer.app.use(cookieParser());
 HCServer.app.use(cors({
-	origin: "*",
-	optionsSuccessStatus: 200
+	origin: process.env.BASE_URL,
+	optionsSuccessStatus: 200,
+	credentials:true
 }))
 HCServer.app.use(fileUpload())
 
 HCServer.app.use("/api/user", userRouter)
 HCServer.app.use("/api/room", roomRouter)
 
-HCServer.app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
+//HCServer.app.use('/', proxy(`http://localhost:${process.env.FRONTEND_PORT || process.env.NITRO_PORT}`));
 http.listen(process.env.BACKEND_PORT, function () {
-	console.log(`app running on \x1b[43m\x1b[31mhttp://localhost:${process.env.BACKEND_PORT}\x1b[0m`);
+	console.log(`app running on \x1b[43m\x1b[31mhttp://localhost:${process.env.FRONTEND_PORT}\x1b[0m`);
 });
 
 fs.mkdir("public/profile", (err:any) => {})

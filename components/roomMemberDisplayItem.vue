@@ -8,6 +8,7 @@ const hostClass = ref("")
 const statusIcon = ref("❌")
 const onlineIcon = ref("💻")
 const name = ref(props.member.displayName)
+const showUserInfo = ref(false)
 
 if (props.member.permissions.host) {
 	hostClass.value = "text-red-500"
@@ -77,15 +78,16 @@ watch(props, () => {
 	<div class="flex">
 			<!--<p :class="hostClass"></p>-->
 			<div class="pl-6 pr-6 dark:text-slate-400 font-semibold flex w-full justify-between">
-				<div class="flex items-center">
+				<div @click="showUserInfo = true" class="flex items-center cursor-pointer">
 					<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" />
 					<p class="h-fit">{{ name }}</p>
-				</div>
-				<div class="flex gap-6 items-end">
+					</div>
+					<div class="flex gap-6 items-end">
 					<div class="" v-show="props.member.permissions.host">🌟</div>
 					<div class=""> {{ onlineIcon }}</div>
 					<div class=""> {{ statusIcon }}</div>
 				</div>
 			</div>
 		</div>
+		<ModalPopup v-if="showUserInfo"><memberInfo></memberInfo></ModalPopup>
 </template>
