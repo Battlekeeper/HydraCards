@@ -136,5 +136,33 @@ router.get("/csv", (req, res) => {
 	res.send()
 })
 
+router.get("/kickuser", (req, res) => {
+	var id: string = req.query.id as string
+	var user = HCUser.get(id)
+	var room = HCRoom.get(user.currentRoom)
+
+	if (user != undefined && room != undefined){
+		room.kickuser(user)
+	}
+
+	res.send()
+})
+router.get("/promote", (req, res) => {
+	var id: string = req.query.id as string
+	var promote:string = req.query.promote as string
+	var user = HCUser.get(id)
+	var room = HCRoom.get(user.currentRoom)
+
+	if (user != undefined && room != undefined){
+		if (promote == "true"){
+			user.permissions.host = true
+		} else {
+			user.permissions.host = false
+		}
+		room.emitRoomStateUpdate()
+	}
+
+	res.send()
+})
 
 module.exports = router;

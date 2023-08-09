@@ -111,4 +111,8 @@ export default class HCRoom {
 		this.counter.count = 0
 		this.counter.active = false
 	}
+	public async kickuser(user:HCUser){
+		HCSocketIO.io.to(this.id.toString()).emit("kick", user.id)
+		user.leaveRoom()
+	}
 }

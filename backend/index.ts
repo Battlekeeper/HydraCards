@@ -215,17 +215,23 @@ HCServer.io.on("connect", (socket) => {
 			}
 		}
 	})
-	socket.on("onlinePing", (userId:string) => {
+	socket.on("onlinePing", (userId:string, focused:boolean) => {
 		var user:HCUser = HCUser.get(userId)
+
 		if (user != undefined){
+			var room:HCRoom = HCRoom.get(user.currentRoom)
+			if (room == undefined){
+				return
+			}
 			if (user.online){
 				user.online = true
 			} else {
 				user.online = true
-				var room:HCRoom = HCRoom.get(user.currentRoom)
-				if (room != undefined){
-					room.emitRoomStateUpdate()
-				}
+				room.emitRoomStateUpdate()
+			}
+			if (user.focused != focused){
+				user.focused = focused
+				room.emitRoomStateUpdate()
 			}
 			
 		}

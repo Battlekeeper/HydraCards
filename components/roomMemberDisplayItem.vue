@@ -2,13 +2,22 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router";
 import HCRoom from "../backend/models/HCRoom";
+import HCUser from "../backend/models/HCUser";
 
-const props = defineProps(['member', "roomStatus"])
+
+const props = defineProps(['member', "roomStatus", "userId"])
 const hostClass = ref("")
 const statusIcon = ref("❌")
 const onlineIcon = ref("💻")
+const focusedIcon = ref("😵")
+const config = useRuntimeConfig()
 const name = ref(props.member.displayName)
 const showUserInfo = ref(false)
+const currentUser = ref(new HCUser)
+
+const { data: user } = await useFetch(`api/user/getUserById?id=` + props.userId, { baseURL: config.public.baseUrl })
+currentUser.value = user.value as HCUser
+
 
 if (props.member.permissions.host) {
 	hostClass.value = "text-red-500"
@@ -16,7 +25,11 @@ if (props.member.permissions.host) {
 if (props.member.anonymous && props.member.allowanon){
 	name.value = "Anonymous"
 }
-
+if (props.member.focused){
+	focusedIcon.value = "😎"
+} else {
+	focusedIcon.value = "😵"
+}
 
 switch (props.member.userVotingStatus) {
 	case 0:
@@ -58,6 +71,9 @@ watch(props, () => {
 		} else {
 			//@ts-ignore
 			statusIcon.value = room.votes[props.member.id]
+			if (statusIcon.value == undefined || statusIcon.value == ""){
+				statusIcon.value = "N/A"
+			}
 		}
 	}
 	
@@ -67,6 +83,12 @@ watch(props, () => {
 		onlineIcon.value = "💻" //OFF LINE
 	}
 	name.value = props.member.displayName
+
+	if (props.member.focused){
+		focusedIcon.value = "😎"
+	} else {
+		focusedIcon.value = "😵"
+	}
 
 	if (props.member.anonymous && props.member.allowAnon){
 		name.value = "Anonymous"
@@ -81,13 +103,17 @@ watch(props, () => {
 				<div @click="showUserInfo = true" class="flex items-center cursor-pointer">
 					<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" />
 					<p class="h-fit">{{ name }}</p>
-					</div>
-					<div class="flex gap-6 items-end">
+				</div>
+				<div class="flex gap-6 items-end">
+				<div class="grid grid-cols-4 gap-1">
 					<div class="" v-show="props.member.permissions.host">🌟</div>
+					<div class="" v-show="!props.member.permissions.host"></div>
+					<div class=""> {{ focusedIcon }}</div>
 					<div class=""> {{ onlineIcon }}</div>
-					<div class=""> {{ statusIcon }}</div>
+					<div class="w-[30px]"> {{ statusIcon }}</div>
 				</div>
 			</div>
 		</div>
-		<ModalPopup v-if="showUserInfo && props.member.permissions.host"><memberInfo member="props.member" @cancel="showUserInfo=false;"></memberInfo></ModalPopup>
+	</div>
+	<ModalPopup v-if="showUserInfo && (props.member.id == props.userId || currentUser.permissions.host)"><memberInfo :user-id=props.userId :member=props.member @cancel="showUserInfo=false;"></memberInfo></ModalPopup>
 </template>

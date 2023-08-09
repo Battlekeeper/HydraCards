@@ -43,7 +43,7 @@ const colormode = useColorMode()
 
 const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
-const socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"));
+var socket = io()
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()
@@ -183,35 +183,52 @@ function copy() {
 function socketSetCoffeeBreak(enabled:boolean){
 	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
 }
-socket.on("connect", () => {
-	socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
-	socket.emit("setSocketId", currentUser.value.id)
-	setInterval(() => { socket.emit("onlinePing", currentUser.value.id) }, 1000)
-})
-socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
-	if (!room || !members) {
-		return
-	}
-	var oldRoom: HCRoom = currentRoom.value
-	currentRoom.value = room
-	localStorage.setItem("room", JSON.stringify(currentRoom.value))
-	currentRoomMembers.value = members;
-	currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
-	displayName.value = currentUser.value.displayName
-	minutes.value = Math.floor(currentRoom.value.counter.count / 60)
-	seconds.value = currentRoom.value.counter.count % 60
+function mounted(){
+	socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"))
+	socket.on("connect_error", (err) => {
+		console.log(`connect_error due to ${err.message}`);
+	});
+	socket.on("connect", () => {
+		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
+		socket.emit("setSocketId", currentUser.value.id)
+		setInterval(() => { 
+			socket.emit("onlinePing", currentUser.value.id, document.hasFocus()) 
+	}, 1000)
+	})
+	socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
+		if (!room || !members) {
+			return
+		}
+		var oldRoom: HCRoom = currentRoom.value
+		currentRoom.value = room
+		localStorage.setItem("room", JSON.stringify(currentRoom.value))
+		currentRoomMembers.value = members;
+		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
+		displayName.value = currentUser.value.displayName
+		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
+		seconds.value = currentRoom.value.counter.count % 60
 
-	roomTopicName.value = currentRoom.value.topicName
-	
-	sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
-	sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
-	var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
-	pieData.value.labels = votes.keys()
-	pieData.value.datasets[0].data = votes.values()
-	if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote) {
+		roomTopicName.value = currentRoom.value.topicName
 		
-	}
-})
+		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
+		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
+		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
+		pieData.value.labels = votes.keys()
+		pieData.value.datasets[0].data = votes.values()
+		if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote) {
+			
+		}
+	})
+	socket.on("kick", (id:string) => {
+		if (id == currentUser.value.id){
+			window.location.href = "/kick"
+		}
+	})
+}
+
+
+mounted()
+onMounted(mounted)
 
 definePageMeta({
 	middleware: ["nullroomredirect"]
@@ -244,7 +261,7 @@ watch(displayName, socketSetName)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in currentRoomMembers" :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[95%] justify-between">
@@ -307,6 +324,7 @@ watch(displayName, socketSetName)
 			</div>
 		</div>
 		<div v-if="currentRoom.status == 1" class="m-[4.6rem] mt-0 flex justify-center flex-col">
+			<h1 class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl pb-5 p-6 mb-5">{{ currentRoom.topicName }}</h1>
 			<div class="flex justify-between mb-4">
 				<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
 				<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
@@ -327,7 +345,7 @@ watch(displayName, socketSetName)
 	</div>
 	<div v-if="!currentUser.permissions.host && currentRoom.status != 2" class="flex m-36 mt-10 mb-0 justify-between">
 		<div>
-			<div class="flex justify-between" v-if="currentRoom.status == 0">
+			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
 					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
 						<input disabled type="number"
@@ -346,7 +364,7 @@ watch(displayName, socketSetName)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[100%]">
@@ -405,14 +423,17 @@ watch(displayName, socketSetName)
 				</div>
 			</div>
 		</div>
-		<div v-if="currentRoom.status == 1" class="mt-0 flex justify-center items-center">
-			<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
-			<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
-			<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
-			<div class="flex flex-col mb-4 ml-20 gap-6">
-				<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
-				<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
-				<button @click="selectedChart = 'bar'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
+		<div v-if="currentRoom.status == 1" class="mt-0 flex justify-center items-center flex-col">
+			<h1 class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl pb-5 p-6 mb-5">{{ currentRoom.topicName }}</h1>
+			<div class="flex justify-center items-center">
+				<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
+				<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
+				<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+				<div class="flex flex-col mb-4 ml-20 gap-6">
+					<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
+					<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
+					<button @click="selectedChart = 'bar'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
+				</div>
 			</div>
 		</div>
 
