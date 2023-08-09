@@ -43,7 +43,7 @@ const colormode = useColorMode()
 
 const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
-const socket = io(config.public.apiUrl.replace("http", "ws"));
+const socket = io(config.public.apiUrl.replace("http", "ws").replace("https", "wss"));
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()

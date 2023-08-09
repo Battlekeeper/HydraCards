@@ -1,13 +1,14 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	const id = useCookie("_id")
 	const config = useRuntimeConfig()
-
+	
 	if (id != undefined){
 		try{
-		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.apiUrl })
-		const response = await fetch(config.public.apiUrl + `/api/user/getUserById?id=` + id.value)
-		const user = await response.json()
+		const { data: userobj } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.apiUrl })
+		//const response = await fetch(config.public.apiUrl + `/api/user/getUserById?id=` + id.value)
+		//const user = await response.json()
 
+		const user = userobj.value
 		if (user != undefined){
 			//@ts-ignore
 			if (user.currentRoom != Number.parseInt(to.query.id as string)){
