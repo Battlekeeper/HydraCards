@@ -8,7 +8,7 @@ const name = ref("")
 const config = useRuntimeConfig()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const currentUser = ref(new HCUser)
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
 //name.value = currentUser.value.displayName
 const file: Ref<any> = ref()
@@ -70,16 +70,16 @@ onMounted(()=>{
 			<input v-model="name" text="number" class="w-80 placeholder-current text-slate-800 border border-black text-base font-normal leading-normal p-2 rounded-md"
 				placeholder="Enter your name">
 			<button @click="setNameAndProfileAndJoin(false)"
-				class="ml-2 text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 pl-4 pr-4 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal">
+				class="ml-2 text-blue-800 dark:text-orange-500 bg-gray-300 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:bg-slate-700 p-2 pl-4 pr-4 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal">
 				Join
 			</button>
 		</span>
 		<div class="flex flex-row mt-9">
 			<span class="flex gap-2 items-center">
 				<input id="fileInput" type="file" accept="image/*" class="hidden">
-				<button @click="click" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
+				<button @click="click" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
 				<img v-show="fileUrl != undefined" class="inline" width="64" height="64" :src="fileUrl">
-				<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
+				<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
 			</span>
 			<div>
 		</div>
