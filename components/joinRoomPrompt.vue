@@ -14,6 +14,14 @@ currentUser.value = user.value as HCUser
 const file: Ref<any> = ref()
 const fileUrl: Ref<any> = ref()
 const props = defineProps(["roomId"])
+const joinError = ref(false)
+
+
+var response = await useFetch("api/room/getroombyid?id=" + props.roomId, { credentials: "include", baseURL: config.public.baseUrl })
+var room:HCRoom = response.data.value as HCRoom
+if (room.id == undefined){
+	joinError.value = true
+}
 
 if (currentUser.value != undefined){
 	name.value = currentUser.value.displayName
@@ -50,8 +58,6 @@ function click() {
 	document.getElementById('fileInput').click()
 }
 
-
-
 onMounted(()=>{
 	//@ts-ignore
 	document.getElementById('fileInput').addEventListener('change', function(event:any) {
@@ -74,16 +80,15 @@ onMounted(()=>{
 				Join
 			</button>
 		</span>
-		<div class="flex flex-row mt-9">
-			<span class="flex gap-2 items-center">
-				<input id="fileInput" type="file" accept="image/*" class="hidden">
-				<button @click="click" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
-				<img v-show="fileUrl != undefined" class="inline" width="64" height="64" :src="fileUrl">
-				<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
-			</span>
-			<div>
+			<div class="flex flex-row mt-9">
+				<span class="flex gap-2 items-center">
+					<input id="fileInput" type="file" accept="image/*" class="hidden">
+					<button @click="click" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px]">Change Avatar</button>
+					<img v-show="fileUrl != undefined" class="inline" width="64" height="64" :src="fileUrl">
+					<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
+				</span>
+				<div>
+			</div>
 		</div>
 	</div>
-	</div>
-	<ModalPopup v-sho></ModalPopup>
 </template>

@@ -1,9 +1,24 @@
 <script setup lang="ts">
+import joinError from "../components/joinError.vue"
+import HCRoom from "../backend/models/HCRoom"
 
 const showCreateRoomPrompt = ref(false)
 const showJoinRoomPrompt = ref(false)
 const colormode = useColorMode()
 const roomCode = ref(null)
+const joinErrorPrompt = ref(false)
+const config = useRuntimeConfig()
+
+async function checkIfCanJoin(){
+	
+	var response = await useFetch("api/room/getroombyid?id=" + roomCode.value, { credentials: "include", baseURL: config.public.baseUrl })
+	var room:HCRoom = response.data.value as HCRoom
+	if (room.id == undefined){
+		joinErrorPrompt.value = true
+	} else {
+		showJoinRoomPrompt.value = true
+	}
+}
 
 </script>
 
@@ -144,9 +159,9 @@ const roomCode = ref(null)
 						See Saved Stories
 					</div>
 				</div>
-				<button @click="showJoinRoomPrompt = !showJoinRoomPrompt"
+				<button @click="checkIfCanJoin()"
 					class="text-blue-800 dark:text-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] lg:mt-24 md:mt-5 md:mb-5">
-					Join room
+					Join Room
 				</button>
 			</div>
 		</div>
@@ -299,4 +314,7 @@ const roomCode = ref(null)
 			<JoinRoomPrompt :roomId="roomCode" :pagelink="true"></JoinRoomPrompt>
 		</ModalPopup>
 	</div>
+	<ModalPopup v-if="joinErrorPrompt"  @close="joinErrorPrompt=false;">
+		<joinError @cancel="joinErrorPrompt=false;"></joinError>
+	</ModalPopup>
 </template>

@@ -326,22 +326,6 @@ watch(displayName, socketSetName)
 					<p class="font-medium text-xl">?</p>
 				</div>
 			</div>
-			<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="fixed left-[100%] top-[100%]" style="transform: translate(-150%, -150%);">
-				<svg width="60" height="60" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
-				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
-				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
-				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
-				</svg>
-			</button>
-			<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="fixed left-[100%] top-[100%]" style="transform: translate(-150%, -150%);">
-				<svg width="60" height="60" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
-				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
-				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
-				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
-				</svg>
-			</button>
 		</div>
 		<div v-if="currentRoom.status == 1" class="m-[4.6rem] mt-0 flex justify-center flex-col">
 			<h1 class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl pb-5 p-6 mb-5">{{ currentRoom.topicName }}</h1>
@@ -363,7 +347,7 @@ watch(displayName, socketSetName)
 			</div>
 		</div>
 	</div>
-	<div v-if="!currentUser.permissions.host && currentRoom.status != 2" class="flex m-36 mt-10 mb-0 justify-between">
+	<div v-if="!currentUser.permissions.host && currentRoom.status != 2" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
 		<div>
 			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
@@ -378,7 +362,7 @@ watch(displayName, socketSetName)
 					</div>
 				</div>
 			</div>
-			<div class="w-[358px] bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
+			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl max-w-[625px]">
 				<div class="flex justify-between pt-5 pl-16 pr-16">
 					<p class="font-bold text-black dark:text-gray-300">Name</p>
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
@@ -387,7 +371,7 @@ watch(displayName, socketSetName)
 					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
-			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[100%]">
+			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl flex p-4 w-[90%] max-w-[562px]">
 					<p class="pr-2">http://localhost:3000/room?id={{ currentRoom.id }}</p>
 					<svg v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M18 6.96558C17.9896 6.87448 17.9695 6.78473 17.94 6.69784V6.60859C17.8919 6.50662 17.8278 6.4129 17.75 6.33092L11.75 0.380993C11.6673 0.303858 11.5728 0.240258 11.47 0.192578C11.4402 0.188374 11.4099 0.188374 11.38 0.192578C11.2784 0.134806 11.1662 0.0977206 11.05 0.0834961H7C6.20435 0.0834961 5.44129 0.396929 4.87868 0.954843C4.31607 1.51276 4 2.26945 4 3.05846V4.05012H3C2.20435 4.05012 1.44129 4.36355 0.87868 4.92146C0.316071 5.47938 0 6.23607 0 7.02508V16.9416C0 17.7306 0.316071 18.4873 0.87868 19.0452C1.44129 19.6032 2.20435 19.9166 3 19.9166H11C11.7956 19.9166 12.5587 19.6032 13.1213 19.0452C13.6839 18.4873 14 17.7306 14 16.9416V15.95H15C15.7956 15.95 16.5587 15.6365 17.1213 15.0786C17.6839 14.5207 18 13.764 18 12.975V7.02508C18 7.02508 18 7.02508 18 6.96558ZM12 3.46504L14.59 6.03343H13C12.7348 6.03343 12.4804 5.92895 12.2929 5.74298C12.1054 5.55701 12 5.30477 12 5.04177V3.46504ZM12 16.9416C12 17.2046 11.8946 17.4569 11.7071 17.6428C11.5196 17.8288 11.2652 17.9333 11 17.9333H3C2.73478 17.9333 2.48043 17.8288 2.29289 17.6428C2.10536 17.4569 2 17.2046 2 16.9416V7.02508C2 6.76208 2.10536 6.50985 2.29289 6.32388C2.48043 6.1379 2.73478 6.03343 3 6.03343H4V12.975C4 13.764 4.31607 14.5207 4.87868 15.0786C5.44129 15.6365 6.20435 15.95 7 15.95H12V16.9416ZM16 12.975C16 13.238 15.8946 13.4902 15.7071 13.6762C15.5196 13.8622 15.2652 13.9667 15 13.9667H7C6.73478 13.9667 6.48043 13.8622 6.29289 13.6762C6.10536 13.4902 6 13.238 6 12.975V3.05846C6 2.79546 6.10536 2.54323 6.29289 2.35726C6.48043 2.17128 6.73478 2.06681 7 2.06681H10V5.04177C10 5.83078 10.3161 6.58748 10.8787 7.14539C11.4413 7.7033 12.2044 8.01674 13 8.01674H16V12.975Z" fill="white"/>
@@ -443,8 +427,8 @@ watch(displayName, socketSetName)
 				</div>
 			</div>
 		</div>
-		<div v-if="currentRoom.status == 1" class="mt-0 flex justify-center items-center flex-col">
-			<h1 class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl pb-5 p-6 mb-5">{{ currentRoom.topicName }}</h1>
+		<div v-if="currentRoom.status == 1" class="mt-0 flex items-center flex-col">
+			<h1 class="bg-gray-300 dark:bg-gray-700 rounded-2xl pb-5 p-6 mb-5 w-[80%] self-center">{{ currentRoom.topicName }}</h1>
 			<div class="flex justify-center items-center">
 				<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
 				<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
@@ -477,4 +461,20 @@ watch(displayName, socketSetName)
 			<button @click="socketSetCoffeeBreak(false)" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">End Coffee Break</button>
 		</div>
 	</div>
+	<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="fixed left-[100%] top-[100%]" style="transform: translate(-150%, -150%);">
+				<svg width="60" height="60" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
+				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
+				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
+				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
+				</svg>
+			</button>
+			<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="fixed left-[100%] top-[100%]" style="transform: translate(-150%, -150%);">
+				<svg width="60" height="60" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#2255BE"/>
+				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
+				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#2255BE"/>
+				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#2255BE"/>
+				</svg>
+			</button>
 </template>
