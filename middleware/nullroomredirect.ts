@@ -1,14 +1,15 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	const id = useCookie("_id")
 	const config = useRuntimeConfig()
-	console.log(config.public.serverUrl)
 
 	if (id != undefined){
 		
-		const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
-		if (user.value != undefined){
+		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
+		const response = await fetch(config.public.serverUrl + `/api/user/getUserById?id=` + id.value)
+		const user = await response.json()
+		if (user != undefined){
 			//@ts-ignore
-			if (user.value.currentRoom != Number.parseInt(to.query.id as string)){
+			if (user.currentRoom != Number.parseInt(to.query.id as string)){
 				return navigateTo("/join?id="+to.query.id)
 			}
 		} else {

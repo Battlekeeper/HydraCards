@@ -67,7 +67,7 @@ watch(anonymousMode, async ()=>{
 		<div class="w-full">
 			<PermenantHeader :inRoom="true" :inSettings="true"></PermenantHeader>
 		</div>
-		<h class="text-center text-black dark:text-gray-50 text-6xl font-bold mb-8">Settings</h>
+		<h1 class="text-center text-black dark:text-gray-50 text-6xl font-bold mb-8">Settings</h1>
 		<div class="flex gap-16 h-full" >
 			<div class="flex flex-col grow-[3] bg-gray-300 dark:bg-gray-700 rounded-xl">
 				<div class="grid grid-cols-1">
