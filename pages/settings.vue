@@ -11,8 +11,8 @@ const route = useRoute()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const config = useRuntimeConfig()
 const name = ref(null)
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
-const { data: room } = await useFetch(`api/room/getRoomById?id=` + route.query.id, { baseURL: config.public.serverUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
+const { data: room } = await useFetch(`api/room/getRoomById?id=` + route.query.id, { baseURL: config.public.baseUrl })
 currentRoom.value = room.value as HCRoom
 currentUser.value = user.value as HCUser
 

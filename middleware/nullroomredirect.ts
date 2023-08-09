@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
 	if (id != undefined){
 		
-		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
+		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.baseUrl })
 		const response = await fetch(config.public.baseUrl + `/api/user/getUserById?id=` + id.value)
 		const user = await response.json()
 		if (user != undefined){

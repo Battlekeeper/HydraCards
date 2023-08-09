@@ -8,7 +8,7 @@ const name = ref("")
 const config = useRuntimeConfig()
 const userId: Ref<string> = ref(useCookie('_id').value as string)
 const currentUser = ref(new HCUser)
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
 name.value = currentUser.value.displayName
 const file:Ref<any> = ref()

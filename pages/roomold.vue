@@ -58,7 +58,7 @@ const showQRCodeModal = ref(false)
 const minutes = ref(0)
 const seconds = ref(0)
 
-const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.serverUrl })
+const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.baseUrl })
 currentRoom.value = room.value as HCRoom
 
 var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
@@ -66,7 +66,7 @@ pieData.value.labels = votes.keys()
 pieData.value.datasets[0].data = votes.values()
 
 
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.serverUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
 
 

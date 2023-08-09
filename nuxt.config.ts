@@ -6,8 +6,7 @@ export default defineNuxtConfig({
 		// Will be available in both server and client
 		public: {
 			socketUrl: '',
-			baseUrl: process.env.BASE_URL,
-			serverUrl: process.env.SERVER_URL
+			baseUrl: process.env.BASE_URL
 		},
 	},
 	devServer: {

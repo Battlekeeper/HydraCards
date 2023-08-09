@@ -15,9 +15,9 @@ const roomCode = ref(null)
 	<div class="flex w-full justify-center mt-7">
 		<div class="bg-gray-300 dark:bg-gray-700 rounded-md lg:w-[360px] md:w-64 mr-4" style="aspect-ratio: 1/1.4066;">
 			<div class="flex flex-col items-center">
-				<p class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
+				<p class="text-center text-blue-800 dark:text-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
 					Join Room</p>
-				<h1 class="text-center text-black dark:text-slate-50 text-3xl font-semibold mt-[11px]">Room Code</h1>
+				<h1 class="text-center text-black dark:text-slate-50 text-3xl hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white font-semibold mt-[11px]">Room Code</h1>
 				<input text="number" class="text-slate-800 text-base font-normal leading-normal mt-[11px] p-2 rounded-md"
 					placeholder="12345678" v-model="roomCode">
 				<div class="w-full pl-8">
