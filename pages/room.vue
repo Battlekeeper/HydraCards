@@ -208,7 +208,9 @@ function mounted(){
 		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
 		seconds.value = currentRoom.value.counter.count % 60
 
-		roomTopicName.value = currentRoom.value.topicName
+		if (currentRoom.value.topicName != roomTopicName.value && !currentUser.value.permissions.host){
+			roomTopicName.value = currentRoom.value.topicName
+		}
 		
 		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
 		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
@@ -282,7 +284,7 @@ watch(displayName, socketSetName)
 				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
 			</div>
 			<div class="grid grid-cols-5 grid-rows-3 mt-16 gap-8">
-				<div @click="submitVote('0', $event)" class=" dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div @click="submitVote('0', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl select-none">0</p>
 				</div>
 				<div @click="submitVote('1/2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
