@@ -85,4 +85,5 @@ onMounted(()=>{
 		</div>
 	</div>
 	</div>
+	<ModalPopup v-sho></ModalPopup>
 </template>
