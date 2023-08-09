@@ -7,7 +7,7 @@ const config = useRuntimeConfig()
 const props = defineProps(['voteObj'])
 
 
-const { data: user } = await useFetch("api/user/getUserById?id=" + props.voteObj.userId, {baseURL: config.public.apiUrl})
+const { data: user } = await useFetch("api/user/getUserById?id=" + props.voteObj.userId, {baseURL: config.public.baseUrl})
 const currentUser = ref(user.value as HCUser)
 
 const hostClass = ref("")

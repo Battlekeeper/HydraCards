@@ -41,7 +41,7 @@ const config = useRuntimeConfig()
 const route = useRouter()
 const colormode = useColorMode()
 
-const socket = io(config.public.apiUrl.replace("http", "ws"));
+const socket = io(config.public.baseUrl.replace("http", "ws"));
 const displayName = ref("")
 const roomTopicName = ref("")
 const countDownTime = ref()
@@ -58,7 +58,7 @@ const showQRCodeModal = ref(false)
 const minutes = ref(0)
 const seconds = ref(0)
 
-const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.apiUrl })
+const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.baseUrl })
 currentRoom.value = room.value as HCRoom
 
 var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
@@ -66,12 +66,12 @@ pieData.value.labels = votes.keys()
 pieData.value.datasets[0].data = votes.values()
 
 
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
 
 
 async function apiJoinRoom() {
-	var response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.apiUrl })
+	var response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.baseUrl })
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
@@ -105,7 +105,7 @@ function isInRoom() {
 	return false
 }
 async function apiSetDisplayName() {
-	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.apiUrl })
+	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
 }
 function socketSetName() {
 	socket.emit("setMemberName", currentRoom.value.id, currentUser.value.id, displayName.value)
@@ -117,7 +117,7 @@ function setCardActive(cardId: number) {
 	selectedCard.value = cardId
 }
 async function switchSpectatorMode(mode: boolean) {
-	await useFetch(`api/user/setSpectatorMode?mode=` + mode, { baseURL: config.public.apiUrl })
+	await useFetch(`api/user/setSpectatorMode?mode=` + mode, { baseURL: config.public.baseUrl })
 	selectedCard.value = -1
 }
 function getRoomVotesMap(room: HCRoom) {
@@ -158,7 +158,7 @@ function downloadCharts() {
 	downloadBase64File(ChartJS.instances[1].toBase64Image(), "bar.png")
 }
 async function downloadTopicCSV(topicIndex: number, topicName: string) {
-	var response = await useFetch(`api/room/csv`, { baseURL: config.public.apiUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
+	var response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
 	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
 	const link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);

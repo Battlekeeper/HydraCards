@@ -20,7 +20,7 @@ const route = useRoute()
 const userId = useCookie('_id')
 const file: Ref<any> = ref()
 const fileUrl: Ref<any> = ref()
-const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.apiUrl })
+const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
 
 
@@ -38,17 +38,17 @@ async function apiCreateRoom() {
 		topicName: roomTopicName.value,
 		timer: timerMinutes.value * 60 + timerSeconds.value,
 		timerEnabled: timerEnabled.value
-	}, credentials: "include", baseURL: config.public.apiUrl })
+	}, credentials: "include", baseURL: config.public.baseUrl })
 	//@ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
 	//router.push({ path: 'room', query: { id: room.id } })
 	//TODO: Find a way to have router.push not be shallow redirect
 
-	response = await useFetch("api/room/joinRoom?id=" + route.query.id, { credentials: "include", baseURL: config.public.apiUrl })
+	response = await useFetch("api/room/joinRoom?id=" + route.query.id, { credentials: "include", baseURL: config.public.baseUrl })
 	const formData = new FormData();
 	formData.append('profileImage', file.value);
 	fetch("api/user/profileupload", { method: "POST", body: formData })
-	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.apiUrl })
+	await useFetch("api/user/setname?name=" + name.value, { credentials: "include", baseURL: config.public.baseUrl })
 	window.location.href = "/room?id=" + room.id
 }
 
