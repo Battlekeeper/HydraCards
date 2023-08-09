@@ -1,6 +1,9 @@
 CSV
 00:00 rather than 0:0 on host view
+add character limit
 ❓fix -1 -1 time
+copy button broken?
+Fix timer
 
 ✅Join room error message popup
 ✅Chart Size
