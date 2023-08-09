@@ -329,7 +329,7 @@ if (!isInRoom() || currentUser.value.displayName == "" || currentUser.value.disp
 				</div>
 				<div class="border border-slate-400"></div>
 				<div class="px-6 py-4 flex-col justify-start items-start gap-4 flex">
-					<roomMemberDisplayItem v-for="member in  currentRoomMembers" :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 

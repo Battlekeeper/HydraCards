@@ -3,10 +3,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	const config = useRuntimeConfig()
 
 	if (id != undefined){
-		
+		try{
 		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.apiUrl })
 		const response = await fetch(config.public.apiUrl + `/api/user/getUserById?id=` + id.value)
 		const user = await response.json()
+
 		if (user != undefined){
 			//@ts-ignore
 			if (user.currentRoom != Number.parseInt(to.query.id as string)){
@@ -15,6 +16,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		} else {
 			return navigateTo("/join?id="+to.query.id)
 		}
+	} catch {
+		return navigateTo("/join?id="+to.query.id)
+	}
 	} else {
 		return navigateTo("/join?id="+to.query.id)
 	}
