@@ -19,7 +19,7 @@ const roomCode = ref(null)
 					Join Room</p>
 				<h1 class="text-center text-black dark:text-slate-50 text-3xl font-semibold mt-[11px]">Room Code</h1>
 				<input text="number" class="text-slate-800 text-base font-normal leading-normal mt-[11px] p-2 rounded-md"
-					placeholder="12345678" v-model="roomCode">
+					placeholder="Enter Code Here" v-model="roomCode">
 				<div class="w-full pl-8">
 					<div class="flex mt-[42px]">
 						<svg v-if="colormode.preference == 'dark'" width="26" height="26" viewBox="0 0 26 26" fill="none"
