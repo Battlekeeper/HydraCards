@@ -22,7 +22,7 @@ onMounted(() => {
 				the
 				better and badass teams.</div>
 			<a href="/create"
-				class="rounded-md text-lg font-medium leading-7 text-white dark:text-gray-100 w-[171px] h-14 px-7 py-4 bg-blue-800 dark:bg-HCOrange shadow justify-center items-center gap-2 flex">Get
+				class="rounded-md text-lg font-medium leading-7 text-white dark:text-gray-100 w-[171px] h-14 px-7 py-4 bg-blue-800 dark:bg-HCOrange dark:hover:bg-white dark:hover:text-orange-500 shadow justify-center items-center gap-2 flex">Get
 				Started</a>
 		</div>
 

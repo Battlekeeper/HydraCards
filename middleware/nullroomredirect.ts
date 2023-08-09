@@ -5,7 +5,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (id != undefined){
 		
 		//const { data: user } = await useFetch(`api/user/getUserById?id=` + id.value, { baseURL: config.public.serverUrl })
-		const response = await fetch(config.public.serverUrl + `/api/user/getUserById?id=` + id.value)
+		const response = await fetch(config.public.baseUrl + `/api/user/getUserById?id=` + id.value)
 		const user = await response.json()
 		if (user != undefined){
 			//@ts-ignore
@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (to.query.id != undefined) {
 		const config = useRuntimeConfig()
 
-		const { data: room } = await useFetch("api/room/getRoomById?id=" + to.query.id, {baseURL: config.public.serverUrl})
+		const { data: room } = await useFetch("api/room/getRoomById?id=" + to.query.id, {baseURL: config.public.baseUrl})
 		if (typeof room.value != typeof "")
 		{
 			return;
