@@ -25,7 +25,7 @@ currentRoom.value.history.forEach((historicalVote) => {
 		story.name = "Unnamed"
 	}
 	story.points = historicalVote.Points
-	story.numberOfVoters = historicalVote.Revotes.length
+	story.numberOfVoters = historicalVote.Revotes[historicalVote.Revotes.length - 1].length
 	stories.value.push(story)
 })
 stories.value.pop()

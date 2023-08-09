@@ -183,37 +183,34 @@ function copy() {
 function socketSetCoffeeBreak(enabled:boolean){
 	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
 }
+socket.on("connect", () => {
+	socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
+	socket.emit("setSocketId", currentUser.value.id)
+	setInterval(() => { socket.emit("onlinePing", currentUser.value.id) }, 1000)
+})
+socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
+	if (!room || !members) {
+		return
+	}
+	var oldRoom: HCRoom = currentRoom.value
+	currentRoom.value = room
+	localStorage.setItem("room", JSON.stringify(currentRoom.value))
+	currentRoomMembers.value = members;
+	currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
+	displayName.value = currentUser.value.displayName
+	minutes.value = Math.floor(currentRoom.value.counter.count / 60)
+	seconds.value = currentRoom.value.counter.count % 60
 
-onMounted(async () => {
-	socket.on("connect", () => {
-		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
-		socket.emit("setSocketId", currentUser.value.id)
-		setInterval(() => { socket.emit("onlinePing", currentUser.value.id) }, 1000)
-	})
-	socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
-		if (!room || !members) {
-			return
-		}
-		var oldRoom: HCRoom = currentRoom.value
-		currentRoom.value = room
-		localStorage.setItem("room", JSON.stringify(currentRoom.value))
-		currentRoomMembers.value = members;
-		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
-		displayName.value = currentUser.value.displayName
-		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
-		seconds.value = currentRoom.value.counter.count % 60
-
-		roomTopicName.value = currentRoom.value.topicName
+	roomTopicName.value = currentRoom.value.topicName
+	
+	sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
+	sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
+	var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
+	pieData.value.labels = votes.keys()
+	pieData.value.datasets[0].data = votes.values()
+	if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote) {
 		
-		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
-		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
-		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
-		pieData.value.labels = votes.keys()
-		pieData.value.datasets[0].data = votes.values()
-		if (oldRoom.status != currentRoom.value.status && currentRoom.value.status == HCRoomStatus.voting && currentRoom.value.revote) {
-			
-		}
-	})
+	}
 })
 
 definePageMeta({

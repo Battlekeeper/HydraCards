@@ -1,0 +1,17 @@
+CSV
+Copy Link
+Settings page breaks main view
+00:00 rather than 0:0 on host view
+Chart Size
+Leave room button
+Cancel Timer
+fix -1 -1 time
+Hide timer when it is disabled in the room on member view
+Icon Sizing in the member view
+When you click on your own name in the player view it should allow you to change it
+disable pointer css on members in member view except own member
+user no select css on a bunch of things so they cant be highlighted
+Show title of story on review screen
+
+Azure integration?????
+Show if they are still on the page or if they have tabbed out

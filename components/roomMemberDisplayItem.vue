@@ -78,9 +78,9 @@ watch(props, () => {
 	<div class="flex">
 			<!--<p :class="hostClass"></p>-->
 			<div class="pl-6 pr-6 dark:text-slate-400 font-semibold flex w-full justify-between">
-				<div class="flex items-center cursor-pointer">
+				<div @click="showUserInfo = true" class="flex items-center cursor-pointer">
 					<img width="32" height="32" :src="member.avatar" alt="Avatar" class="mr-2" />
-					<p  @click="showUserInfo = true" class="h-fit">{{ name }}</p>
+					<p class="h-fit">{{ name }}</p>
 					</div>
 					<div class="flex gap-6 items-end">
 					<div class="" v-show="props.member.permissions.host">🌟</div>
@@ -89,5 +89,5 @@ watch(props, () => {
 				</div>
 			</div>
 		</div>
-		<ModalPopup v-if="showUserInfo && props.member.permissions.host"><memberInfo @cancel="showUserInfo=false;"></memberInfo></ModalPopup>
+		<ModalPopup v-if="showUserInfo && props.member.permissions.host"><memberInfo member="props.member" @cancel="showUserInfo=false;"></memberInfo></ModalPopup>
 </template>
