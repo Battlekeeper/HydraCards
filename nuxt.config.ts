@@ -24,5 +24,5 @@ export default defineNuxtConfig({
 		//@ts-ignore
 		middleware: ['nullroomredirect'],
 	},
-	ssr: true
+	ssr: false
 })
