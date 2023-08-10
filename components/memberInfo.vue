@@ -22,6 +22,14 @@ async function apiSetDisplayName() {
 	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
 	emit("cancel")
 }
+
+watch(displayName, ()=>{
+	if (displayName.value.length > 16){
+		displayName.value = displayName.value.substring(0,16)
+	}
+})
+
+
 </script>
 
 <template>

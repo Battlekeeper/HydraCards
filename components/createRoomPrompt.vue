@@ -71,20 +71,26 @@ watch(timerSeconds, () => {
 		timerSeconds.value = 59
 	}
 })
+watch(name, ()=>{
+	if (name.value.length > 16){
+		name.value = name.value.substring(0,16)
+	}
+})
 </script>
 
 <template>
-	<div class="grid grid-cols-2 grid-rows-1 bg-white-500 dark:bg-slate-800 flex-col w-1/3 min-w-[750px] items-center "
+	<div class="grid grid-cols-2 grid-rows-1 bg-gray-50 dark:bg-slate-800 flex-col w-1/3 min-w-[750px] items-center rounded-xl"
 		style="width: 40svw; aspect-ratio: 1/0.46266666666;">
 		<div class="flex flex-col h-full p-8">
 			<p class="dark:text-slate-300 text-black text-base font-semibold pb-2">Story Title</p>
-			<input v-model="roomTopicName" text="text" class="w-80 bg-gray-300 font-normal dark:bg-gray-700 p-4 rounded-md text-black"
+			<input v-model="roomTopicName" text="text" class="w-80 bg-gray-300 font-normal dark:bg-gray-700 dark:text-gray-50 p-4 rounded-md text-black"
 				placeholder="Enter Story Name">
 			<div class="flex dark:bg-gray-700 bg-gray-300 mt-5 w-80 rounded-md flex-col p-4 pb-8">
 				<p class="text-white-900 font-bold text-xl">Nickname</p>
 				<input v-model="name" text="text" class="text-slate-800 font-normal leading-normal p-2 rounded-md"
 					placeholder="Enter your name">
 			</div>
+			<!--
 			<span>
 				<input hidden id="fileInput" @change="storeProfile($event)" type="file" accept="image/*">
 				<button @click="click"
@@ -92,6 +98,7 @@ watch(timerSeconds, () => {
 					Avatar</button>
 				<img v-show="fileUrl != undefined" class="m-4 inline " width="40" height="40" :src="fileUrl">
 			</span>
+			-->
 		</div>
 		<div class="flex flex-col h-full p-8">
 			<div class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6">

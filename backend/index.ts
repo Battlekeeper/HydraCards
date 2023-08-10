@@ -95,6 +95,7 @@ HCServer.io.on("connect", (socket) => {
 		}
 		room.setVote(userId, vote)
 		user!.userVotingStatus = HCVotingStatus.voted
+		user.vote = vote
 
 		room.emitRoomStateUpdate()
 	})
@@ -133,6 +134,10 @@ HCServer.io.on("connect", (socket) => {
 		if (!user.permissions.host){
 			return
 		}
+
+		room.counter.active = false
+		room.counter.count = 0
+
 		room.status = HCRoomStatus.voting
 		room.revote = revote
 		if (room.history.length == 0)
@@ -145,7 +150,6 @@ HCServer.io.on("connect", (socket) => {
 		HistoricalVoteData.Revotes.push(JSON.parse(JSON.stringify(room.votes)))
 
 		if (!revote){
-			room.counter.count = 0
 			room.history.push(new HistoricalVote)
 		}
 

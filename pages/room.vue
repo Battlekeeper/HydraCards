@@ -55,8 +55,8 @@ const userId: Ref<string> = ref(useCookie('_id').value as string)
 var roomId: string = route.currentRoute.value.query.id as string
 const sortedVotes = ref()
 const showQRCodeModal = ref(false)
-const minutes = ref(0)
-const seconds = ref(0)
+const minutes:Ref<string> = ref("00")
+const seconds:Ref<string> = ref("00")
 const roomLink = ref("")
 const allowAnonymousMode = ref(true)
 
@@ -152,7 +152,7 @@ function socketSetTopicName() {
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
 }
 function socketStartCount() {
-	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, minutes.value * 60 + seconds.value)
+	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
 }
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
@@ -205,9 +205,63 @@ function mounted(){
 		localStorage.setItem("room", JSON.stringify(currentRoom.value))
 		currentRoomMembers.value = members;
 		currentUser.value = currentRoomMembers.value.find(member => member.id == userId.value) as HCUser
+
+		if (currentRoom.value.status == HCRoomStatus.reviewing){
+			const voteOrder = {
+				'N/A': -1,
+				'Coffee Break': 0,
+				'0': 1,
+				'1/2': 2,
+				'1': 3,
+				'2': 4,
+				'3': 5,
+				'5': 6,
+				'8': 7,
+				'13': 8,
+				'20': 9,
+				'40': 10,
+				'100': 11,
+				'?': 12,
+			};
+
+			currentRoomMembers.value.sort((a, b) => {
+				//@ts-ignore
+				const voteA = voteOrder[a.vote];
+				//@ts-ignore
+				const voteB = voteOrder[b.vote];
+
+				// Sorting logic
+				if (voteA < voteB) {
+					return -1;
+				}
+				if (voteA > voteB) {
+					return 1;
+				}
+				return 0;
+				});
+		}
+
+
 		displayName.value = currentUser.value.displayName
-		minutes.value = Math.floor(currentRoom.value.counter.count / 60)
-		seconds.value = currentRoom.value.counter.count % 60
+
+		if (currentRoom.value.counter.count < 0){
+			currentRoom.value.counter.count = 0
+		}
+
+		var minnum:number = Math.floor(currentRoom.value.counter.count / 60)
+		var secnum:number = currentRoom.value.counter.count % 60
+
+		if (minnum == 0){
+			minutes.value = "00"
+		} else {
+			minutes.value = minnum.toString().padStart(2, "0")
+		}
+
+		if (secnum == 0){
+			seconds.value = "00"
+		} else {
+			seconds.value = secnum.toString().padStart(2, "0")
+		}
 
 		if (currentRoom.value.topicName != roomTopicName.value && !currentUser.value.permissions.host){
 			roomTopicName.value = currentRoom.value.topicName
@@ -228,6 +282,9 @@ function mounted(){
 		}
 	})
 	roomLink.value = window.location.href
+	if (roomTopicName.value == "" || roomTopicName == undefined){
+		roomTopicName.value = currentRoom.value.topicName
+	}
 }
 
 
@@ -239,14 +296,24 @@ definePageMeta({
 })
 
 watch(displayName, socketSetName)
+watch(minutes, ()=>{
+	if (minutes.value != undefined) {
+		minutes.value = minutes.value.replace(/[^0-9]/g, '');
+	}
+})
+watch(seconds, ()=>{
+	if (seconds.value != undefined) {
+		seconds.value = seconds.value.replace(/[^0-9]/g, '');
+	}
+})
 </script>
 
 <template>
 	<PermenantHeader :inRoom="true" :roomId="currentRoom.id"></PermenantHeader>
 	
-	<div v-if="currentUser.permissions.host && currentRoom.status != 2" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
+	<div v-if="currentUser.permissions.host && currentRoom.status != 2" class="grid grid-cols-2 grid-rows-1 m-36 mt-16 mb-0 gap-5">
 		<div>
-			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
+			<div class="flex justify-between mb-6" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
 					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
 						<input v-model="minutes" type="number"
@@ -259,7 +326,7 @@ watch(displayName, socketSetName)
 				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Start
 					Timer</button>
 			</div>
-			<div class="bg-gray-300 dark:bg-gray-700 mt-6 rounded-2xl">
+			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
 				<div class="flex justify-between pt-5 pl-16 pr-16">
 					<p class="font-bold text-black dark:text-gray-300">Name</p>
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
@@ -278,7 +345,7 @@ watch(displayName, socketSetName)
 					</svg>
 			</div>
 		</div>
-		<div v-if="currentRoom.status == 0 && currentUser.userVotingStatus != HCVotingStatus.spectating" class="m-[4.6rem]">
+		<div v-if="currentRoom.status == 0 && currentUser.userVotingStatus != HCVotingStatus.spectating" class="m-[4.6rem] mt-0">
 			<input v-model="roomTopicName" placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-6">
 			<div class="mt-14 flex justify-between">
 				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-8 pl-8 shadow hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white border border-blue-800 dark:border-orange-500">Set Story Name</button>
@@ -349,16 +416,14 @@ watch(displayName, socketSetName)
 	</div>
 	<div v-if="!currentUser.permissions.host && currentRoom.status != 2" class="grid grid-cols-2 grid-rows-1 m-36 mt-10 mb-0 gap-5">
 		<div>
-			<div class="flex justify-between" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
+			<div class="flex justify-between mb-6" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div>
 					<div class="w-[321px] h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
-						<input disabled type="number"
-							class="w-12 h-12 text-center bg-transparent ext-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
-							value="00">
+						<input v-model="minutes" disabled type="number"
+							class="w-12 h-12 text-center bg-transparent ext-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 						<p class="w-fit h-fit text-[30px] pl-2 pr-2 ext-black dark:text-gray-50">:</p>
-						<input disabled type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2"
-							value="00">
+						<input v-model="seconds" disabled type="number"
+							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 					</div>
 				</div>
 			</div>

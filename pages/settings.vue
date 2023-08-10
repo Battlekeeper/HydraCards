@@ -25,7 +25,12 @@ currentRoom.value.history.forEach((historicalVote) => {
 		story.name = "Unnamed"
 	}
 	story.points = historicalVote.Points
-	story.numberOfVoters = historicalVote.Revotes[historicalVote.Revotes.length - 1].length
+
+	var voters = historicalVote.Revotes[historicalVote.Revotes.length - 1]
+	if (voters != undefined){
+		story.numberOfVoters =Object.keys(voters).length
+	}
+	
 	stories.value.push(story)
 })
 stories.value.pop()
@@ -59,7 +64,16 @@ watch(anonymousMode, async ()=>{
 		enabled: anonymousMode.value
 	}, credentials: "include", baseURL: config.public.baseUrl })
 })
-
+async function exportStory(topicIndex: number, topicName: string){
+	var response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
+	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
+	const link = document.createElement('a');
+	link.href = URL.createObjectURL(blob);
+	link.download = topicName;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
 </script>
 
 <template>
@@ -75,14 +89,15 @@ watch(anonymousMode, async ()=>{
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Story Name</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Points</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow"># Of Voters</p>
-						<button class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
+						<button class="hidden dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
+						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p>
 					</div>
 					<div class="border-gray-400 border-b-2"></div>
-					<div  class="grid grid-cols-4 p-4 items-center" v-for="story in stories">
+					<div  class="grid grid-cols-4 p-4 items-center" v-for="(story, index) in stories">
 						<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.name}}</p>
 						<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.points}}</p>
 						<p class="font-semibold text-gray-400 whitespace-nowrap grow">{{story.numberOfVoters}}</p>
-						<button class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export To CSV</button>
+						<button @click="exportStory(index,story.name)" class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export To CSV</button>
 					</div>
 				</div>
 			</div>
@@ -108,16 +123,6 @@ watch(anonymousMode, async ()=>{
 						<Toggle v-model="anonymousMode" class="mr-4"/>
 					</div>
 					<p class="grow-1 text-black dark:text-slate-400 text-base font-medium  pr-8">Allow other people to see your name or not.</p>
-				</div>
-                <div class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6" style="aspect-ratio: 1.5/0.39944134078;">
-					<div class="flex justify-between flex-col">
-						<h1 class="text-white-900 text-xl font-bold">Nickname</h1>
-                        <div class="flex-row">
-                            <input v-model="displayName" text="text" class="w-80 mt-4 mr-2 bg-white dark:bg-gray-300 font-normal p-2 rounded-md text-black"
-				            placeholder="Enter Your Name">
-                        	<button @click="apiSetDisplayName()" class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium">Set Name</button>
-                        </div>
-					</div>
 				</div>
 			</div>
 		</div>

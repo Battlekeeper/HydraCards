@@ -1,9 +1,11 @@
-CSV
-00:00 rather than 0:0 on host view
-add character limit
-❓fix -1 -1 time
-copy button broken?
-Fix timer
+
+✅CSV Exporting
+✅sort result page
+✅fix -1 -1 time
+✅00:00 rather than 0:0 on host view
+✅Fix timer
+✅host room topic name not displaying
+✅add character limit
 
 ✅Join room error message popup
 ✅Chart Size
@@ -16,6 +18,6 @@ Fix timer
 ✅Show if they are still on the page or if they have tabbed out
 ✅Show title of story on review screen
 
-Fix profile upload on prod
+❌Fix profile upload on prod
 user no select css on a bunch of things so they cant be highlighted
 Azure integration?????

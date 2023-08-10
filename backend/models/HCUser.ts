@@ -16,6 +16,7 @@ export default class HCUser{
 	anonymous:boolean = false
 	allowAnon:boolean = false
 	focused:boolean = false
+	vote:string = ""
 	static users:TSMap<string,HCUser> = new TSMap<string,HCUser>
 	public static get(id:string){
 		return HCUser.users.get(id)
