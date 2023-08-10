@@ -25,12 +25,12 @@ async function checkIfCanJoin(){
 
 <template>
 	<PermenantHeader></PermenantHeader>
-	<p class="text-black dark:text-slate-50 text-5xl font-bold mt-10 lg:ml-60 md:ml-16">Joining a Room</p>
-	<p class="text-black dark:text-slate-400 text-xl font-normal mt-5 lg:ml-60 md:ml-16">Get a code from the host and input it here.</p>
-	<div class="flex w-full justify-center mt-7">
-		<div class="bg-gray-300 dark:bg-gray-700 rounded-md lg:w-[360px] md:w-64 mr-4" style="aspect-ratio: 1/1.4066;">
+	<p class="flex place-content-center text-black dark:text-slate-50 text-5xl font-bold mt-10">Joining a Room</p>
+	<p class="flex place-content-center text-black dark:text-slate-400 text-xl font-normal mt-5">Get a code from the host and input it here.</p>
+	<div class="flex flex-col p-32 pt-6 md:pt-8 items-center justify-center gap-3 md:gap-0 md:p-0 md:flex-row w-full md:mt-7">
+		<div class="bg-gray-300 dark:bg-gray-700 rounded-md h-80 md:h-auto lg:w-[360px] md:w-64 mr-4" style="aspect-ratio: 1/1.4066;">
 			<div class="flex flex-col items-center">
-				<p class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
+				<p class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-3 md:mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
 					Join Room</p>
 				<h1 class="text-center text-black dark:text-slate-50 text-3xl font-semibold mt-[11px]">Room Code</h1>
 				<input text="number" class="text-slate-800 text-base font-normal leading-normal mt-[11px] p-2 rounded-md"
@@ -160,15 +160,15 @@ async function checkIfCanJoin(){
 					</div>
 				</div>
 				<button @click="checkIfCanJoin()"
-					class="text-blue-800 dark:text-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] lg:mt-24 md:mt-5 md:mb-5">
+					class="text-blue-800 mt-4 dark:text-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] lg:mt-24 md:mt-5 md:mb-5">
 					Join Room
 				</button>
 			</div>
 		</div>
-		<div class="bg-gray-300 dark:bg-gray-700 rounded-md ml-4 lg:w-[360px] md:w-64" style="aspect-ratio: 1/1.4066;">
+		<div class="bg-gray-300 dark:bg-gray-700 rounded-md h-80 md:h-auto lg:w-[360px] md:w-64 mr-4" style="aspect-ratio: 1/1.4066;">
 			<div class="flex flex-col items-center">
 				<p
-					class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
+					class="text-center text-blue-800 dark:text-orange-500 text-xl font-medium mt-3 md:mt-[86px] w-[295px] h-[30px] ml-[32px] mr-[32px]">
 					Host Temporary Room</p>
 				<img v-if="colormode.preference == 'dark'" class="w-24 mt-6" src="/images/server_icon_white.png" />
 				<img v-else="colormode.preference == 'light'" class="w-24 mt-6" src="/images/server_icon_black.png" />
@@ -298,7 +298,7 @@ async function checkIfCanJoin(){
 					</div>
 				</div>
 				<button @click="showCreateRoomPrompt = !showCreateRoomPrompt"
-					class="text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] lg:mt-24 md:mt-5 md:mb-5">
+					class="text-blue-800 mt-4 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 bg-gray-300 dark:bg-gray-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium leading-normal w-[160px] lg:mt-24 md:mt-5 md:mb-5">
 					Create Room
 				</button>
 			</div>

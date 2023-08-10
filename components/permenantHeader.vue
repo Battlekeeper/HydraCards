@@ -7,6 +7,7 @@ import Cookies from "js-cookie"
 
 const props = defineProps(["inRoom", "inSettings", "roomId"])
 
+const dropDownShow = ref(false)
 const config = useRuntimeConfig()
 const route = useRoute()
 const selectedTheme = ref(true)
@@ -46,7 +47,7 @@ function redirectToRoom(){
 </script>
 
 <template>
-	<div class="flex items-center pl-16 pr-16 pt-5">
+	<div class="flex max-lg:hidden items-center pl-16 pr-16 pt-5">
 		<router-link to="/">
 			<div class="flex w-[15em]">
 				<img v-show="colormode.preference == 'dark'" src="/images/poker_chip.png" style="width: 40px; height: 39px"
@@ -130,6 +131,24 @@ function redirectToRoom(){
 				<Toggle @change="toggleDark();" v-model="selectedTheme"/>
 			</div>
 		</div>
+	</div>
+	<div class="flex lg:hidden justify-between items-center pl-16 pr-16 pt-5 cursor-pointer">
+		<router-link to="/">
+			<div class="flex w-[15em]">
+				<img v-show="colormode.preference == 'dark'" src="/images/poker_chip.png" style="width: 40px; height: 39px"
+					class="" />
+				<img v-show="colormode.preference != 'dark'" src="/images/poker_chip_blue.png"
+					style="width: 40px; height: 39px" class="" />
+				<p class="text-black dark:text-slate-50 text-2xl font-bold">HydraCards</p>
+			</div>
+		</router-link>
+		<div>
+			<svg @click="dropDownShow = true" width="23" height="17" viewBox="0 0 23 17" fill="none" xmlns="http://www.w3.org/2000/svg" class="flex place-self-end">
+				<path v-if="colormode.preference == 'dark'" d="M1.5 1.5H21.5M1.5 8.5H21.5M1.5 15.5H21.5" stroke="#F7F8F9" stroke-width="3" stroke-linecap="round"/>
+				<path v-else d="M1.5 1.5H21.5M1.5 8.5H21.5M1.5 15.5H21.5" stroke="#000000" stroke-width="3" stroke-linecap="round"/>
+			</svg>
+		</div>
+		<DropDownMenu @close="dropDownShow = false" v-show="dropDownShow" @toggle="toggleDark()"></DropDownMenu>
 	</div>
 </template>
 <style src="@vueform/toggle/themes/default.css"></style>
