@@ -18,6 +18,8 @@
 ✅Show title of story on review screen
 ✅remember last vote
 
+link to room that doesnt exist
+pie chart color fix
 
 ❌Fix profile upload on prod
 user no select css on a bunch of things so they cant be highlighted

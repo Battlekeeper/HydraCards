@@ -20,12 +20,21 @@ import { Pie, Bar, Doughnut } from 'vue-chartjs'
 ChartJS.register(ArcElement, Tooltip, Legend)
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
+const colormode = useColorMode()
+var backgroundColor = []
+
+if(colormode.preference == 'dark'){
+		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
+	} else {
+		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079']
+	}
+
 const pieData = ref({
 	labels: [''],
 	datasets: [
 		{
 			label: '',
-			backgroundColor: ['#CF551B', '#E46651', '#F16523', '#EEA684'],
+			backgroundColor: backgroundColor,
 			data: [1]
 		}
 	]
@@ -39,7 +48,6 @@ const chartOptions = {
 
 const config = useRuntimeConfig()
 const route = useRouter()
-const colormode = useColorMode()
 
 const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
@@ -60,6 +68,11 @@ const minutes:Ref<string> = ref("00")
 const seconds:Ref<string> = ref("00")
 const roomLink = ref("")
 const allowAnonymousMode = ref(true)
+const pie = ref()
+const bar = ref()
+const doughnut = ref()
+
+
 
 const cards = ref(["0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?", "Coffee Break"])
 
@@ -188,6 +201,7 @@ function socketSetCoffeeBreak(enabled:boolean){
 	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
 }
 function mounted(){
+	mounted.value = true
 	socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"))
 	socket.on("connect_error", (err) => {
 		console.log(`connect_error due to ${err.message}`);
@@ -313,6 +327,36 @@ watch(seconds, ()=>{
 		seconds.value = seconds.value.replace(/[^0-9]/g, '');
 	}
 })
+
+function updateColors() {
+	var backgroundColor = []
+
+	if(colormode.preference == 'dark'){
+		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
+	} else {
+		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079']
+	}
+	var chart = undefined
+	if (pie.value != undefined){
+		if (pie.value.chart != undefined){
+			chart = pie.value.chart
+		}
+	}
+	if (bar.value != undefined){
+		if (bar.value.chart != undefined){
+			chart = bar.value.chart
+		}
+	}
+	if (doughnut.value != undefined){
+		if (doughnut.value.chart != undefined){
+			chart = doughnut.value.chart
+		}
+	}
+
+	chart.data.datasets[0].backgroundColor = backgroundColor;
+	chart.update()
+}
+watch(colormode, updateColors)
 </script>
 
 <template>
@@ -534,14 +578,18 @@ watch(seconds, ()=>{
 					</div>
 				</div>
 				<div class="flex justify-center gap-4">
-					<button @click="selectedChart = 'pie'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
-					<button @click="selectedChart = 'donut'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
-					<button @click="selectedChart = 'bar'" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
+					<button @click="selectedChart = 'pie'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Pie Chart</button>
+					<button @click="selectedChart = 'donut'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
+					<button @click="selectedChart = 'bar'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
 				</div>
-				<div class="flex justify-center">
-					<Pie v-if="selectedChart == 'pie'" :data="pieData" :options="chartOptions" />
-					<Bar v-if="selectedChart == 'bar'" :data="pieData" :options="chartOptions" />
-					<Doughnut v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+				<div v-if="selectedChart == 'pie'" class="flex justify-center">
+					<Pie ref="pie" :data="pieData" :options="chartOptions" />
+				</div>
+				<div v-if="selectedChart == 'donut'" class="flex justify-center">
+					<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+				</div>
+				<div v-if="selectedChart == 'bar'" class="flex justify-center">
+					<Bar ref="bar" :data="pieData" :options="chartOptions" />
 				</div>
 		</div>
 		<div class="flex flex-col gap-5 xl:w-1/2">
