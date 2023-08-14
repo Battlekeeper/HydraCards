@@ -17,9 +17,11 @@
 ✅Show if they are still on the page or if they have tabbed out
 ✅Show title of story on review screen
 ✅remember last vote
+✅pie chart color fix
 
+
+download chart as png (talk to UI about adding a button or option of some kind)
 link to room that doesnt exist
-pie chart color fix
 
 ❌Fix profile upload on prod
 user no select css on a bunch of things so they cant be highlighted

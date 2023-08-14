@@ -26,7 +26,7 @@ var backgroundColor = []
 if(colormode.preference == 'dark'){
 		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
 	} else {
-		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079']
+		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079','9E9E9E']
 	}
 
 const pieData = ref({
@@ -35,7 +35,7 @@ const pieData = ref({
 		{
 			label: '',
 			backgroundColor: backgroundColor,
-			data: [1]
+			data: [1,1,1,1,1,1,1,1,1,1,1,1,1]
 		}
 	]
 })
@@ -334,7 +334,7 @@ function updateColors() {
 	if(colormode.preference == 'dark'){
 		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
 	} else {
-		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079']
+		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079','#9E9E9E']
 	}
 	var chart = undefined
 	if (pie.value != undefined){
