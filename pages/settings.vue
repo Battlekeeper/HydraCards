@@ -82,8 +82,8 @@ async function exportStory(topicIndex: number, topicName: string){
 			<PermenantHeader :inRoom="true" :inSettings="true"></PermenantHeader>
 		</div>
 		<h1 class="text-center text-black dark:text-gray-50 text-6xl font-bold mb-8">Settings</h1>
-		<div class="flex gap-16 h-full" >
-			<div class="flex flex-col grow-[3] bg-gray-300 dark:bg-gray-700 rounded-xl">
+		<div class="flex flex-col-reverse lg:flex-row gap-16 h-full" >
+			<div class="flex flex-col grow bg-gray-300 dark:bg-gray-700 rounded-xl lg:min-w-[550px]">
 				<div class="grid grid-cols-1">
 					<div class="grid grid-cols-4 p-4 items-center">
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Story Name</p>
@@ -93,16 +93,18 @@ async function exportStory(topicIndex: number, topicName: string){
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p>
 					</div>
 					<div class="border-gray-400 border-b-2"></div>
-					<div  class="grid grid-cols-4 p-4 items-center" v-for="(story, index) in stories">
-						<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.name}}</p>
-						<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.points}}</p>
-						<p class="font-semibold text-gray-400 whitespace-nowrap grow">{{story.numberOfVoters}}</p>
-						<button @click="exportStory(index,story.name)" class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export To CSV</button>
+					<div class="min-h-[48px]">
+						<div class="grid grid-cols-4 p-4 items-center" v-for="(story, index) in stories">
+							<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.name}}</p>
+							<p class="font-semibold text-gray-400 whitespace-nowrap">{{story.points}}</p>
+							<p class="font-semibold text-gray-400 whitespace-nowrap grow">{{story.numberOfVoters}}</p>
+							<button @click="exportStory(index,story.name)" class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export To CSV</button>
+						</div>
 					</div>
 				</div>
 			</div>
-			<div class="flex flex-col grow-1">
-				<div v-if="currentUser.permissions.host" class="dark:bg-gray-700 bg-gray-300 rounded-md p-4" style="aspect-ratio: 1.5/0.39944134078;">
+			<div class="flex flex-col justify-center items-center gap-6">
+				<div v-if="currentUser.permissions.host" class="dark:bg-gray-700 max-sm:w-3/4 bg-gray-300 rounded-md p-4 w-full" style="aspect-ratio: 1.5/0.39944134078;">
 					<div class="flex justify-between">
 						<h1 class="text-white-900 text-xl font-bold mb-4">Timed Room</h1>
 						<Toggle v-model="timerEnabled" class="mr-4"/>
@@ -110,14 +112,14 @@ async function exportStory(topicIndex: number, topicName: string){
 					<p class="grow-1 text-black dark:text-slate-400 text-base font-medium">Change whether players must submit their
 						answers by a certain time.</p>
 				</div>
-                <div v-if="currentUser.permissions.host" class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6" style="aspect-ratio: 1.5/0.39944134078;">
+                <div v-if="currentUser.permissions.host" class="dark:bg-gray-700 max-sm:w-3/4 bg-gray-300 rounded-md p-4 w-full" style="aspect-ratio: 1.5/0.39944134078;">
 					<div class="flex justify-between">
 						<h1 class="text-white-900 text-xl font-bold mb-4">Allow Anonymous</h1>
 						<Toggle v-model="allowAnonymous" class="mr-4"/>
 					</div>
 					<p class="grow-1 text-black dark:text-slate-400 text-base font-medium pr-8">Allow players to use anonymous mode or not.</p>
 				</div>
-                <div v-if="currentRoom.allowAnonymousMode" class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6" style="aspect-ratio: 1.5/0.39944134078;">
+                <div v-if="currentRoom.allowAnonymousMode" class="dark:bg-gray-700 max-sm:w-3/4 bg-gray-300 rounded-md p-4 w-full" style="aspect-ratio: 1.5/0.39944134078;">
 					<div class="flex justify-between">
 						<h1 class="text-white-900 text-xl font-bold mb-4">Anonymous Mode</h1>
 						<Toggle v-model="anonymousMode" class="mr-4"/>
