@@ -5,6 +5,13 @@ import Config from "chart.js/dist/core/core.config";
 import ModalPopup from "../components/modalPopup.vue";
 
 const colormode = useColorMode()
+const route = useRoute()
+
+const userKickedPrompt = ref(false)
+
+if (route.query.kicked != undefined){
+	userKickedPrompt.value = true
+}
 
 onMounted(() => {
 });
@@ -23,8 +30,12 @@ onMounted(() => {
 		</div>
 
 		<img v-show="colormode.preference == 'dark'" src="/images/card_logo.png" alt="My Image" class="w-90 h-96 flex place-self-center xl:w-11/12 xl:h-[650px]"/>
-		<img v-show="colormode.preference != 'dark'" src="/images/card_logo_blue.png" alt="My Image" class="w-80 h-96 xl:w-11/12 xl:max-h-fit xl:h-[650px]"/>
+		<img v-show="colormode.preference != 'dark'" src="/images/card_logo_blue.png" alt="My Image" class="w-90 h-96 flex place-self-center xl:w-11/12 xl:h-[650px]"/>
 		<a href="/create"
 				class="xl:hidden rounded-md place-self-center text-lg font-medium leading-7 text-white dark:text-gray-100 w-30 h-12 sm:w-40 sm:h-16 px-7 py-4 bg-blue-800 dark:bg-HCOrange dark:hover:bg-white dark:hover:text-orange-500 hover:bg-indigo-200 hover:text-blue-800 shadow justify-center items-center gap-2 flex">Get Started</a>
 	</div>
+
+	<ModalPopup v-if="userKickedPrompt" @close="userKickedPrompt=false;">
+		<joinError @cancel="userKickedPrompt=false;" :user-kicked="true"></joinError>
+	</ModalPopup>
 </template>

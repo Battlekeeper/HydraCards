@@ -315,6 +315,6 @@ async function checkIfCanJoin(){
 		</ModalPopup>
 	</div>
 	<ModalPopup v-if="joinErrorPrompt"  @close="joinErrorPrompt=false;">
-		<joinError @cancel="joinErrorPrompt=false;"></joinError>
+		<joinError @cancel="joinErrorPrompt=false;" :user-kicked="false"></joinError>
 	</ModalPopup>
 </template>

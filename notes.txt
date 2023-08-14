@@ -16,9 +16,7 @@
 ✅When you click on your own name in the player view it should allow you to change it
 ✅Show if they are still on the page or if they have tabbed out
 ✅Show title of story on review screen
-
-do time for host voting view
-remember last vote
+✅remember last vote
 
 
 ❌Fix profile upload on prod

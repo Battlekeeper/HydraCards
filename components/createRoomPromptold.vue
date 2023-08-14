@@ -79,19 +79,20 @@ watch(name, ()=>{
 </script>
 
 <template>
-	<div class="flex flex-col md:flex-row bg-gray-50 dark:bg-slate-800 rounded-xl p-8 gap-5">
-		<div class="flex flex-col h-full">
-			<p class="dark:text-slate-300 text-black text-base font-semibold pb-2 w-80">Story Title</p>
-			<input v-model="roomTopicName" text="text" class="w-full bg-gray-300 font-normal dark:bg-gray-700 dark:text-gray-50 p-4 rounded-md text-black"
+	<div class="grid grid-cols-1 grid-rows-2 md:grid-cols-2 md:grid-rows-1 bg-gray-50 dark:bg-slate-800 flex-col md:w-1/3 md:min-w-[750px] items-center rounded-xl"
+		style="width: 40svw; aspect-ratio: 1/0.46266666666;">
+		<div class="flex flex-col h-full p-8">
+			<p class="dark:text-slate-300 text-black text-base font-semibold pb-2">Story Title</p>
+			<input v-model="roomTopicName" text="text" class="w-80 bg-gray-300 font-normal dark:bg-gray-700 dark:text-gray-50 p-4 rounded-md text-black"
 				placeholder="Enter Story Name">
-			<div class="flex dark:bg-gray-700 bg-gray-300 mt-5 w-full rounded-md flex-col p-4 pb-8">
+			<div class="flex dark:bg-gray-700 bg-gray-300 mt-5 w-80 rounded-md flex-col p-4 pb-8">
 				<p class="text-white-900 font-bold text-xl">Nickname</p>
 				<input v-model="name" text="text" class="text-slate-800 font-normal leading-normal p-2 rounded-md"
 					placeholder="Enter your name">
 			</div>
 		</div>
-		<div class="flex flex-col h-full">
-			<div class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6 w-full">
+		<div class="flex flex-col h-full p-8">
+			<div class="dark:bg-gray-700 bg-gray-300 rounded-md p-4 mt-6 w-fit">
 				<div class="flex justify-between">
 					<h1 class="text-white-900 text-xl font-bold">Timed Room</h1>
 					<Toggle v-model="timerEnabled" />
@@ -116,4 +117,4 @@ watch(name, ()=>{
 			</div>
 		</div>
 	</div>
-</template>
+	</template>

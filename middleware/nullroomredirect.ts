@@ -1,3 +1,17 @@
+async function roomExists(to:any, from:any){
+	if (to.query.id != undefined) {
+		const config = useRuntimeConfig()
+
+		const { data: room } = await useFetch("api/room/getRoomById?id=" + to.query.id, {baseURL: config.public.baseUrl})
+		if (typeof room.value != typeof "")
+		{
+			return navigateTo("/join?id="+to.query.id)
+		}
+	}
+	return navigateTo("/error?errormsg=Sorry, that room does not exist.")
+}
+
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	const id = useCookie("_id")
 	const config = useRuntimeConfig()
@@ -12,26 +26,17 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		if (user != undefined){
 			//@ts-ignore
 			if (user.currentRoom != Number.parseInt(to.query.id as string)){
-				return navigateTo("/join?id="+to.query.id)
+				return roomExists(to,from)
 			}
 		} else {
-			return navigateTo("/join?id="+to.query.id)
+			return roomExists(to,from)
 		}
 	} catch {
-		return navigateTo("/join?id="+to.query.id)
+		return roomExists(to,from)
 	}
 	} else {
-		return navigateTo("/join?id="+to.query.id)
+		return roomExists(to,from)
 	}
 
-	if (to.query.id != undefined) {
-		const config = useRuntimeConfig()
-
-		const { data: room } = await useFetch("api/room/getRoomById?id=" + to.query.id, {baseURL: config.public.baseUrl})
-		if (typeof room.value != typeof "")
-		{
-			return;
-		}
-	}
-	return navigateTo("/error?errormsg=Sorry, that room does not exist.")
+	
 })
