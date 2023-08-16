@@ -25,11 +25,6 @@ if (props.member.permissions.host) {
 if (props.member.anonymous && props.member.allowanon){
 	name.value = "Anonymous"
 }
-if (props.member.focused){
-	focusedIcon.value = "😎"
-} else {
-	focusedIcon.value = "😵"
-}
 
 switch (props.member.userVotingStatus) {
 	case 0:
@@ -43,9 +38,17 @@ switch (props.member.userVotingStatus) {
 		break;
 }
 if (props.member.online) {
-	onlineIcon.value = "👨‍💻" //ON LINE
+	onlineIcon.value = "🌎" //ON LINE
 } else {
-	onlineIcon.value = "💻" //OFF LINE
+	onlineIcon.value = "🌐" //OFF LINE
+}
+if (props.member.focused){
+		focusedIcon.value = "😎"
+} else {
+	focusedIcon.value = "💤"
+}
+if (!props.member.online){
+	focusedIcon.value = ""
 }
 
 watch(props, () => {
@@ -78,16 +81,19 @@ watch(props, () => {
 	}
 	
 	if (props.member.online) {
-		onlineIcon.value = "👨‍💻" //ON LINE
+		onlineIcon.value = "🌎" //ON LINE
 	} else {
-		onlineIcon.value = "💻" //OFF LINE
+		onlineIcon.value = "🌐" //OFF LINE
 	}
 	name.value = props.member.displayName
 
 	if (props.member.focused){
 		focusedIcon.value = "😎"
 	} else {
-		focusedIcon.value = "😵"
+		focusedIcon.value = "💤"
+	}
+	if (!props.member.online){
+		focusedIcon.value = ""
 	}
 
 	if (props.member.anonymous && props.member.allowAnon){
@@ -110,7 +116,7 @@ watch(props, () => {
 					<div class="" v-show="!props.member.permissions.host"></div>
 					<div class=""> {{ focusedIcon }}</div>
 					<div class=""> {{ onlineIcon }}</div>
-					<div class="w-[30px]"> {{ statusIcon }}</div>
+					<div class="w-[30px] text-center"> {{ statusIcon }}</div>
 				</div>
 			</div>
 		</div>

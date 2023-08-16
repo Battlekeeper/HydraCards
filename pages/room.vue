@@ -201,7 +201,6 @@ function socketSetCoffeeBreak(enabled:boolean){
 	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
 }
 function mounted(){
-	mounted.value = true
 	socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"))
 	socket.on("connect_error", (err) => {
 		console.log(`connect_error due to ${err.message}`);
@@ -352,9 +351,10 @@ function updateColors() {
 			chart = doughnut.value.chart
 		}
 	}
-
-	chart.data.datasets[0].backgroundColor = backgroundColor;
-	chart.update()
+	if (chart){
+		chart.data.datasets[0].backgroundColor = backgroundColor;
+		chart.update()
+	}
 }
 watch(colormode, updateColors)
 </script>
@@ -582,14 +582,16 @@ watch(colormode, updateColors)
 					<button @click="selectedChart = 'donut'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
 					<button @click="selectedChart = 'bar'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
 				</div>
-				<div v-if="selectedChart == 'pie'" class="flex justify-center">
-					<Pie ref="pie" :data="pieData" :options="chartOptions" />
-				</div>
-				<div v-if="selectedChart == 'donut'" class="flex justify-center">
-					<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
-				</div>
-				<div v-if="selectedChart == 'bar'" class="flex justify-center">
-					<Bar ref="bar" :data="pieData" :options="chartOptions" />
+				<div class="flex justify-center">
+					<div v-if="selectedChart == 'pie'" class="flex justify-center w-[300px] sm:w-[400px]">
+						<Pie ref="pie" :data="pieData" :options="chartOptions" />
+					</div>
+					<div v-if="selectedChart == 'donut'" class="flex justify-center">
+						<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+					</div>
+					<div v-if="selectedChart == 'bar'" class="flex justify-center">
+						<Bar ref="bar" :data="pieData" :options="chartOptions" />
+					</div>
 				</div>
 		</div>
 		<div class="flex flex-col gap-5 xl:w-1/2">

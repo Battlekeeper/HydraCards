@@ -33,7 +33,7 @@ watch(displayName, ()=>{
 </script>
 
 <template>
-	<div class="flex flex-col bg-gray-300 dark:bg-gray-700 rounded-xl gap-4">
+	<div class="flex flex-col bg-gray-300 dark:bg-gray-700 rounded-xl">
 		<button @click="$emit('cancel');" class="flex justify-end text-black dark:text-white pr-4 pt-4">X</button>
 		<div v-if="currentUser.permissions.host && props.member.id != currentUser.id" class="pb-10 pl-10 pr-10">
 			<div class="flex flex-row pb-2">
@@ -55,7 +55,7 @@ watch(displayName, ()=>{
 				class="w-80 mt-4 mr-2 bg-white dark:bg-gray-300 font-normal p-2 rounded-md text-black"
 				placeholder="Enter Your Name">
 			<button @click="apiSetDisplayName()"
-			class="bg-transparent text-blue-800 dark:text-orange-500 p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium">Set
+			class="w-fit h-fit bg-transparent text-blue-800 dark:text-orange-500 px-2 py-2 mt-4 flex self-center rounded-md border border-blue-800 dark:border-orange-500 font-medium">Set
 			Name</button>
 	</div>
 </div></template>
