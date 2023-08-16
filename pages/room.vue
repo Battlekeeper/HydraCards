@@ -299,6 +299,9 @@ function mounted(){
 				}
 			})
 		}
+		nextTick(()=>{
+			updateColors()
+		})
 	})
 	socket.on("kick", (id:string) => {
 		if (id == currentUser.value.id){
@@ -356,6 +359,7 @@ function updateColors() {
 		}
 	}
 	if (chart){
+		pieData.value.datasets[0].backgroundColor = backgroundColor
 		chart.data.datasets[0].backgroundColor = backgroundColor;
 		chart.update()
 	}
