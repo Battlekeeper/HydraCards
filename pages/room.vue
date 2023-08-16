@@ -295,6 +295,7 @@ function mounted(){
 				selectedCard.value = document.getElementById(lastCard.value)
 				if (selectedCard.value){
 					selectedCard.value.classList.replace("bg-gray-300","bg-blue-800")
+					selectedCard.value.classList.replace("text-black", "text-gray-300")
 					selectedCard.value.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
 				}
 			})
