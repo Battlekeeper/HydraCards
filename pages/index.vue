@@ -20,7 +20,7 @@ onMounted(() => {
 <template>
 	<permenantHeader></permenantHeader>
 
-	<div class="grid grid-cols-1 xl:grid-cols-2 grid-rows-1 pl-[50px] md:pl-[150px] md:pr-[150px] mt-8 xl:mt-16">
+	<div class="grid grid-cols-1 xl:grid-cols-2 grid-rows-1 md:pl-[150px] md:pr-[150px] mt-8 xl:mt-16">
 		<div class="flex flex-col justify-center justify-self-center">
 			<div class="w-full 2xl:w-2/3 text-3xl lg:text-5xl xl:text-6xl pb-4 font-bold text-center xl:text-left">Agile Planning Poker for badass agile teams.</div>
 			<div class="w-full 2xl:w-2/3 text-md pb-8 font-medium leading-[30px] text-center xl:text-left">We’re different. Hydracards is the best choice
