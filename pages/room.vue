@@ -560,7 +560,7 @@ watch(colormode, updateColors)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :room-status=currentRoom.status :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
@@ -611,7 +611,7 @@ watch(colormode, updateColors)
 						<p class="font-bold text-black dark:text-gray-300">Status</p>
 					</div>
 					<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-						<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
+						<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member :room-status=currentRoom.status></roomMemberDisplayItem>
 					</div>
 				</div>
 			</div>
