@@ -132,17 +132,19 @@ function socketSetName() {
 function submitVote(vote: string, event:any) {
 	var element = event.target
 
-	if (element.localName == 'p'){
+	if (element.localName == 'p' || element.localName == "svg"){
 		element = element.parentElement
 	}
 
 	if (selectedCard.value != undefined){
 		selectedCard.value.classList.replace("bg-blue-800","bg-gray-300")
+		selectedCard.value.classList.replace("text-gray-300", "text-black")
 		selectedCard.value.classList.replace("dark:bg-orange-500","dark:bg-gray-700")
 	}
 
 	socket.emit("submitVote", Number.parseInt(roomId), userId.value, vote)
 	element.classList.replace("bg-gray-300","bg-blue-800")
+	element.classList.replace("text-black", "text-gray-300")
 	element.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
 	selectedCard.value = element
 	lastCard.value = vote
@@ -201,7 +203,6 @@ function socketSetCoffeeBreak(enabled:boolean){
 	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
 }
 function mounted(){
-	mounted.value = true
 	socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"))
 	socket.on("connect_error", (err) => {
 		console.log(`connect_error due to ${err.message}`);
@@ -292,10 +293,16 @@ function mounted(){
 		if (currentRoom.value.revote && oldRoom.status != currentRoom.value.status && currentRoom.value.status != HCRoomStatus.coffeebreak && lastCard.value != "") {
 			nextTick(()=>{
 				selectedCard.value = document.getElementById(lastCard.value)
-				selectedCard.value.classList.replace("bg-gray-300","bg-blue-800")
-				selectedCard.value.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
+				if (selectedCard.value){
+					selectedCard.value.classList.replace("bg-gray-300","bg-blue-800")
+					selectedCard.value.classList.replace("text-black", "text-gray-300")
+					selectedCard.value.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
+				}
 			})
 		}
+		nextTick(()=>{
+			updateColors()
+		})
 	})
 	socket.on("kick", (id:string) => {
 		if (id == currentUser.value.id){
@@ -352,9 +359,11 @@ function updateColors() {
 			chart = doughnut.value.chart
 		}
 	}
-
-	chart.data.datasets[0].backgroundColor = backgroundColor;
-	chart.update()
+	if (chart){
+		pieData.value.datasets[0].backgroundColor = backgroundColor
+		chart.data.datasets[0].backgroundColor = backgroundColor;
+		chart.update()
+	}
 }
 watch(colormode, updateColors)
 </script>
@@ -387,40 +396,40 @@ watch(colormode, updateColors)
 				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md shadow hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white border border-blue-800 dark:border-orange-500">Set Story Name</button>
 			</div>
 			<div class="grid grid-cols-4 grid-rows-3 gap-4 sm:grid-cols-7 sm:grid-rows-2">
-					<div :id="cards[0]" @click="submitVote('0', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[0]" @click="submitVote('0', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl select-none">0</p>
 					</div>
-					<div :id="cards[1]" @click="submitVote('1/2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[1]" @click="submitVote('1/2', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">1/2</p>
 					</div>
-					<div :id="cards[2]" @click="submitVote('1', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[2]" @click="submitVote('1', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">1</p>
 					</div>
-					<div :id="cards[3]" @click="submitVote('2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[3]" @click="submitVote('2', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">2</p>
 					</div>
-					<div :id="cards[4]" @click="submitVote('3', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+					<div :id="cards[4]" @click="submitVote('3', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">3</p>
 					</div>
-					<div :id="cards[5]" @click="submitVote('5', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+					<div :id="cards[5]" @click="submitVote('5', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">5</p>
 					</div>
-					<div :id="cards[6]" @click="submitVote('8', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[6]" @click="submitVote('8', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">8</p>
 					</div>
-					<div :id="cards[7]" @click="submitVote('13', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[7]" @click="submitVote('13', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">13</p>
 					</div>
-					<div :id="cards[8]" @click="submitVote('20', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[8]" @click="submitVote('20', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">20</p>
 					</div>
-					<div :id="cards[9]" @click="submitVote('40', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[9]" @click="submitVote('40', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">40</p>
 					</div>
-					<div :id="cards[10]" @click="submitVote('100', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[10]" @click="submitVote('100', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">100</p>
 					</div>
-					<div :id="cards[11]" @click="submitVote('?', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+					<div :id="cards[11]" @click="submitVote('?', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl">?</p>
 					</div>
 					<div :id="cards[12]" @click="socketSetCoffeeBreak(true)" class="flex justify-center dark:hover:bg-orange-500 hover:bg-blue-800 bg-gray-300 dark:bg-gray-700 rounded-full w-2/3 sm:w-full col-span-4 sm:col-span-2">
@@ -451,7 +460,7 @@ watch(colormode, updateColors)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :room-status=currentRoom.status :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
@@ -487,48 +496,48 @@ watch(colormode, updateColors)
 				</button>
 			</div>
 			<div class="grid grid-cols-4 grid-rows-3 xl:grid-cols-5 xl:grid-rows-3 lg:grid-rows-4 lg:grid-cols-4 lg:gap-10 gap-4 sm:grid-cols-7 sm:grid-rows-2">
-				<div :id="cards[0]" @click="submitVote('0', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[0]" @click="submitVote('0', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl select-none">0</p>
 				</div>
-				<div :id="cards[1]" @click="submitVote('1/2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[1]" @click="submitVote('1/2', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">1/2</p>
 				</div>
-				<div :id="cards[2]" @click="submitVote('1', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[2]" @click="submitVote('1', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">1</p>
 				</div>
-				<div :id="cards[3]" @click="submitVote('2', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[3]" @click="submitVote('2', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">2</p>
 				</div>
-				<div :id="cards[4]" @click="submitVote('3', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+				<div :id="cards[4]" @click="submitVote('3', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">3</p>
 				</div>
-				<div :id="cards[5]" @click="submitVote('5', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
+				<div :id="cards[5]" @click="submitVote('5', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center"  style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">5</p>
 				</div>
-				<div :id="cards[6]" @click="submitVote('8', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[6]" @click="submitVote('8', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">8</p>
 				</div>
-				<div :id="cards[7]" @click="submitVote('13', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[7]" @click="submitVote('13', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">13</p>
 				</div>
-				<div :id="cards[8]" @click="submitVote('20', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[8]" @click="submitVote('20', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">20</p>
 				</div>
-				<div :id="cards[9]" @click="submitVote('40', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[9]" @click="submitVote('40', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">40</p>
 				</div>
-				<div :id="cards[10]" @click="submitVote('100', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[10]" @click="submitVote('100', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">100</p>
 				</div>
-				<div :id="cards[11]" @click="submitVote('?', $event)" class="dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
+				<div :id="cards[11]" @click="submitVote('?', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 					<p class="font-medium text-xl">?</p>
 				</div>
 				<div class="align-items xl:col-span-1 xl:w-[102px] xl:h-[171px] lg:col-span-4 col-span-2 flex justify-center">
-					<div :id="cards[12]"  class="flex dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center justify-center items-center">
-						<svg @click="submitVote('Coffee Break', $event)" v-if="colormode.preference == 'dark'" class="w-1/4" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<div @click="submitVote('Coffee Break', $event)" :id="cards[12]"  class="flex dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer  bg-gray-300 dark:bg-gray-700 rounded-full lg:w-[102px] lg:h-[171px] lg:rounded-lg text-center justify-center items-center">
+						<svg v-if="colormode.preference == 'dark'" class="w-1/4" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M9.35565 17.7754H13.5137C14.8922 17.7754 16.2142 17.2246 17.1889 16.2441C18.1636 15.2637 18.7112 13.9339 18.7112 12.5473V11.5017H19.7507C20.5778 11.5017 21.371 11.1712 21.9559 10.5829C22.5407 9.99465 22.8692 9.19678 22.8692 8.36483C22.8692 7.53288 22.5407 6.73501 21.9559 6.14673C21.371 5.55845 20.5778 5.22796 19.7507 5.22796H18.7112V4.18234C18.7112 3.90502 18.6017 3.63907 18.4068 3.44297C18.2118 3.24688 17.9474 3.13672 17.6717 3.13672H5.19762C4.92193 3.13672 4.65753 3.24688 4.46258 3.44297C4.26764 3.63907 4.15812 3.90502 4.15812 4.18234V12.5473C4.15812 13.9339 4.70571 15.2637 5.68044 16.2441C6.65517 17.2246 7.97718 17.7754 9.35565 17.7754ZM18.7112 7.31921H19.7507C20.0264 7.31921 20.2908 7.42937 20.4858 7.62546C20.6807 7.82155 20.7902 8.08751 20.7902 8.36483C20.7902 8.64214 20.6807 8.9081 20.4858 9.10419C20.2908 9.30029 20.0264 9.41045 19.7507 9.41045H18.7112V7.31921ZM6.23713 5.22796H16.6322V12.5473C16.6322 13.3793 16.3036 14.1771 15.7188 14.7654C15.134 15.3537 14.3408 15.6842 13.5137 15.6842H9.35565C8.52857 15.6842 7.73536 15.3537 7.15052 14.7654C6.56569 14.1771 6.23713 13.3793 6.23713 12.5473V5.22796ZM21.8297 19.8667H3.11861C2.84291 19.8667 2.57851 19.9768 2.38357 20.1729C2.18862 20.369 2.0791 20.635 2.0791 20.9123C2.0791 21.1896 2.18862 21.4556 2.38357 21.6517C2.57851 21.8477 2.84291 21.9579 3.11861 21.9579H21.8297C22.1054 21.9579 22.3698 21.8477 22.5648 21.6517C22.7597 21.4556 22.8692 21.1896 22.8692 20.9123C22.8692 20.635 22.7597 20.369 22.5648 20.1729C22.3698 19.9768 22.1054 19.8667 21.8297 19.8667Z" fill="#F7F8F9"/>
 						</svg>
-						<svg @click="submitVote('Coffee Break', $event)" v-else class="w-1/4" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<svg v-else class="w-1/4" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path d="M9.35565 17.7754H13.5137C14.8922 17.7754 16.2142 17.2246 17.1889 16.2441C18.1636 15.2637 18.7112 13.9339 18.7112 12.5473V11.5017H19.7507C20.5778 11.5017 21.371 11.1712 21.9559 10.5829C22.5407 9.99465 22.8692 9.19678 22.8692 8.36483C22.8692 7.53288 22.5407 6.73501 21.9559 6.14673C21.371 5.55845 20.5778 5.22796 19.7507 5.22796H18.7112V4.18234C18.7112 3.90502 18.6017 3.63907 18.4068 3.44297C18.2118 3.24688 17.9474 3.13672 17.6717 3.13672H5.19762C4.92193 3.13672 4.65753 3.24688 4.46258 3.44297C4.26764 3.63907 4.15812 3.90502 4.15812 4.18234V12.5473C4.15812 13.9339 4.70571 15.2637 5.68044 16.2441C6.65517 17.2246 7.97718 17.7754 9.35565 17.7754ZM18.7112 7.31921H19.7507C20.0264 7.31921 20.2908 7.42937 20.4858 7.62546C20.6807 7.82155 20.7902 8.08751 20.7902 8.36483C20.7902 8.64214 20.6807 8.9081 20.4858 9.10419C20.2908 9.30029 20.0264 9.41045 19.7507 9.41045H18.7112V7.31921ZM6.23713 5.22796H16.6322V12.5473C16.6322 13.3793 16.3036 14.1771 15.7188 14.7654C15.134 15.3537 14.3408 15.6842 13.5137 15.6842H9.35565C8.52857 15.6842 7.73536 15.3537 7.15052 14.7654C6.56569 14.1771 6.23713 13.3793 6.23713 12.5473V5.22796ZM21.8297 19.8667H3.11861C2.84291 19.8667 2.57851 19.9768 2.38357 20.1729C2.18862 20.369 2.0791 20.635 2.0791 20.9123C2.0791 21.1896 2.18862 21.4556 2.38357 21.6517C2.57851 21.8477 2.84291 21.9579 3.11861 21.9579H21.8297C22.1054 21.9579 22.3698 21.8477 22.5648 21.6517C22.7597 21.4556 22.8692 21.1896 22.8692 20.9123C22.8692 20.635 22.7597 20.369 22.5648 20.1729C22.3698 19.9768 22.1054 19.8667 21.8297 19.8667Z" fill="#000000"/>
 						</svg>
 					</div>
@@ -551,7 +560,7 @@ watch(colormode, updateColors)
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
 				</div>
 				<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
+					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :room-status=currentRoom.status :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
@@ -582,14 +591,16 @@ watch(colormode, updateColors)
 					<button @click="selectedChart = 'donut'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Donut Chart</button>
 					<button @click="selectedChart = 'bar'; nextTick(updateColors)" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Bar Chart</button>
 				</div>
-				<div v-if="selectedChart == 'pie'" class="flex justify-center">
-					<Pie ref="pie" :data="pieData" :options="chartOptions" />
-				</div>
-				<div v-if="selectedChart == 'donut'" class="flex justify-center">
-					<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
-				</div>
-				<div v-if="selectedChart == 'bar'" class="flex justify-center">
-					<Bar ref="bar" :data="pieData" :options="chartOptions" />
+				<div class="flex justify-center">
+					<div v-if="selectedChart == 'pie'" class="flex justify-center w-[300px] sm:w-[400px]">
+						<Pie ref="pie" :data="pieData" :options="chartOptions" />
+					</div>
+					<div v-if="selectedChart == 'donut'" class="flex justify-center">
+						<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
+					</div>
+					<div v-if="selectedChart == 'bar'" class="flex justify-center">
+						<Bar ref="bar" :data="pieData" :options="chartOptions" />
+					</div>
 				</div>
 		</div>
 		<div class="flex flex-col gap-5 xl:w-1/2">
@@ -600,7 +611,7 @@ watch(colormode, updateColors)
 						<p class="font-bold text-black dark:text-gray-300">Status</p>
 					</div>
 					<div class="border-slate-400 border-t-2 mt-5 pt-6 pb-6 flex flex-col gap-2">
-						<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member></roomMemberDisplayItem>
+						<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :member=member :room-status=currentRoom.status></roomMemberDisplayItem>
 					</div>
 				</div>
 			</div>

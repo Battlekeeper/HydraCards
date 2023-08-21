@@ -20,10 +20,10 @@ onMounted(() => {
 <template>
 	<permenantHeader></permenantHeader>
 
-	<div class="grid grid-cols-1 xl:grid-cols-2 grid-rows-1 pl-[50px] md:pl-[150px] md:pr-[150px] mt-8 xl:mt-16">
+	<div class="grid grid-cols-1 xl:grid-cols-2 grid-rows-1 md:pl-[150px] md:pr-[150px] mt-8 xl:mt-16">
 		<div class="flex flex-col justify-center justify-self-center">
-			<div class="w-2/3 md:w-96 lg:w-8/12 xl:w-5/6 text-3xl lg:text-5xl xl:text-6xl pb-4 font-bold">Agile Planning Poker for badass agile teams.</div>
-			<div class="w-9/12 md:w-full text-md xl:w-2/3 lg:text-lg pb-8 font-medium leading-[30px]">We’re different. Hydracards is the best choice
+			<div class="w-full 2xl:w-2/3 text-3xl lg:text-5xl xl:text-6xl pb-4 font-bold text-center xl:text-left">Agile Planning Poker for badass agile teams.</div>
+			<div class="w-full 2xl:w-2/3 text-md pb-8 font-medium leading-[30px] text-center xl:text-left">We’re different. Hydracards is the best choice
 				for the better and badass teams.</div>
 			<a href="/create"
 				class="max-xl:hidden rounded-md place-items-end text-lg font-medium leading-7 text-white dark:text-gray-100 w-[171px] h-14 px-7 py-4 bg-blue-800 dark:bg-HCOrange dark:hover:bg-white dark:hover:text-orange-500 hover:bg-indigo-200 hover:text-blue-800 shadow justify-center items-center gap-2 flex">Get Started</a>
