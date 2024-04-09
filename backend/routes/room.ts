@@ -4,6 +4,7 @@ import HCUser from "../models/HCUser"
 import { HCVotingStatus } from "../../backend/models/HCVotingStatus"
 import * as papa from "papaparse"
 import { TSMap } from "typescript-map";
+import HistoricalVote from "backend/models/HistoricalVote"
 
 const router = express.Router()
 
@@ -111,28 +112,45 @@ router.get("/allowAnonymous", (req, res) => {
 
 
 router.get("/csv", (req, res) => {
+	
 	var id: string = req.query.id as string
 	var topic: string = req.query.topic as string
 	var room: HCRoom = HCRoom.get(Number.parseInt(id))
-	if (room != undefined) {
 
-		var data: Array<Object> = new Array<Object> 
-		room.history[Number.parseInt(topic)].Revotes.forEach((map:TSMap<string, number>, index:number) => {
-			Object.keys(map).forEach((key:string) => {
-				var voteObj = {
-					revoteNumber: index,
-					name: HCUser.get(key as string).displayName,
-					vote: Object.values(map)[Object.keys(map).findIndex(k => k==key)]
-				}
-				data.push(voteObj)
-			})
+	function mapRevotes(map: TSMap<string, number>, index: number, topicName: string) {
+		Object.keys(map).forEach((key: string) => {
+			var voteObj = {
+				topic: topicName,
+				revoteNumber: index,
+				name: HCUser.get(key as string).displayName,
+				vote: Object.values(map)[Object.keys(map).findIndex(k => k==key)]
+			}
+			data.push(voteObj)
 		})
-
-		const csv = papa.unparse(data, {
-			header: true
-		});
-		res.write(csv)
 	}
+	
+	if (room == undefined) {
+		res.send()
+		return
+	}
+
+	var data: Array<Object> = new Array<Object> 
+	
+	if (topic != undefined) {
+		let vote: HistoricalVote = room.history[Number.parseInt(topic)]
+		vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName))
+	} 
+	else {
+		room.history.forEach((vote: HistoricalVote) => {
+			vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName))
+		})
+	}
+
+	const csv = papa.unparse(data, {
+		header: true
+	});
+	res.write(csv)
+
 	res.send()
 })
 

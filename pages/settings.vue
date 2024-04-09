@@ -64,12 +64,37 @@ watch(anonymousMode, async ()=>{
 		enabled: anonymousMode.value
 	}, credentials: "include", baseURL: config.public.baseUrl })
 })
-async function exportStory(topicIndex: number, topicName: string){
-	var response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
+
+async function exportStory(topicIndex: number, topicName: string): Promise<void> {
+	var response = await useFetch(`api/room/csv`, { 
+		baseURL: config.public.baseUrl, 
+		query: { 
+			id: currentRoom.value.id, 
+			topic: topicIndex, 
+		} 
+	})
+
 	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
 	const link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);
 	link.download = topicName;
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+}
+
+async function exportAllStories() {
+	var response = await useFetch(`api/room/csv`, { 
+		baseURL: config.public.baseUrl, 
+		query: { 
+			id: currentRoom.value.id, 
+		} 
+	})
+
+	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
+	const link = document.createElement('a');
+	link.href = URL.createObjectURL(blob);
+	link.download = `room_${currentRoom.value.id}`;
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
@@ -89,8 +114,8 @@ async function exportStory(topicIndex: number, topicName: string){
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Story Name</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Points</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow"># Of Voters</p>
-						<button class="hidden dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
-						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p>
+						<button @click="exportAllStories" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
+						<!-- <p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p> -->
 					</div>
 					<div class="border-gray-400 border-b-2"></div>
 					<div class="min-h-[48px]">
