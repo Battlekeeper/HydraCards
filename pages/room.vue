@@ -145,12 +145,15 @@ function submitVote(vote: string, event:any) {
 	lastCard.value = vote
 }
 function getRoomVotesMap(room: HCRoom) {
-	var votes: TSMap<string, number> = new TSMap<string, number>
+	var votes: TSMap<string, number> = new TSMap<string, number>()
 
 	if (!room) {
 		return votes
 	}
 	Object.values(room.votes).forEach((vote: number) => {
+		if (vote.toString() == '') {
+			return
+		}
 
 		var curr: number = votes.get(vote.toString())
 		if (curr == undefined) {
