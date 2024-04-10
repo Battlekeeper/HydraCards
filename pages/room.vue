@@ -12,18 +12,18 @@ import { TSMap } from "typescript-map"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
 //@ts-ignore
 import { Pie, Bar, Doughnut } from 'vue-chartjs'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 ChartJS.register(ArcElement, Tooltip, Legend)
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 
 const colormode = useColorMode()
 var backgroundColor = []
 
 if(colormode.preference == 'dark'){
-	backgroundColor = ['#FF7700', '#FF8955', '#FFA18D', '#DAF5F3','#7DE0DB','#33A6A0','#10605C','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
-
-	} else {
-		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
-	}
+	backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
+} else {
+	backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
+}
 
 const pieData = ref({
 	labels: [''],
@@ -31,14 +31,22 @@ const pieData = ref({
 		{
 			label: '',
 			backgroundColor: backgroundColor,
-			data: [1,1,1,1,1,1,1,1,1,1,1,1,1]
+			data: new Array<number>
 		}
 	]
 })
 
 const chartOptions = {
 	responsive: true,
-	maintainAspectRatio: true
+	maintainAspectRatio: true,
+	plugins: {
+		datalabels: {
+			color: '#FFFFFF',
+			font: {
+				size: 20 
+			},
+		}
+	},
 }
 
 
@@ -593,7 +601,7 @@ watch(colormode, updateColors)
 				</div>
 				<div class="flex justify-center">
 					<div v-if="selectedChart == 'pie'" class="flex justify-center w-[300px] sm:w-[400px]">
-						<Pie ref="pie" :data="pieData" :options="chartOptions" />
+						<Pie ref="pie" :data="pieData" :options="chartOptions"/>
 					</div>
 					<div v-if="selectedChart == 'donut'" class="flex justify-center">
 						<Doughnut ref="doughnut" v-if="selectedChart == 'donut'" :data="pieData" :options="chartOptions" />
