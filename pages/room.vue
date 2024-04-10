@@ -19,9 +19,9 @@ const colormode = useColorMode()
 var backgroundColor = []
 
 if(colormode.preference == 'dark'){
-		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
+	backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
 	} else {
-		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079','9E9E9E']
+		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
 	}
 
 const pieData = ref({
@@ -334,9 +334,9 @@ function updateColors() {
 	var backgroundColor = []
 
 	if(colormode.preference == 'dark'){
-		backgroundColor = ['#FFF0E9', '#FFCFB8', '#FFAD87', '#FF8C56','#F16523','#AD3B05','#8B2D00','#692200','#471700','#FBD89D','#F59E0B','#B87708','#784D05']
+		backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
 	} else {
-		backgroundColor = ['#E5ECFA','#BACCF3','#638DE3','#2255BE','#132E68','#0B1B3D','#76A8F9','#3B82F6','#3575DD','#2C62B9','#234E94','#1D4079','#9E9E9E']
+		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
 	}
 	var chart = undefined
 	if (pie.value != undefined){
