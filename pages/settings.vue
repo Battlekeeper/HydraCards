@@ -83,7 +83,15 @@ async function exportStory(topicIndex: number, topicName: string): Promise<void>
 	document.body.removeChild(link);
 }
 
+function isRoomHistoryEmpty(): boolean {
+	return currentRoom.value.history == undefined || currentRoom.value.history.length == 0 
+}
+
 async function exportAllStories() {
+	if (isRoomHistoryEmpty()) {
+		return;
+	}
+
 	var response = await useFetch(`api/room/csv`, { 
 		baseURL: config.public.baseUrl, 
 		query: { 
@@ -114,8 +122,8 @@ async function exportAllStories() {
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Story Name</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap">Points</p>
 						<p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow"># Of Voters</p>
-						<button @click="exportAllStories" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
-						<!-- <p class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p> -->
+						<button v-if="!isRoomHistoryEmpty()" @click="exportAllStories" class="dark:bg-orange-500 bg-blue-800 text-white dark:text-white p-2 rounded-md border border-blue-800 dark:border-orange-500 text-base font-medium w-[160px]">Export All To CSV</button>
+						<p v-if="isRoomHistoryEmpty()" class="font-semibold text-black dark:text-gray-400 whitespace-nowrap grow">Export</p>
 					</div>
 					<div class="border-gray-400 border-b-2"></div>
 					<div class="min-h-[48px]">
