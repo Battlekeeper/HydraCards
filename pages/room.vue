@@ -145,12 +145,15 @@ function submitVote(vote: string, event:any) {
 	lastCard.value = vote
 }
 function getRoomVotesMap(room: HCRoom) {
-	var votes: TSMap<string, number> = new TSMap<string, number>
+	var votes: TSMap<string, number> = new TSMap<string, number>()
 
 	if (!room) {
 		return votes
 	}
 	Object.values(room.votes).forEach((vote: number) => {
+		if (vote.toString() == '') {
+			return
+		}
 
 		var curr: number = votes.get(vote.toString())
 		if (curr == undefined) {
@@ -289,9 +292,9 @@ function mounted(){
 			nextTick(()=>{
 				selectedCard.value = document.getElementById(lastCard.value)
 				if (selectedCard.value){
-					selectedCard.value.classList.replace("bg-gray-300","bg-blue-800")
-					selectedCard.value.classList.replace("text-black", "text-gray-300")
-					selectedCard.value.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
+					selectedCard.value.classList.replace("bg-blue-800", "bg-gray-300")
+					selectedCard.value.classList.replace("text-gray-300", "text-black")
+					selectedCard.value.classList.replace("dark:bg-orange-500", "dark:bg-gray-700")
 				}
 			})
 		}
