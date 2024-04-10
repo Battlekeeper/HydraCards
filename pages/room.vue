@@ -19,7 +19,8 @@ const colormode = useColorMode()
 var backgroundColor = []
 
 if(colormode.preference == 'dark'){
-	backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
+	backgroundColor = ['#FF7700', '#FF8955', '#FFA18D', '#DAF5F3','#7DE0DB','#33A6A0','#10605C','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
+
 	} else {
 		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
 	}
@@ -337,7 +338,8 @@ function updateColors() {
 	var backgroundColor = []
 
 	if(colormode.preference == 'dark'){
-		backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
+		backgroundColor = ['#FF7700', '#FF8955', '#FFA18D', '#DAF5F3','#7DE0DB','#33A6A0','#10605C','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
+
 	} else {
 		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
 	}
