@@ -136,7 +136,7 @@ HCServer.io.on("connect", (socket) => {
 		}
 
 		room.counter.active = false
-		room.counter.count = 0
+		room.counter.count = room.counter.default
 
 		room.status = HCRoomStatus.voting
 		room.revote = revote

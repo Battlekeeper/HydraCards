@@ -36,7 +36,9 @@ currentRoom.value.history.forEach((historicalVote) => {
 stories.value.pop()
 
 const displayName = ref(currentUser.value.displayName)
-const timerEnabled =  ref(currentRoom.value.roomCounterEnabled)
+const timerEnabled = ref(currentRoom.value.roomCounterEnabled)
+const timerMinutes = ref(Math.floor(currentRoom.value.counter.default / 60))
+const timerSeconds = ref(currentRoom.value.counter.default % 60)
 
 const allowAnonymous = ref(currentRoom.value.allowAnonymousMode)
 const anonymousMode = ref(currentUser.value.anonymous)
@@ -44,13 +46,18 @@ const anonymousMode = ref(currentUser.value.anonymous)
 async function apiSetDisplayName() {
 	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
 }
-
-watch(timerEnabled, async ()=>{
+async function apiSetTimer() {
 	await useFetch(`api/room/setTimerActive` , { query:{
 		id: currentRoom.value.id,
-		enabled: timerEnabled.value
+		enabled: timerEnabled.value,
+		count: timerMinutes.value * 60 + timerSeconds.value
 	}, credentials: "include", baseURL: config.public.baseUrl })
-})
+}
+
+watch(timerEnabled, apiSetTimer)
+watch(timerMinutes, apiSetTimer)
+watch(timerSeconds, apiSetTimer)
+
 watch(allowAnonymous, async ()=>{
 	currentRoom.value.allowAnonymousMode = allowAnonymous.value
 	await useFetch(`api/room/allowAnonymous` , { query:{
@@ -143,7 +150,17 @@ async function exportAllStories() {
 						<Toggle v-model="timerEnabled" class="mr-4"/>
 					</div>
 					<p class="grow-1 text-black dark:text-slate-400 text-base font-medium">Change whether players must submit their
-						answers by a certain time.</p>
+						answers by a certain time.
+					</p>
+					<div class="gap-8 flex justify-center pt-2">
+						<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">MINS</div>
+						<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">SECS</div>
+					</div>
+					<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex justify-center pt-2 pb-2">
+						<input v-model="timerMinutes" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
+						<p class="w-fit h-fit text-[30px] pl-2 pr-2">:</p>
+						<input v-model="timerSeconds" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
+					</div>
 				</div>
                 <div v-if="currentUser.permissions.host" class="dark:bg-gray-700 max-sm:w-3/4 bg-gray-300 rounded-md p-4 w-full" style="aspect-ratio: 1.5/0.39944134078;">
 					<div class="flex justify-between">

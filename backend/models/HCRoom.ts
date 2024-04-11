@@ -108,7 +108,7 @@ export default class HCRoom {
 		}
 	}
 	public async stopCounter(){
-		this.counter.count = 0
+		this.counter.count = this.counter.default
 		this.counter.active = false
 	}
 	public async kickuser(user:HCUser){

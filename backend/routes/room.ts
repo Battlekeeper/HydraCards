@@ -21,7 +21,8 @@ router.get("/createroom", (req, res) => {
 	user!.permissions.host = true
 	room.addMember(user!.id)
 	room.topicName = req.query.topicName as string
-	room.counter.count = Number.parseInt(req.query.timer as string)
+	room.counter.default = Number.parseInt(req.query.timer as string)
+	room.counter.count = room.counter.default
 	if (req.query.timerEnabled as string == "true" || req.query.timerEnabled as string == "True"){
 		room.roomCounterEnabled = true
 	} else {
@@ -84,9 +85,12 @@ router.get("/history", (req, res) => {
 
 router.get("/setTimerActive", (req, res) => {
 	var id: string = req.query.id as string
+	var count: string = req.query.count as string
 	var enabled:string = req.query.enabled as string
 	var room: HCRoom = HCRoom.get(Number.parseInt(id))
 	if (room != undefined) {
+		room.counter.default = Number.parseInt(count)
+		room.counter.count = room.counter.default
 		if (enabled == "true"){
 			room.roomCounterEnabled = true
 		} else {
