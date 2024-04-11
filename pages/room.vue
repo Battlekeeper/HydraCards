@@ -178,8 +178,8 @@ function socketSetTopicName() {
 function socketStartCount() {
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
 }
-function socketStopCount() {
-	socket.emit("stopCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
+function socketCancelCount() {
+	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
 }
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
@@ -472,8 +472,14 @@ watch(colormode, updateColors)
 					</div>
 				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Start
 					Timer</button>
-					<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Cancel
+					<button @click="socketCancelCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Cancel
 					Timer</button>
+					<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Pause
+					Timer</button>
+
+
+
+
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
 				<div class="flex justify-between pt-5 pl-16 pr-16">

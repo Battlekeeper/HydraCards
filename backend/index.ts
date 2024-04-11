@@ -220,6 +220,17 @@ HCServer.io.on("connect", (socket) => {
 		}
 
 	})
+	socket.on("cancelCount",(roomId:number, userId:string, count:number) => {
+		var user:HCUser = HCUser.get(userId);
+		var room:HCRoom = HCRoom.get(roomId)
+		
+		if (typeof user !== typeof undefined && room !== undefined){
+			if (user.permissions.host){
+				room.cancelCounter()
+				room.emitRoomStateUpdate()
+			}
+		}
+	})
 	socket.on("stopCount",(roomId:number, userId:string, count:number) => {
 		var user:HCUser = HCUser.get(userId);
 		var room:HCRoom = HCRoom.get(roomId)

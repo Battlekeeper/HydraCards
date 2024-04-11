@@ -108,6 +108,10 @@ export default class HCRoom {
 			this.emitRoomStateUpdate()
 		}
 	}
+	public async cancelCounter(){
+		this.counter.active = false
+		this.counter.count = this.counter.default
+	}
 	public async stopCounter(){
 		this.counter.active = false
 		this.counter.count = this.counter.default
