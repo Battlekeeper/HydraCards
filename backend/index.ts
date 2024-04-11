@@ -175,8 +175,10 @@ HCServer.io.on("connect", (socket) => {
 
 		if (enabled){
 			room.status = HCRoomStatus.coffeebreak
+			room.counter.active = false
 		} else {
 			room.status = HCRoomStatus.voting
+			room.startCounter(room.counter.count)
 		}
 		room.emitRoomStateUpdate()
 	})
