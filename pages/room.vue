@@ -179,6 +179,9 @@ function socketSetTopicName() {
 function socketStartCount() {
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
 }
+function socketStopCount() {
+	socket.emit("stopCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
+}
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
 	const downloadLink = document.createElement('a');
@@ -407,6 +410,11 @@ watch(colormode, updateColors)
 				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
 				<button v-if="currentRoom.topicName != roomTopicName" @click="socketSetTopicName()" class="p-3 text-blue-800 dark:text-orange-500 text-base font-small rounded-md shadow hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white border border-blue-800 dark:border-orange-500">Set Story Name</button>
 			</div>
+			
+
+
+
+
 			<div class="grid grid-cols-4 grid-rows-3 gap-4 sm:grid-cols-7 sm:grid-rows-2">
 					<div :id="cards[0]" @click="submitVote('0', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
 						<p class="font-medium text-xl select-none">0</p>
@@ -464,6 +472,8 @@ watch(colormode, updateColors)
 							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 					</div>
 				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Start
+					Timer</button>
+					<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">Stop
 					Timer</button>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">

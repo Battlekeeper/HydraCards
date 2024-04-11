@@ -218,6 +218,18 @@ HCServer.io.on("connect", (socket) => {
 				room.emitRoomStateUpdate()
 			}
 		}
+
+	})
+	socket.on("stopCount",(roomId:number, userId:string, count:number) => {
+		var user:HCUser = HCUser.get(userId);
+		var room:HCRoom = HCRoom.get(roomId)
+		
+		if (typeof user !== typeof undefined && room !== undefined){
+			if (user.permissions.host){
+				room.stopCounter()
+				room.emitRoomStateUpdate()
+			}
+		}
 	})
 	socket.on("onlinePing", (userId:string, focused:boolean) => {
 		var user:HCUser = HCUser.get(userId)
