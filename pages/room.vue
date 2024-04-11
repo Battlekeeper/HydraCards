@@ -29,25 +29,27 @@ const pieData = ref({
 	labels: [''],
 	datasets: [
 		{
-			label: '',
+			label: 'count',
 			backgroundColor: backgroundColor,
-			data: new Array<number>
+			data: new Array<number>,
 		}
-	]
+	],
 })
 
-const chartOptions = {
+const chartOptions = ref({
 	responsive: true,
 	maintainAspectRatio: true,
+	color: '#FFFFFF',
 	plugins: {
 		datalabels: {
 			color: '#FFFFFF',
 			font: {
-				size: 20 
+				size: 30, 
 			},
-		}
+			formatter: (val: any, ctx: any) => ctx.chart.data.labels[ctx.dataIndex],
+		},
 	},
-}
+})
 
 
 const config = useRuntimeConfig()
@@ -76,8 +78,6 @@ const pie = ref()
 const bar = ref()
 const doughnut = ref()
 
-
-
 const cards = ref(["0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100", "?", "Coffee Break"])
 
 const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.baseUrl })
@@ -86,7 +86,6 @@ currentRoom.value = room.value as HCRoom
 var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 pieData.value.labels = votes.keys()
 pieData.value.datasets[0].data = votes.values()
-
 
 const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
@@ -159,6 +158,7 @@ function getRoomVotesMap(room: HCRoom) {
 	if (!room) {
 		return votes
 	}
+
 	Object.values(room.votes).forEach((vote: number) => {
 		if (vote.toString() == '') {
 			return
@@ -344,12 +344,14 @@ watch(seconds, ()=>{
 
 function updateColors() {
 	var backgroundColor = []
+	var legendColor = ''
 
 	if(colormode.preference == 'dark'){
 		backgroundColor = ['#FF7700', '#FF8955', '#FFA18D', '#DAF5F3','#7DE0DB','#33A6A0','#10605C','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
-
+		legendColor = 'white'
 	} else {
 		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
+		legendColor = 'black'
 	}
 	var chart = undefined
 	if (pie.value != undefined){
@@ -369,7 +371,9 @@ function updateColors() {
 	}
 	if (chart){
 		pieData.value.datasets[0].backgroundColor = backgroundColor
+		chartOptions.value.color = legendColor
 		chart.data.datasets[0].backgroundColor = backgroundColor;
+		chart.options.color = legendColor
 		chart.update()
 	}
 }
