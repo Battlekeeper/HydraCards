@@ -181,6 +181,9 @@ function socketStartCount() {
 function socketCancelCount() {
 	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
 }
+function socketStopCount() {
+	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
+}
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
 	const downloadLink = document.createElement('a');
