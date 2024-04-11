@@ -108,8 +108,8 @@ export default class HCRoom {
 		}
 	}
 	public async stopCounter(){
-		this.counter.count = this.counter.default
 		this.counter.active = false
+		this.counter.count = this.counter.default
 	}
 	public async kickuser(user:HCUser){
 		HCSocketIO.io.to(this.id.toString()).emit("kick", user.id)
