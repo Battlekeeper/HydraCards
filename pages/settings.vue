@@ -91,7 +91,10 @@ async function exportStory(topicIndex: number, topicName: string): Promise<void>
 }
 
 function isRoomHistoryEmpty(): boolean {
-	return currentRoom.value.history == undefined || currentRoom.value.history.length == 0 
+	return currentRoom.value.history == undefined 
+		|| currentRoom.value.history.length == 0
+		|| stories.value == undefined 
+		|| stories.value.length == 0
 }
 
 async function exportAllStories() {
