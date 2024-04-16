@@ -13,6 +13,7 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, BarElement, CategoryScal
 //@ts-ignore
 import { Pie, Bar, Doughnut } from 'vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { HCVotingStatus } from "../backend/models/HCVotingStatus";
 ChartJS.register(ArcElement, Tooltip, Legend)
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 
@@ -504,7 +505,7 @@ watch(colormode, updateColors)
 		</div>
 	</div>
 	<div v-if="!currentUser.permissions.host && currentRoom.status == 0" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-10 gap-10 mt-7 mx-7">
-		<div class="flex flex-col lg:max-w-xl gap-5 justify-center xl:mr-8">
+		<div v-if="currentUser.userVotingStatus != HCVotingStatus.spectating" class="flex flex-col lg:max-w-xl gap-5 justify-center xl:mr-8">
 			<div class="flex justify-center items-center gap-5">
 				<input v-model="roomTopicName" disabled placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
 				<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="lg:z-50 lg:fixed lg:left-[100%] lg:top-[100%] lg:translate-x-[-150%] lg:translate-y-[-150%]">

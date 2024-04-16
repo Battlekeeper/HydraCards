@@ -35,6 +35,7 @@ export default class HCUser{
 			this.avatar = randomAvatar()
 		}
 		this.permissions.host = false;
+		this.permissions.admin = false;
 		this.userVotingStatus = HCVotingStatus.voting
 	}
 }
