@@ -19,6 +19,7 @@ router.get("/createroom", (req, res) => {
 
 	user?.reset()
 	user!.permissions.host = true
+	user!.permissions.admin = true
 	room.addMember(user!.id)
 	room.topicName = req.query.topicName as string
 	room.counter.default = Number.parseInt(req.query.timer as string)

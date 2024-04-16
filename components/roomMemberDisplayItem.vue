@@ -141,5 +141,10 @@ watch(props, () => {
 			</div>
 		</div>
 	</div>
-	<ModalPopup v-if="showUserInfo && (props.member.id == props.userId || currentUser.permissions.host)"><memberInfo :user-id=props.userId :member=props.member @cancel="showUserInfo=false;"></memberInfo></ModalPopup>
+	<ModalPopup v-if="showUserInfo 
+				   && (props.member.id == props.userId 
+				   	|| (currentUser.permissions.host && !props.member.permissions.host) 
+				   	|| currentUser.permissions.admin)">
+		<memberInfo :user-id=props.userId :member=props.member @cancel="showUserInfo=false;"></memberInfo>
+	</ModalPopup>
 </template>
