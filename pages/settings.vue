@@ -152,11 +152,11 @@ async function exportAllStories() {
 					<p class="grow-1 text-black dark:text-slate-400 text-base font-medium">Change whether players must submit their
 						answers by a certain time.
 					</p>
-					<div class="gap-8 flex justify-center pt-2">
+					<div v-if="timerEnabled" class="gap-8 flex justify-center pt-2">
 						<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">MINS</div>
 						<div class="dark:text-slate-300 text-black text-sm font-bold leading-tight">SECS</div>
 					</div>
-					<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex justify-center pt-2 pb-2">
+					<div v-if="timerEnabled" class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex justify-center pt-2 pb-2">
 						<input v-model="timerMinutes" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">
 						<p class="w-fit h-fit text-[30px] pl-2 pr-2">:</p>
 						<input v-model="timerSeconds" type="number" class="w-12 h-12 text-center bg-white dark:bg-slate-800 text-black dark:text-white text-2xl font-normal rounded-md pl-2 pr-2" placeholder="00">

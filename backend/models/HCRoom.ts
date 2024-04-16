@@ -108,13 +108,9 @@ export default class HCRoom {
 			this.emitRoomStateUpdate()
 		}
 	}
-	public async cancelCounter(){
+	public async cancelCounter(resetcount: number){
 		this.counter.active = false
-		this.counter.count = this.counter.default
-	}
-	public async stopCounter(){
-		this.counter.active = false
-		this.counter.count = this.counter.default
+		this.counter.count = resetcount
 	}
 	public async kickuser(user:HCUser){
 		HCSocketIO.io.to(this.id.toString()).emit("kick", user.id)

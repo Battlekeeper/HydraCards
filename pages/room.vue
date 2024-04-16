@@ -179,7 +179,7 @@ function socketStartCount() {
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
 }
 function socketCancelCount() {
-	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
+	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, currentRoom.value.counter.default);
 }
 function socketStopCount() {
 	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
