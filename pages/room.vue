@@ -467,22 +467,21 @@ watch(colormode, updateColors)
 		<div class="flex flex-col gap-5 lg:w-full xl:max-w-2xl">
 			<div class="flex justify-between gap-5" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div class="w-full h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
-						<input v-model="minutes" type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
-						<p class="w-fit h-fit text-[30px] pl-2 pr-2 text-black dark:text-gray-50">:</p>
-						<input v-model="seconds" type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
-					</div>
-				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">⏵︎
-					</button>
-					<button @click="socketCancelCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">⏹︎ 
-					</button>
-					<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap"> ⏸︎ 
-					</button>
-
-
-
-
+					<input v-model="minutes" type="number"
+						class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
+					<p class="w-fit h-fit text-[30px] pl-2 pr-2 text-black dark:text-gray-50">:</p>
+					<input v-model="seconds" type="number"
+						class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
+				</div>
+				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					▶️
+				</button>
+				<button @click="socketCancelCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					⏹︎ 
+				</button>
+				<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					⏸ 
+				</button>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
 				<div class="flex justify-between pt-5 pl-16 pr-16">

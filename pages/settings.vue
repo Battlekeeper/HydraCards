@@ -51,12 +51,11 @@ async function apiSetTimer() {
 		id: currentRoom.value.id,
 		enabled: timerEnabled.value,
 		count: timerMinutes.value * 60 + timerSeconds.value
-	}, credentials: "include", baseURL: config.public.baseUrl })
+	}, credentials: "include", baseURL: config.public.baseUrl, keepalive: false })
 }
 
-watch(timerEnabled, apiSetTimer)
-watch(timerMinutes, apiSetTimer)
-watch(timerSeconds, apiSetTimer)
+watch(timerEnabled, apiSetTimer);
+onUnmounted(apiSetTimer)
 
 watch(allowAnonymous, async ()=>{
 	currentRoom.value.allowAnonymousMode = allowAnonymous.value
