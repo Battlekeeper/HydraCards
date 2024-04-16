@@ -95,11 +95,12 @@ export default class HCRoom {
 		this.counter.count = count
 		this.counter.active = true
 
-		await delayMs(100)
 		while (this.counter.count > 0 && this.counter.active && !this.allMembersHaveVoted())
 		{
-			this.counter.count--
 			await delayMs(1000)
+			if (this.counter.active) {
+				this.counter.count--
+			}
 			this.emitRoomStateUpdate()
 		}
 		this.counter.active = false
