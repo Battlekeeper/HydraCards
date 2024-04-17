@@ -384,6 +384,11 @@ function updateColors() {
 	}
 }
 watch(colormode, updateColors)
+watch(roomTopicName, ()=>{
+	if (roomTopicName.value.length > 255){
+		roomTopicName.value = roomTopicName.value.substring(0,255)
+	}
+})
 </script>
 
 <template>
