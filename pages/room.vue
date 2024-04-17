@@ -173,6 +173,15 @@ function getRoomVotesMap(room: HCRoom) {
 	votes.delete("-1")
 	return votes
 }
+function getWinningVote(room: HCRoom): number {
+	const votes = getRoomVotesMap(room)
+	const result = votes.values().every(count => count === votes.values()[0])
+	if (result) {
+		return 0
+	}
+	const highest = votes.keys().reduce((a, b) => votes.get(a) > votes.get(b) ? a : b)
+	return Number.parseInt(highest)
+}
 function socketSetTopicName() {
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
 }
@@ -620,7 +629,7 @@ watch(roomTopicName, ()=>{
 					<button @click="socketRevote()" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500">Revote</button>
 					<button @click="showStoryPointsPrompt = true" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow dark:bg-orange-500 bg-blue-800">New Story</button>
 					<ModalPopup @close="showStoryPointsPrompt = false" v-if="showStoryPointsPrompt">
-						<SetStoryPointsPromt @close="showStoryPointsPrompt = false" @set-story-points="(points) => socketNewTopic(points)"></SetStoryPointsPromt>
+						<SetStoryPointsPromt :default="getWinningVote(currentRoom)" @close="showStoryPointsPrompt = false" @set-story-points="(points) => socketNewTopic(points)"></SetStoryPointsPromt>
 					</ModalPopup>
 					</div>
 				</div>

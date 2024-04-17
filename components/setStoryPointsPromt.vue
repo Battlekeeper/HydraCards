@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	defineEmits(['setStoryPoints', 'close'])
-	const points = ref(0)
+	const props = defineProps(['default'])
+	const points = ref(props.default)
 </script>
 
 <template>
