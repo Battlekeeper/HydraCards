@@ -176,7 +176,7 @@ function getRoomVotesMap(room: HCRoom) {
 function getWinningVote(room: HCRoom): number {
 	const votes = getRoomVotesMap(room)
 	const result = votes.values().every(count => count === votes.values()[0])
-	if (result) {
+	if (result && votes.length > 1) {
 		return 0
 	}
 	const highest = votes.keys().reduce((a, b) => votes.get(a) > votes.get(b) ? a : b)
