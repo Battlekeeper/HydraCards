@@ -20,7 +20,7 @@ const settingsLink = ref("/settings?id="  + props.roomId)
 const roomLink = ref("/room?id=" + route.query.id)
 
 if (colormode.preference != "light" && colormode.preference != "dark") {
-	colormode.preference = "light"
+	colormode.preference = "dark"
 	Cookies.set('theme', colormode.preference)
 }
 
