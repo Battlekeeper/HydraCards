@@ -429,7 +429,7 @@ watch(roomTopicName, ()=>{
 				</button>
 			</div>
 			<div class="flex flex-row-reverse justify-between">
-				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
+				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-blue-800 dark:border-orange-500">Reveal Votes</button>
 			</div>
 
 			<div class="grid grid-cols-4 grid-rows-3 gap-4 sm:grid-cols-7 sm:grid-rows-2">
@@ -652,7 +652,7 @@ watch(roomTopicName, ()=>{
 			<div v-show="currentUser.permissions.host">
 				<div class="flex justify-center gap-8">
 					<button @click="socketRevote()" class="p-2 text-blue-800 dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 hover:text-white dark:hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500">Revote</button>
-					<button @click="showStoryPointsPrompt = true" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow dark:bg-orange-500 bg-blue-800 hover:text-blue-800 dark:hover:text-orange-500 hover:bg-white dark:hover:bg-white">New Story</button>
+					<button @click="showStoryPointsPrompt = true" class="p-2 text-white text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 dark:bg-orange-500 bg-blue-800 hover:text-blue-800 dark:hover:text-orange-500 hover:bg-white dark:hover:bg-white">New Story</button>
 					<ModalPopup @close="showStoryPointsPrompt = false" v-if="showStoryPointsPrompt">
 						<SetStoryPointsPromt :default="getWinningVote(currentRoom)" @close="showStoryPointsPrompt = false" @set-story-points="(points) => socketNewTopic(points)"></SetStoryPointsPromt>
 					</ModalPopup>
