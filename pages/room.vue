@@ -402,7 +402,7 @@ watch(roomTopicName, ()=>{
 
 <template>
 	<PermenantHeader :inRoom="true" :roomId="currentRoom.id"></PermenantHeader>
-	<div v-if="currentUser.permissions.host && currentRoom.status == 0" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-20 gap-10 mt-7 mx-7">
+	<div v-if="currentUser.permissions.host && currentRoom.status == HCRoomStatus.voting" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-20 gap-10 mt-7 mx-7">
 		<div class="flex flex-col lg:max-w-xl gap-5 xl:mr-8">
 			<div class="flex justify-center items-center gap-5">
 				<input v-model="roomTopicName" placeholder="Enter Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
@@ -411,7 +411,7 @@ watch(roomTopicName, ()=>{
 					<path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
 				</svg>
 				
-				<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
+				<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="hidden lg:inline z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
 					<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
 						<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
@@ -419,7 +419,7 @@ watch(roomTopicName, ()=>{
 						<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
 					</svg>
 				</button>
-				<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
+				<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="hidden lg:inline z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
 					<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#2255BE"/>
 						<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
@@ -525,7 +525,7 @@ watch(roomTopicName, ()=>{
 			</div>
 		</div>
 	</div>
-	<div v-if="!currentUser.permissions.host && currentRoom.status == 0" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-10 gap-10 mt-7 mx-7">
+	<div v-if="!currentUser.permissions.host && currentRoom.status == HCRoomStatus.voting" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-10 gap-10 mt-7 mx-7">
 		<div v-if="currentUser.userVotingStatus != HCVotingStatus.spectating" class="flex flex-col lg:max-w-xl gap-5 justify-center xl:mr-8">
 			<div class="flex justify-center items-center gap-5">
 				<input v-model="roomTopicName" disabled placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
@@ -626,6 +626,23 @@ watch(roomTopicName, ()=>{
 		</div>
 	</div>
 	<div v-if="currentRoom.status == HCRoomStatus.reviewing" class="flex flex-col xl:flex-row-reverse justify-center xl:gap-20 gap-10 mt-7 mx-7">
+		<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="hidden lg:inline z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
+			<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
+				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
+				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
+				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
+			</svg>
+		</button>
+		<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="hidden lg:inline lg:z-50 lg:fixed lg:left-[100%] lg:top-[100%] lg:translate-x-[-150%] lg:translate-y-[-150%]">
+			<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#2255BE"/>
+				<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
+				<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#2255BE"/>
+				<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#2255BE"/>
+			</svg>
+		</button>
+		
 		<div class="flex flex-col gap-5 xl:w-1/3">
 			<div class="flex justify-center gap-5">
 				<input v-model="roomTopicName" :disabled="!currentUser.permissions.host" :placeholder="currentUser.permissions.host ? 'Enter Story Name' : 'Story Name'" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
