@@ -34,7 +34,9 @@ watch(displayName, ()=>{
 
 <template>
 	<div class="flex flex-col bg-gray-300 dark:bg-gray-700 rounded-xl">
-		<button @click="$emit('cancel');" class="flex justify-end text-black dark:text-white pr-4 pt-4">X</button>
+		<div class="flex justify-end pr-4 pt-4">
+			<button @click="$emit('cancel');" class="font-bold text-black dark:text-white">✕</button>
+		</div>
 		<div v-if="currentUser.permissions.host && props.member.id != currentUser.id" class="pb-10 pl-10 pr-10">
 			<div class="flex flex-row pb-2">
 				<img width="60" height="60" :src="member.avatar" alt="Avatar" class="mr-2" />
