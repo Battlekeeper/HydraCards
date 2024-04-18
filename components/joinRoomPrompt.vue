@@ -92,7 +92,7 @@ watch(name, ()=>{
 			<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
 		</span>
 
-		<!--
+<!-- 		
 		<div class="flex flex-row mt-9">
 			<span class="flex gap-2 items-center">
 				<input id="fileInput" type="file" accept="image/*" class="hidden">
@@ -101,6 +101,6 @@ watch(name, ()=>{
 				<button @click="setNameAndProfileAndJoin(true)" class="text-blue-800 dark:text-orange-500 bg-gray-300 dark:bg-slate-700 p-2 rounded-md border border-blue-800 dark:border-orange-500 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white text-base font-medium leading-normal w-[160px]">Join As Spectator</button>
 			</span>
 		<div>
-		-->
+		 -->
 	</div>
 </template>
