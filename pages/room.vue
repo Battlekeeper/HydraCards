@@ -431,10 +431,6 @@ watch(roomTopicName, ()=>{
 			<div class="flex flex-row-reverse justify-between">
 				<button @click="socketDisplayResults()" class="p-3 text-white dark:text-white text-base font-small rounded-md hover:text-blue-800 hover:bg-white dark:hover:bg-white dark:hover:text-orange-500 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">Reveal Votes</button>
 			</div>
-			
-
-
-
 
 			<div class="grid grid-cols-4 grid-rows-3 gap-4 sm:grid-cols-7 sm:grid-rows-2">
 					<div :id="cards[0]" @click="submitVote('0', $event)" class="text-black dark:text-gray-300 dark:hover:bg-orange-500 hover:bg-blue-800 hover:text-gray-300 w-full cursor-pointer bg-gray-300 dark:bg-gray-700 rounded-full text-center flex justify-center items-center" style="aspect-ratio: 1/1;">
@@ -525,6 +521,7 @@ watch(roomTopicName, ()=>{
 			</div>
 		</div>
 	</div>
+
 	<div v-if="!currentUser.permissions.host && currentRoom.status == HCRoomStatus.voting" class="flex flex-col lg:flex-row-reverse justify-center lg:gap-10 gap-10 mt-7 mx-7">
 		<div v-if="currentUser.userVotingStatus != HCVotingStatus.spectating" class="flex flex-col lg:max-w-xl gap-5 justify-center xl:mr-8">
 			<div class="flex justify-center items-center gap-5">
@@ -625,6 +622,7 @@ watch(roomTopicName, ()=>{
 			</div>
 		</div>
 	</div>
+
 	<div v-if="currentRoom.status == HCRoomStatus.reviewing" class="flex flex-col xl:flex-row-reverse justify-center xl:gap-20 gap-10 mt-7 mx-7">
 		<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="hidden lg:inline z-50 fixed left-[100%] top-[100%] translate-x-[-150%] translate-y-[-150%]">
 			<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -701,7 +699,7 @@ watch(roomTopicName, ()=>{
 		</div>
 	</div>
 
-	<div v-if="currentRoom.status == 2" class="flex items-center flex-col w-full h-full mt-7">
+	<div v-if="currentRoom.status == HCRoomStatus.coffeebreak" class="flex items-center flex-col w-full h-full mt-7">
 		<div v-if="!currentUser.permissions.host" class="flex items-center flex-col">
 			<h1 class="w-96 text-center text-black dark:text-gray-50 text-5xl font-bold">Coffee Break!</h1>
 			<p class="w-96 text-center text-black dark:text-gray-50 text-xl font-medium leading-loose">Wait Here Till The Host Ends The Break...</p>
@@ -720,7 +718,4 @@ watch(roomTopicName, ()=>{
 			<button @click="socketSetCoffeeBreak(false)" class="p-3 text-white dark:text-white text-base font-small rounded-md pr-8 pl-8 shadow bg-blue-800 dark:bg-orange-500 border border-transparent">End Coffee Break</button>
 		</div>
 	</div>
-
-
-
 </template>
