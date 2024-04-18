@@ -13,8 +13,8 @@ const route = useRoute()
 const selectedTheme = ref(true)
 const colormode = useColorMode()
 const showWrestle = ref(false)
-colormode.preference = "light"
-const theme = useCookie("theme", { default: () => ("light") })
+colormode.preference = "dark"
+const theme = useCookie("theme", { default: () => ("dark") })
 colormode.preference = theme.value
 const settingsLink = ref("/settings?id="  + props.roomId)
 const roomLink = ref("/room?id=" + route.query.id)
