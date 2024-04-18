@@ -58,7 +58,7 @@ watch(displayName, ()=>{
 			</div>
 		</div>
 		<div v-if="props.member.id == currentUser.id" class="flex pb-10 pl-10 pr-10">
-			<input v-model="displayName" text="text"
+			<input v-model="displayName" text="text" v-on:keyup.enter="apiSetDisplayName()"
 				class="w-80 mt-4 mr-2 bg-white dark:bg-gray-300 font-normal p-2 rounded-md text-black"
 				placeholder="Enter Your Name">
 			<button @click="apiSetDisplayName()" 
