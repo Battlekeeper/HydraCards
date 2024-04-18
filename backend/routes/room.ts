@@ -158,7 +158,24 @@ router.get("/csv", (req, res) => {
 
 	res.send()
 })
+router.get("/delete", (req, res) => {
+	let id = req.query.id as string
+	let topic = req.query.topic as string
+	let room = HCRoom.get(Number.parseInt(id))
 
+	if (room == undefined) {
+		res.send()
+		return
+	}
+
+	if (topic != undefined) {
+		room.history.splice(Number.parseInt(topic), 1)
+	} 
+	else {
+		room.history = []
+	}
+	res.send()
+})
 router.get("/kickuser", (req, res) => {
 	var id: string = req.query.id as string
 	var user = HCUser.get(id)
