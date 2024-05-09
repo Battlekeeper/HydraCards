@@ -10,6 +10,7 @@ import HistoricalVote from "./HistoricalVote"
 export default class HCRoom {
 	id: number = generateRoomId()
 	topicName: string = ""
+	urlName: string = ""
 	members: Array<string> = new Array<string>
 	status: HCRoomStatus = 0
 	votes: TSMap<string, string> = new TSMap<string, string>

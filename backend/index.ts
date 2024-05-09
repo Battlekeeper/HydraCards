@@ -209,6 +209,18 @@ HCServer.io.on("connect", (socket) => {
 			}
 		}
 	})
+	socket.on("setRoomUrlName",(roomId:number, userId:string, urlName:string) => {
+		var user:HCUser = HCUser.get(userId);
+		var room:HCRoom = HCRoom.get(roomId)
+		
+		if (typeof user !== typeof undefined && room !== undefined){
+			if (user.permissions.host){
+				room.urlName = urlName
+				room.emitRoomStateUpdate()
+			}
+		}
+	})
+	
 	socket.on("startCount",(roomId:number, userId:string, count:number) => {
 		var user:HCUser = HCUser.get(userId);
 		var room:HCRoom = HCRoom.get(roomId)

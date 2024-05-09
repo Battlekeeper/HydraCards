@@ -61,6 +61,7 @@ const selectedChart = ref("pie")
 var socket = io()
 const displayName = ref("")
 const roomTopicName = ref("")
+const roomUrlName = ref("")
 const selectedCard = ref()
 const lastCard = ref("")
 const currentUser = ref(new HCUser)
@@ -117,6 +118,7 @@ function socketNewTopic(points:number) {
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, "")
 	showStoryPointsPrompt.value = false
 }
+
 function isInRoom() {
 	const roomExists = currentRoom.value != undefined
 	const userExists = currentUser.value != undefined
@@ -184,6 +186,9 @@ function getWinningVote(room: HCRoom): number {
 }
 function socketSetTopicName() {
 	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
+}
+function socketSetUrl() {
+	socket.emit("setRoomUrl", currentRoom.value.id, currentUser.value.id, roomUrlName.value)
 }
 function socketStartCount() {
 	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
@@ -306,6 +311,9 @@ function mounted(){
 		if (currentRoom.value.topicName != roomTopicName.value && !currentUser.value.permissions.host){
 			roomTopicName.value = currentRoom.value.topicName
 		}
+		if (currentRoom.value.urlName != roomUrlName.value && !currentUser.value.permissions.host){
+			roomUrlName.value = currentRoom.value.urlName
+		}
 		
 		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
 		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
@@ -334,6 +342,10 @@ function mounted(){
 	roomLink.value = window.location.href
 	if (roomTopicName.value == "" || roomTopicName == undefined){
 		roomTopicName.value = currentRoom.value.topicName
+		
+	}
+	if (roomUrlName.value == ""|| roomUrlName == undefined){
+		roomUrlName.value = currentRoom.value.urlName
 	}
 }
 
@@ -510,6 +522,17 @@ watch(roomTopicName, ()=>{
 					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :room-status=currentRoom.status :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
+			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
+			<input v-model="roomUrlName" placeholder="Enter URL Here" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
+				<svg v-if="currentRoom.urlName != roomUrlName" @click="socketSetUrl()" mlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-floppy-fill cursor-pointer" viewBox="0 0 16 16">
+					<path d="M0 1.5A1.5 1.5 0 0 1 1.5 0H3v5.5A1.5 1.5 0 0 0 4.5 7h7A1.5 1.5 0 0 0 13 5.5V0h.086a1.5 1.5 0 0 1 1.06.44l1.415 1.414A1.5 1.5 0 0 1 16 2.914V14.5a1.5 1.5 0 0 1-1.5 1.5H14v-5.5A1.5 1.5 0 0 0 12.5 9h-9A1.5 1.5 0 0 0 2 10.5V16h-.5A1.5 1.5 0 0 1 0 14.5z"/>
+					<path d="M3 16h10v-5.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5zm9-16H4v5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5zM9 1h2v4H9z"/>
+				</svg>
+			</div>
+
+
+
+
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
 					<p class="">{{roomLink}}</p>
 					<svg @click="copy()" class="cursor-pointer" v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -528,18 +551,18 @@ watch(roomTopicName, ()=>{
 				<input v-model="roomTopicName" disabled placeholder="Story Name" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
 				<button @click="socketLeaveRoom" v-if="colormode.preference == 'dark'" class="lg:z-50 lg:fixed lg:left-[100%] lg:top-[100%] lg:translate-x-[-150%] lg:translate-y-[-150%]">
 					<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
-					<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
-					<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
-					<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
+						<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#F16523"/>
+						<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#F16523"/>
+						<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#F16523"/>
+						<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#F16523"/>
 					</svg>
 				</button>
 				<button @click="socketLeaveRoom"  v-if="colormode.preference == 'light'" class="lg:z-50 lg:fixed lg:left-[100%] lg:top-[100%] lg:translate-x-[-150%] lg:translate-y-[-150%]">
 					<svg width="32" height="32" viewBox="0 0 89 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#2255BE"/>
-					<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
-					<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#2255BE"/>
-					<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#2255BE"/>
+						<path d="M28.9736 18.8756V37.7512L31.7432 40.4782L34.5128 43.2051V24.3721V5.53903H58.5867H82.6606V41.9695V78.3999H85.4302H88.1997V39.1999V-0.000100076H58.5867H28.9736V18.8756Z" fill="#2255BE"/>
+						<path d="M77.9739 8.18087C72.4773 9.2887 45.7191 14.9983 45.0799 15.1687C44.3556 15.3817 44.313 17.5122 44.313 51.8122C44.313 86.3252 44.3556 88.2426 45.0799 88.0296C45.4634 87.9017 51.7695 86.24 59.013 84.3652C66.2991 82.4478 74.0965 80.4026 76.3973 79.7635L80.5304 78.6983V43.4183C80.5304 24.0313 80.4026 8.05305 80.2321 7.96783C80.0191 7.88261 79.0391 7.96783 77.9739 8.18087Z" fill="#2255BE"/>
+						<path d="M17.0435 34.641V40.4784H8.52174H0V47.9349V55.3914H8.52174H17.0009L17.1287 61.1436L17.2565 66.8958L26.7583 57.4366L36.2174 47.9349L26.6304 38.3479L17.0435 28.761V34.641Z" fill="#2255BE"/>
+						<path d="M31.6154 55.519L28.9736 58.2034V68.3016V78.3999H31.7432H34.5128V65.6173C34.5128 58.5869 34.4702 52.8347 34.3849 52.8347C34.3423 52.8347 33.0641 54.0277 31.6154 55.519Z" fill="#2255BE"/>
 					</svg>
 				</button>
 			</div>
@@ -595,12 +618,12 @@ watch(roomTopicName, ()=>{
 		<div class="flex flex-col gap-5 lg:w-1/3 xl:max-w-2xl">
 			<div class="flex justify-between gap-5" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div class="w-full h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
-						<input disabled v-model="minutes" type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
-						<p class="w-fit h-fit text-[30px] pl-2 pr-2 text-black dark:text-gray-50">:</p>
-						<input disabled v-model="seconds" type="number"
-							class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
-					</div>
+					<input disabled v-model="minutes" type="number"
+					class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
+					<p class="w-fit h-fit text-[30px] pl-2 pr-2 text-black dark:text-gray-50">:</p>
+					<input disabled v-model="seconds" type="number"
+					class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
+				</div>
 			</div>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
 				<div class="flex justify-between pt-5 pl-16 pr-16">
@@ -611,6 +634,7 @@ watch(roomTopicName, ()=>{
 					<roomMemberDisplayItem v-for="member in currentRoomMembers" :user-id=userId :room-status=currentRoom.status :member=member></roomMemberDisplayItem>
 				</div>
 			</div>
+			<input v-model="roomUrlName" disabled placeholder="URL" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
 				<p class="">{{roomLink}}</p>
 				<svg @click="copy()" class="cursor-pointer" v-if="colormode.preference == 'dark'" width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
