@@ -209,7 +209,7 @@ HCServer.io.on("connect", (socket) => {
 			}
 		}
 	})
-	socket.on("setRoomUrlName",(roomId:number, userId:string, urlName:string) => {
+	socket.on("setRoomUrl",(roomId:number, userId:string, urlName:string) => {
 		var user:HCUser = HCUser.get(userId);
 		var room:HCRoom = HCRoom.get(roomId)
 		
