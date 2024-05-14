@@ -121,7 +121,7 @@ router.get("/csv", (req, res) => {
 	var id: string = req.query.id as string
 	var topic: string = req.query.topic as string
 	var room: HCRoom = HCRoom.get(Number.parseInt(id))
-
+	var setRoomUrl: string =req.query.urlName as string
 	function mapRevotes(map: TSMap<string, number>, index: number, topicName: string) {
 		Object.keys(map).forEach((key: string) => {
 			var voteObj = {
