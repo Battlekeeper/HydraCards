@@ -147,6 +147,7 @@ HCServer.io.on("connect", (socket) => {
 		var HistoricalVoteData:HistoricalVote = room.history[room.history.length - 1]
 		HistoricalVoteData.TopicName = room.topicName
 		HistoricalVoteData.Points = points
+		HistoricalVoteData.URL = room.urlName
 		HistoricalVoteData.Revotes.push(JSON.parse(JSON.stringify(room.votes)))
 
 		if (!revote){

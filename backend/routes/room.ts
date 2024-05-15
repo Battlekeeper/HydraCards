@@ -121,33 +121,33 @@ router.get("/csv", (req, res) => {
 	var id: string = req.query.id as string
 	var topic: string = req.query.topic as string
 	var room: HCRoom = HCRoom.get(Number.parseInt(id))
-	var setRoomUrl: string =req.query.urlName as string
-	function mapRevotes(map: TSMap<string, number>, index: number, topicName: string) {
+
+	if (room == undefined) {
+		res.send()
+		return
+	}
+	
+	var data: Array<Object> = new Array<Object> 
+	function mapRevotes(map: TSMap<string, number>, index: number, topicName: string, url: string = "") {
 		Object.keys(map).forEach((key: string) => {
 			var voteObj = {
 				topic: topicName,
 				revoteNumber: index,
 				name: HCUser.get(key as string).displayName,
-				vote: Object.values(map)[Object.keys(map).findIndex(k => k==key)]
+				vote: Object.values(map)[Object.keys(map).findIndex(k => k==key)],
+				url: url,
 			}
 			data.push(voteObj)
 		})
 	}
 	
-	if (room == undefined) {
-		res.send()
-		return
-	}
-
-	var data: Array<Object> = new Array<Object> 
-	
 	if (topic != undefined) {
 		let vote: HistoricalVote = room.history[Number.parseInt(topic)]
-		vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName))
+		vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName, vote.URL))
 	} 
 	else {
 		room.history.forEach((vote: HistoricalVote) => {
-			vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName))
+			vote.Revotes.forEach((value, index) => mapRevotes(value, index, vote.TopicName, vote.URL))
 		})
 	}
 
