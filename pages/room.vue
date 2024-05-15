@@ -498,7 +498,7 @@ watch(roomTopicName, ()=>{
 					</div>
 			</div>
 		</div>
-		<div class="flex flex-col gap-5 lg:w-full xl:max-w-2xl">
+		<div class="flex flex-col gap-5 lg:w-full xl:max-w-2xl" style="max-height: 800px;">
 			<div class="flex justify-between gap-5" v-if="currentRoom.status == 0 && currentRoom.roomCounterEnabled">
 				<div class="w-full h-[46px] bg-gray-300 dark:bg-gray-700 rounded-md flex justify-center">
 					<input v-model="minutes" type="number"
@@ -507,20 +507,23 @@ watch(roomTopicName, ()=>{
 					<input v-model="seconds" type="number"
 						class="w-12 h-12 text-center bg-transparent text-black dark:text-gray-50 text-2xl font-light rounded-md pl-2 pr-2">
 				</div>
-				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
-  <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
-</svg>
+				<button @click="socketStartCount()" v-if="!currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+						<path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+					</svg>
 				</button>
-				<button @click="socketCancelCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-stop-circle-fill" viewBox="0 0 16 16">
-  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.5 5A1.5 1.5 0 0 0 5 6.5v3A1.5 1.5 0 0 0 6.5 11h3A1.5 1.5 0 0 0 11 9.5v-3A1.5 1.5 0 0 0 9.5 5z"/>
-</svg> 
+				<button @click="socketCancelCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-stop-circle-fill" viewBox="0 0 16 16">
+						<path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.5 5A1.5 1.5 0 0 0 5 6.5v3A1.5 1.5 0 0 0 6.5 11h3A1.5 1.5 0 0 0 11 9.5v-3A1.5 1.5 0 0 0 9.5 5z"/>
+					</svg> 
 				</button>
-				<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16">
-  <path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/>
-</svg> 
+				<button @click="socketStopCount()" v-if="currentRoom.counter.active" class="p-2 text-blue-800 hover:text-white hover:bg-blue-800 dark:hover:bg-orange-500 dark:hover:text-white dark:text-orange-500 text-base font-small rounded-md pr-4 pl-4 shadow border border-blue-800 dark:border-orange-500 whitespace-nowrap">
+					<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-pause-fill" viewBox="0 0 16 16">
+						<path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5m5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5"/>
+					</svg> 
 				</button>
 			</div>
-			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl">
+			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl overflow-auto">
 				<div class="flex justify-between pt-5 pl-16 pr-16">
 					<p class="font-bold text-black dark:text-gray-300">Name</p>
 					<p class="font-bold text-black dark:text-gray-300">Status</p>
@@ -530,7 +533,7 @@ watch(roomTopicName, ()=>{
 				</div>
 			</div>
 			<div class="bg-transparent rounded-2xl flex w-full items-center gap-5">
-				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter URL Here" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
+				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter Story URL" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
 				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 					{{ currentRoom.urlName }}
 				</a>
@@ -722,7 +725,7 @@ watch(roomTopicName, ()=>{
 				</div>
 			</div>
 			<div v-if="currentUser.permissions.host" class="flex items-center gap-5">
-				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter URL Here" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
+				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter Story URL" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
 				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 					{{ currentRoom.urlName }}
 				</a>

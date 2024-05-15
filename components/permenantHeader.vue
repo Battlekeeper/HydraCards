@@ -109,7 +109,7 @@ function redirectToRoom(){
 				</button>
 				<div v-show="showQRCodeModal">
 					<ModalPopup @close="showQRCodeModal = false; showWrestle = false">
-						<div class="bg-gray-200 dark:bg-gray-700 flex">
+						<div class="bg-gray-200 dark:bg-gray-700 flex rounded-2xl">
 							<div class="p-10">
 								<qrCode v-show="!showWrestle" @click="showWrestle = true" :size="256" :pagelink="true"></qrCode>
 								<svg class="bg-white rounded-2xl" @click="showWrestle = false" v-show="showWrestle" width="256" height="256" viewBox="0 0 208 195" fill="none" xmlns="http://www.w3.org/2000/svg">
