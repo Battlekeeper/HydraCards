@@ -531,7 +531,7 @@ watch(roomTopicName, ()=>{
 			</div>
 			<div class="bg-transparent rounded-2xl flex w-full items-center gap-5">
 				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter URL Here" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
-				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer">
+				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 					{{ currentRoom.urlName }}
 				</a>
 				<svg v-if="currentRoom.urlName != roomUrlName" @click="socketSetUrl()" mlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-floppy-fill cursor-pointer" viewBox="0 0 16 16">
@@ -642,7 +642,7 @@ watch(roomTopicName, ()=>{
 				</div>
 			</div>
 			<input v-if="currentRoom.urlName == ''" disabled placeholder="URL" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
-			<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer">
+			<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 				{{ currentRoom.urlName }}
 			</a>
 			<div class="bg-gray-300 dark:bg-gray-700 rounded-2xl flex p-4 w-full justify-between">
@@ -723,7 +723,7 @@ watch(roomTopicName, ()=>{
 			</div>
 			<div v-if="currentUser.permissions.host" class="flex items-center gap-5">
 				<input v-if="currentRoom.urlName == ''" v-model="roomUrlName" placeholder="Enter URL Here" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
-				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer">
+				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 					{{ currentRoom.urlName }}
 				</a>
 				<svg v-if="currentRoom.urlName != roomUrlName" @click="socketSetUrl()" mlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-floppy-fill cursor-pointer" viewBox="0 0 16 16">
@@ -734,7 +734,7 @@ watch(roomTopicName, ()=>{
 			</div>
 			<div v-else class="flex">
 				<input v-if="currentRoom.urlName == ''" disabled v-model="roomUrlName" placeholder="URL" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4">
-				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer">
+				<a v-else @click="confirmHyperlink(currentRoom.urlName)" target="_blank" class="w-full bg-gray-300 dark:bg-gray-700 rounded-2xl p-4 underline cursor-pointer truncate">
 					{{ currentRoom.urlName }}
 				</a>
 			</div>
