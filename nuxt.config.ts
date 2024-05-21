@@ -1,7 +1,8 @@
 require("dotenv").config();
-
+import { defineNuxtConfig } from 'nuxt/config'
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+	
 	runtimeConfig: {
 		// Will be available in both server and client
 		public: {
@@ -15,11 +16,15 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: [
 		'@nuxtjs/tailwindcss',
-		'@nuxtjs/color-mode'
+		'@nuxtjs/color-mode',
+		'nuxt-vue3-google-signin'
 	],
 	colorMode: {
 		classSuffix: ''
 	},
+	googleSignIn: {
+		clientId: 'CLIENT ID OBTAINED FROM GOOGLE API CONSOLE',
+	  },
 	router: {
 		//@ts-ignore
 		middleware: ['nullroomredirect'],
