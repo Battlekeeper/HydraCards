@@ -32,7 +32,6 @@ const handleLoginError = () => {
 
 <template>
     <permenantHeader></permenantHeader>
-    .
     <div class="flex flex-col items-center justify-center mt-[38px]">
 		<h1 class="text-4xl font-bold mb-[16px]">HydraCards</h1>
 		<p class="text-center text-xl font-semibold pb-[54px]">Sign In Please</p>
