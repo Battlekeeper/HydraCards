@@ -77,7 +77,7 @@ export default class HCRoom {
 		});
 		return users
 	}
-	public emitRoomStateUpdate(){
+	public emitRoomStateUpdate(revealVotes:boolean = false){
 		var tempRoom:HCRoom = JSON.parse(JSON.stringify(this))
 		tempRoom.history.forEach((val) => {
 			val.Revotes = new Array<TSMap<string, number>>
@@ -85,6 +85,9 @@ export default class HCRoom {
 		this.getMembersUserArray().forEach(member => {
 			member.allowAnon = this.allowAnonymousMode
 		});
+		if (!revealVotes){
+			tempRoom.votes = new TSMap<string, string>()
+		}
 		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom,this.getMembersUserArray())
 
 	}
