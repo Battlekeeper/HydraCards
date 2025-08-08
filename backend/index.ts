@@ -119,7 +119,7 @@ HCServer.io.on("connect", (socket) => {
 
 
 		room.status = HCRoomStatus.reviewing
-		room.emitRoomStateUpdate()
+		room.emitRoomStateUpdate(true)
 
 	})
 	socket.on("revote", (roomId:number, userId:string, revote:boolean, points:number) => {
