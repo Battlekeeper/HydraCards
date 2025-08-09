@@ -3,45 +3,45 @@ import HCRoom from "../models/HCRoom"
 import HCUser from "../models/HCUser"
 import { HCVotingStatus } from "../models/HCVotingStatus";
 import { deleteAllFilesWithName } from "../utility";
+import { authenticateToken } from "../auth/auth";
 
 
 const router=express.Router()
 
-router.get("/setname", (req, res) => {
-	var name: string = req.query.name as string
-	var user: HCUser = HCUser.get(req.cookies["_id"])
-
+router.get("/setname", authenticateToken, (req, res) => {
+	let name: string = req.query.name as string
+	let user: HCUser | undefined = req.user
 	if (user !== undefined) {
 		user!.displayName = name
 		if (user?.currentRoom != 0){
-			var room: HCRoom = HCRoom.get(user!.currentRoom)
+			let room: HCRoom = HCRoom.get(user!.currentRoom)
 			room.emitRoomStateUpdate()
 		}
 	}
 	res.send()
 })
-router.get("/setspectatormode", (req, res) => {
-	var mode: string = req.query.mode as unknown as string
-	var user: HCUser = HCUser.get(req.cookies["_id"])
+router.get("/setspectatormode", authenticateToken, (req, res) => {
+	let mode: string = req.query.mode as unknown as string
+	let user: HCUser | undefined = req.user
 
 	if (mode != undefined && user != undefined) {
-		if (user?.currentRoom != 0){
-			var room: HCRoom = HCRoom.get(user!.currentRoom)
+		if (user.currentRoom != 0){
+			let room: HCRoom = HCRoom.get(user.currentRoom)
 
 			if (mode == "true") {
-				user!.userVotingStatus = HCVotingStatus.spectating
+				user.userVotingStatus = HCVotingStatus.spectating
 				room.votes.delete(user.id)
 			} else {
-				user!.userVotingStatus = HCVotingStatus.voting
+				user.userVotingStatus = HCVotingStatus.voting
 			}
 			room.emitRoomStateUpdate()
 		}
 	}
 	res.send()
 })
-router.get("/setAnonymousMode", (req, res) => {
-	var enabled: string = req.query.enabled as string
-	var user: HCUser = HCUser.get(req.cookies["_id"])
+router.get("/setAnonymousMode", authenticateToken, (req, res) => {
+	let enabled: string = req.query.enabled as string
+	let user: HCUser | undefined = req.user
 
 	if (user != undefined){
 		if(enabled == "true"){
@@ -53,9 +53,9 @@ router.get("/setAnonymousMode", (req, res) => {
 	}
 	res.send()
 })
-router.get("/getUserById", (req, res) => {
-	var id: string = req.query.id as unknown as string
-	var user: HCUser = HCUser.get(id)
+router.get("/getUserById", authenticateToken, (req, res) => {
+	let id: string = req.query.id as unknown as string
+	let user: HCUser = HCUser.get(id)
 	res.send(user)
 })
 
@@ -64,10 +64,10 @@ router.post("/profileupload", (req, res) => {
 	if (!req.files || Object.keys(req.files).length === 0) {
 		return res.status(400).send('No files were uploaded.');
 	}
-	var user: HCUser = HCUser.get(req.cookies["_id"])
+	let user: HCUser | undefined = req.user
 	if (user != undefined && HCRoom.get(user.currentRoom) != undefined){
 		//@ts-ignore
-		var filename:string = user.id + "." + (req.files.profileImage.name as string).split(".").slice(-1)[0];
+		let filename:string = user.id + "." + (req.files.profileImage.name as string).split(".").slice(-1)[0];
 		user.avatar = "/profile/" + filename
 		deleteAllFilesWithName(user.id,'public/profile/')
 		//@ts-ignore

@@ -26,16 +26,16 @@ export function getRandomNumber(min: number, max: number) {
 }
 
 export function randomAvatar() {
-	var scale: number = 100//getRandomNumber(50,150)
-	var radius: number = getRandomNumber(0, 50)
-	var tranx: number = getRandomNumber(-15, 15)
-	var trany: number = getRandomNumber(-15, 15)
-	var rotate: number = getRandomNumber(-45, 45)
+	let scale: number = 100//getRandomNumber(50,150)
+	let radius: number = getRandomNumber(0, 50)
+	let tranx: number = getRandomNumber(-15, 15)
+	let trany: number = getRandomNumber(-15, 15)
+	let rotate: number = getRandomNumber(-45, 45)
 	if (rotate < 0) {
 		rotate = 360 + rotate
 	}
 
-	var url: string = `https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${uuidv4()}&size=32&scale=${scale}&radius=${radius}&translateX=${tranx}&translateY=${trany}&rotate=${rotate}`
+	let url: string = `https://api.dicebear.com/6.x/bottts-neutral/svg?seed=${uuidv4()}&size=32&scale=${scale}&radius=${radius}&translateX=${tranx}&translateY=${trany}&rotate=${rotate}`
 	return url
 }
 

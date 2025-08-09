@@ -18,7 +18,7 @@ ChartJS.register(ArcElement, Tooltip, Legend)
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ChartDataLabels)
 
 const colormode = useColorMode()
-var backgroundColor = []
+let backgroundColor = []
 
 if(colormode.preference == 'dark'){
 	backgroundColor = ['#FF7700', '#E04D01', '#ffa500', '#DC3A38','#F16523','#CD2321','#BB1412','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
@@ -58,7 +58,7 @@ const route = useRouter()
 
 const showStoryPointsPrompt = ref(false)
 const selectedChart = ref("pie")
-var socket = io()
+let socket = io()
 const displayName = ref("")
 const roomTopicName = ref("")
 const roomUrlName = ref("")
@@ -68,7 +68,7 @@ const currentUser = ref(new HCUser)
 const currentRoom = ref(new HCRoom)
 const currentRoomMembers: Ref<Array<HCUser>> = ref(new Array<HCUser>)
 const userId: Ref<string> = ref(useCookie('_id').value as string)
-var roomId: string = route.currentRoute.value.query.id as string
+let roomId: string = route.currentRoute.value.query.id as string
 const sortedVotes = ref()
 const showQRCodeModal = ref(false)
 const minutes:Ref<string> = ref("00")
@@ -84,16 +84,17 @@ const cards = ref(["0", "1/2", "1", "2", "3", "5", "8", "13", "20", "40", "100",
 const { data: room } = await useFetch(`api/room/getRoomById?id=` + roomId, { baseURL: config.public.baseUrl })
 currentRoom.value = room.value as HCRoom
 
-var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
+let votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 pieData.value.labels = votes.keys()
 pieData.value.datasets[0].data = votes.values()
 
 const { data: user } = await useFetch(`api/user/getUserById?id=` + userId.value, { baseURL: config.public.baseUrl })
 currentUser.value = user.value as HCUser
+let currentToken = useCookie('token').value
 
 
 async function apiJoinRoom() {
-	var response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.baseUrl })
+	let response = await useFetch(`api/room/joinRoom?id=` + roomId, { credentials: "include", baseURL: config.public.baseUrl })
 
 	// @ts-ignore
 	let room: HCRoom = response.data.value?.room as unknown as HCRoom
@@ -103,17 +104,17 @@ async function apiJoinRoom() {
 }
 async function socketLeaveRoom() {
 	// @ts-ignore
-	socket.emit("leaveRoom", room.value?.id as Number, userId.value as string)
+	socket.emit("leaveRoom", room.value?.id as Number, userId.value as string, currentToken)
 	window.location.href = "/"
 }
 function socketDisplayResults() {
-	socket.emit("displayResults", Number.parseInt(roomId), userId.value)
+	socket.emit("displayResults", Number.parseInt(roomId), userId.value, currentToken)
 }
 function socketRevote() {
-	socket.emit("revote", currentRoom.value.id, userId.value, true)
+	socket.emit("revote", currentRoom.value.id, userId.value, true, undefined, currentToken)
 }
 function socketNewTopic(points:number) {
-	socket.emit("revote", currentRoom.value.id, userId.value, false, points)
+	socket.emit("revote", currentRoom.value.id, userId.value, false, points, currentToken)
 	roomTopicName.value = ""
 	socketSetTopicName()
 	showStoryPointsPrompt.value = false
@@ -134,10 +135,10 @@ async function apiSetDisplayName() {
 	await useFetch(`api/user/setname?name=` + displayName.value, { credentials: "include", baseURL: config.public.baseUrl })
 }
 function socketSetName() {
-	socket.emit("setMemberName", currentRoom.value.id, currentUser.value.id, displayName.value)
+	socket.emit("setMemberName", currentRoom.value.id, currentUser.value.id, displayName.value, currentToken)
 }
 function submitVote(vote: string, event:any) {
-	var element = event.target
+	let element = event.target
 
 	if (element.localName == 'p' || element.localName == "svg"){
 		element = element.parentElement
@@ -149,7 +150,7 @@ function submitVote(vote: string, event:any) {
 		selectedCard.value.classList.replace("dark:bg-orange-500","dark:bg-gray-700")
 	}
 
-	socket.emit("submitVote", Number.parseInt(roomId), userId.value, vote)
+	socket.emit("submitVote", Number.parseInt(roomId), userId.value, vote, currentToken)
 	element.classList.replace("bg-gray-300","bg-blue-800")
 	element.classList.replace("text-black", "text-gray-300")
 	element.classList.replace("dark:bg-gray-700", "dark:bg-orange-500")
@@ -157,7 +158,7 @@ function submitVote(vote: string, event:any) {
 	lastCard.value = vote
 }
 function getRoomVotesMap(room: HCRoom) {
-	var votes: TSMap<string, number> = new TSMap<string, number>()
+	let votes: TSMap<string, number> = new TSMap<string, number>()
 
 	if (!room) {
 		return votes
@@ -168,7 +169,7 @@ function getRoomVotesMap(room: HCRoom) {
 			return
 		}
 
-		var curr: number = votes.get(vote.toString())
+		let curr: number = votes.get(vote.toString())
 		if (curr == undefined) {
 			curr = 0
 		}
@@ -187,19 +188,19 @@ function getWinningVote(room: HCRoom): number {
 	return Number.parseInt(highest)
 }
 function socketSetTopicName() {
-	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value)
+	socket.emit("setRoomTopicName", currentRoom.value.id, currentUser.value.id, roomTopicName.value, currentToken)
 }
 function socketSetUrl() {
-	socket.emit("setRoomUrl", currentRoom.value.id, currentUser.value.id, roomUrlName.value)
+	socket.emit("setRoomUrl", currentRoom.value.id, currentUser.value.id, roomUrlName.value, currentToken)
 }
 function socketStartCount() {
-	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value))
+	socket.emit("startCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value), currentToken)
 }
 function socketCancelCount() {
-	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, currentRoom.value.counter.default);
+	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, currentRoom.value.counter.default, currentToken);
 }
 function socketStopCount() {
-	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value));
+	socket.emit("cancelCount", currentRoom.value.id, currentUser.value.id, Number.parseInt(minutes.value) * 60 + Number.parseInt(seconds.value), currentToken);
 }
 function downloadBase64File(contentBase64: string, fileName: string) {
 	const linkSource = contentBase64;
@@ -216,7 +217,7 @@ function downloadCharts() {
 	downloadBase64File(ChartJS.instances[1].toBase64Image(), "bar.png")
 }
 async function downloadTopicCSV(topicIndex: number, topicName: string) {
-	var response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
+	let response = await useFetch(`api/room/csv`, { baseURL: config.public.baseUrl, query: { id: currentRoom.value.id, topic: topicIndex } })
 	const blob = new Blob([response.data.value as any], { type: 'text/csv' });
 	const link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);
@@ -237,7 +238,7 @@ function copy() {
 	setTimeout(() => copied.value = false, 2000)
 }
 function socketSetCoffeeBreak(enabled:boolean){
-	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled)
+	socket.emit("coffeebreak", currentRoom.value.id, currentUser.value.id, enabled, currentToken)
 }
 function mounted(){
 	socket = io(config.public.baseUrl.replace("http", "ws").replace("https", "wss"))
@@ -245,17 +246,17 @@ function mounted(){
 		console.log(`connect_error due to ${err.message}`);
 	});
 	socket.on("connect", () => {
-		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string)
-		socket.emit("setSocketId", currentUser.value.id)
+		socket.emit("joinSocketRoom", Number.parseInt(roomId), userId.value as string, currentToken)
+		socket.emit("setSocketId", currentUser.value.id, currentToken)
 		setInterval(() => { 
-			socket.emit("onlinePing", currentUser.value.id, document.hasFocus()) 
+			socket.emit("onlinePing", currentUser.value.id, document.hasFocus(), currentToken) 
 	}, 1000)
 	})
 	socket.on("roomStateUpdate", (room: HCRoom, members: Array<HCUser>) => {
 		if (!room || !members) {
 			return
 		}
-		var oldRoom: HCRoom = currentRoom.value
+		let oldRoom: HCRoom = currentRoom.value
 
 		currentRoom.value = room
 		localStorage.setItem("room", JSON.stringify(currentRoom.value))
@@ -303,8 +304,8 @@ function mounted(){
 			currentRoom.value.counter.count = 0
 		}
 
-		var minnum:number = Math.floor(currentRoom.value.counter.count / 60)
-		var secnum:number = currentRoom.value.counter.count % 60
+		let minnum:number = Math.floor(currentRoom.value.counter.count / 60)
+		let secnum:number = currentRoom.value.counter.count % 60
 
 		if (minnum == 0){
 			minutes.value = "00"
@@ -327,7 +328,7 @@ function mounted(){
 		
 		sortedVotes.value = Object.values(currentRoom.value.votes).map((vote, index) => ({ vote, userId: Object.keys(currentRoom.value.votes)[index] }));
 		sortedVotes.value.sort((a: any, b: any) => a.vote - b.vote);
-		var votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
+		let votes: TSMap<string, number> = getRoomVotesMap(currentRoom.value)
 		pieData.value.labels = votes.keys()
 		pieData.value.datasets[0].data = votes.values()
 		if (currentRoom.value.revote && oldRoom.status != currentRoom.value.status && currentRoom.value.status != HCRoomStatus.coffeebreak && lastCard.value != "") {
@@ -348,6 +349,10 @@ function mounted(){
 		if (id == currentUser.value.id){
 			window.location.href = "/?kicked=true"
 		}
+	})
+	socket.on("invalidToken", () => {
+		//reload the page
+		window.location.reload()
 	})
 	roomLink.value = window.location.href
 	if (roomTopicName.value == "" || roomTopicName == undefined){
@@ -379,8 +384,8 @@ watch(seconds, ()=>{
 })
 
 function updateColors() {
-	var backgroundColor = []
-	var legendColor = ''
+	let backgroundColor = []
+	let legendColor = ''
 
 	if(colormode.preference == 'dark'){
 		backgroundColor = ['#FF7700', '#FF8955', '#FFA18D', '#DAF5F3','#7DE0DB','#33A6A0','#10605C','#B88240','#6C389D','#A0275C','#E86EA2','#F6AFAF','#784D05']
@@ -389,7 +394,7 @@ function updateColors() {
 		backgroundColor = ['#3765B7','#112D5F','#1A3D7D','#26509B','#0C2045','#4D7CCE','#6A95E1','#8EB1ED','#33A6A0','#54C7C1','#45449D','#6E6DCF','#1C1B47']
 		legendColor = 'black'
 	}
-	var chart = undefined
+	let chart = undefined
 	if (pie.value != undefined){
 		if (pie.value.chart != undefined){
 			chart = pie.value.chart
