@@ -2,7 +2,7 @@ import * as express from "express";
 import HCRoom from "../models/HCRoom"
 import HCUser from "../models/HCUser"
 import { HCVotingStatus } from "../models/HCVotingStatus";
-import { deleteAllFilesWithName } from "../utility";
+import { deleteAllFilesWithName, randomAvatar } from "../utility";
 import { authenticateToken } from "../auth/auth";
 
 
@@ -17,6 +17,20 @@ router.get("/setname", authenticateToken, (req, res) => {
 			let room: HCRoom = HCRoom.get(user!.currentRoom)
 			room.emitRoomStateUpdate()
 		}
+	}
+	res.send()
+})
+router.get("/newavatar", authenticateToken, (req, res) => {
+	let user: HCUser | undefined = req.user
+	let query = req.query
+	if (user !== undefined) {
+		user.avatar = randomAvatar(query.seed as any as string, query.scale as any as number, query.radius as any as number, query.translateX as any as number, query.translateY as any as number, query.rotate as any as number, query.backgroundRotation as any as number, query.backgroundColor as any as string)
+		if (user?.currentRoom != 0){
+			let room: HCRoom = HCRoom.get(user!.currentRoom)
+			room.emitRoomStateUpdate()
+		}
+		res.send(user.avatar)
+		return
 	}
 	res.send()
 })
