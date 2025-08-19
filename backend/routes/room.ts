@@ -5,22 +5,25 @@ import { HCVotingStatus } from "../../backend/models/HCVotingStatus"
 import * as papa from "papaparse"
 import { TSMap } from "typescript-map";
 import HistoricalVote from "backend/models/HistoricalVote"
+import {authenticateToken, generateAccessToken, authenticateOrCreateToken} from "../auth/auth"
 
 const router = express.Router()
 
-router.get("/createroom", (req, res) => {
-	var room: HCRoom = new HCRoom()
+router.get("/createroom", authenticateOrCreateToken, (req, res) => {
+	let room: HCRoom = new HCRoom()
 
-	var user: HCUser = HCUser.get(req.cookies["_id"])
-
+	let user: HCUser | undefined = req.user
 	if (user == undefined) {
 		user = new HCUser
+		let jwtToken = generateAccessToken(user.id);
+		res.cookie("token", jwtToken)
+		res.cookie("_id", user.id)
 	}
 
-	user?.reset()
-	user!.permissions.host = true
-	user!.permissions.admin = true
-	room.addMember(user!.id)
+	user.reset()
+	user.permissions.host = true
+	user.permissions.admin = true
+	room.addMember(user.id)
 	room.topicName = req.query.topicName as string
 	room.counter.default = Number.parseInt(req.query.timer as string)
 	room.counter.count = room.counter.default
@@ -29,46 +32,41 @@ router.get("/createroom", (req, res) => {
 	} else {
 		room.roomCounterEnabled = false
 	}
-	res.cookie("_id", user?.id)
 	res.send({ room })
 })
 
 router.get("/getroombyid", (req, res) => {
-	var id: string = req.query.id as string
+	let id: string = req.query.id as string
 
-	var room: HCRoom = HCRoom.get(Number.parseInt(id))
+	let room: HCRoom = HCRoom.get(Number.parseInt(id))
 	res.send(room)
 })
 
-router.get("/getroommembersstring", (req, res) => {
-	var id: string = req.query.id as string
+router.get("/joinRoom", authenticateOrCreateToken, (req, res) => {
+	let id: string = req.query.id as string
+	let spectatorMode:string = req.query.spectatorMode as string
 
-	var room: HCRoom = HCRoom.get(Number.parseInt(id))
-	res.send(room.members)
-})
-
-router.get("/joinRoom", (req, res) => {
-	var id: string = req.query.id as string
-	var user: HCUser = HCUser.get(req.cookies["_id"])
-	var spectatorMode:string = req.query.spectatorMode as string
+	let user: HCUser | undefined = req.user
 
 	if (user == undefined) {
 		user = new HCUser
+		let jwtToken = generateAccessToken(user.id);
+		res.cookie("token", jwtToken)
+		res.cookie("_id", user.id)
 	}
 
-	var room: HCRoom = HCRoom.get(Number.parseInt(id))
+	let room: HCRoom = HCRoom.get(Number.parseInt(id))
 	if (room == undefined) {
 		res.redirect("/")
 		return
 	}
-	user?.reset()
-	room.addMember(user!.id)
+	user.reset()
+	room.addMember(user.id)
 	room.emitRoomStateUpdate()
 
 	if (spectatorMode == "true") {
 		user.userVotingStatus = HCVotingStatus.spectating
 	}
-	res.cookie("_id", user?.id)
 	res.send({ room })
 })
 router.get("/allrooms", (req, res) => {
@@ -84,7 +82,14 @@ router.get("/history", (req, res) => {
 	}
 })
 
-router.get("/setTimerActive", (req, res) => {
+router.get("/setTimerActive", authenticateToken, (req, res) => {
+
+	let user: HCUser | undefined = req.user
+	if (user == undefined || !user.permissions.host) {
+		res.sendStatus(401)
+		return
+	}
+
 	var id: string = req.query.id as string
 	var count: string = req.query.count as string
 	var enabled:string = req.query.enabled as string
@@ -101,7 +106,13 @@ router.get("/setTimerActive", (req, res) => {
 	}
 })
 
-router.get("/allowAnonymous", (req, res) => {
+router.get("/allowAnonymous", authenticateToken, (req, res) => {
+	let user: HCUser | undefined = req.user
+	if (user == undefined || !user.permissions.host) {
+		res.sendStatus(401)
+		return
+	}
+
 	var id: string = req.query.id as string
 	var enabled:string = req.query.enabled as string
 	var room: HCRoom = HCRoom.get(Number.parseInt(id))
@@ -176,29 +187,39 @@ router.get("/delete", (req, res) => {
 	}
 	res.send()
 })
-router.get("/kickuser", (req, res) => {
+router.get("/kickuser", authenticateToken, (req, res) => {
+	let user: HCUser | undefined = req.user
+	if (user == undefined || !user.permissions.host) {
+		res.sendStatus(401)
+		return
+	}
 	var id: string = req.query.id as string
-	var user = HCUser.get(id)
-	var room = HCRoom.get(user.currentRoom)
+	var userToBeKicked = HCUser.get(id)
+	var room = HCRoom.get(userToBeKicked.currentRoom)
 
-	if (user != undefined && room != undefined){
-		room.kickuser(user)
+	if (userToBeKicked != undefined && room != undefined){
+		room.kickuser(userToBeKicked)
 	}
 
 	res.send()
 })
-router.get("/promote", (req, res) => {
+router.get("/promote", authenticateToken, (req, res) => {
+	let user: HCUser | undefined = req.user
+	if (user == undefined || !user.permissions.host) {
+		res.sendStatus(401)
+		return
+	}
 	var id: string = req.query.id as string
 	var promote:string = req.query.promote as string
-	var user = HCUser.get(id)
-	var room = HCRoom.get(user.currentRoom)
+	var userToBePromoted = HCUser.get(id)
+	var room = HCRoom.get(userToBePromoted.currentRoom)
 
-	if (user != undefined && room != undefined){
-		user.userVotingStatus = HCVotingStatus.voting
+	if (userToBePromoted != undefined && room != undefined){
+		userToBePromoted.userVotingStatus = HCVotingStatus.voting
 		if (promote == "true"){
-			user.permissions.host = true
+			userToBePromoted.permissions.host = true
 		} else {
-			user.permissions.host = false
+			userToBePromoted.permissions.host = false
 		}
 		room.emitRoomStateUpdate()
 	}

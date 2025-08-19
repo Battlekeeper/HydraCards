@@ -38,7 +38,7 @@ export default class HCRoom {
 		}
 	}
 	public addMember(id:string){
-		var user:HCUser = HCUser.get(id) as HCUser
+		let user:HCUser = HCUser.get(id) as HCUser
 
 		if (user.currentRoom !== 0){
 			let room:HCRoom = HCRoom.get(user.currentRoom);
@@ -51,7 +51,7 @@ export default class HCRoom {
 		this.emitRoomStateUpdate()
 	}
 	public removeMember(id:string){
-		var user:HCUser = HCUser.get(id) as HCUser
+		let user:HCUser = HCUser.get(id) as HCUser
 
 		if (user.currentRoom !== 0){
 			this.members = this.members.filter(usr => usr !== id);
@@ -71,14 +71,14 @@ export default class HCRoom {
 		this.votes.set(id, vote)
 	}
 	public getMembersUserArray(){
-		var users:Array<HCUser> = new Array<HCUser>
+		let users:Array<HCUser> = new Array<HCUser>
 		this.members.forEach(id => {
 			users.push(HCUser.get(id) as HCUser)
 		});
 		return users
 	}
 	public emitRoomStateUpdate(revealVotes:boolean = false){
-		var tempRoom:HCRoom = JSON.parse(JSON.stringify(this))
+		let tempRoom:HCRoom = JSON.parse(JSON.stringify(this))
 		tempRoom.history.forEach((val) => {
 			val.Revotes = new Array<TSMap<string, number>>
 		})
@@ -87,8 +87,14 @@ export default class HCRoom {
 		});
 		if (!revealVotes){
 			tempRoom.votes = new TSMap<string, string>()
+			let UsersArraySanitized:Array<HCUser> = this.getMembersUserArray();
+			UsersArraySanitized.forEach(user => {
+				user.vote = ""
+			});
+			HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom, UsersArraySanitized)
+		} else {
+			HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom, this.getMembersUserArray())
 		}
-		HCSocketIO.io.to(this.id.toString()).emit("roomStateUpdate", tempRoom,this.getMembersUserArray())
 
 	}
 	public allMembersHaveVoted(){
@@ -110,7 +116,7 @@ export default class HCRoom {
 		this.counter.active = false
 		if (this.counter.count == 0 || this.allMembersHaveVoted()){
 			this.status = HCRoomStatus.reviewing
-			this.emitRoomStateUpdate()
+			this.emitRoomStateUpdate(true)
 		}
 	}
 	public async cancelCounter(resetcount: number){

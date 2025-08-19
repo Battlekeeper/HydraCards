@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 import * as express from "express";
 import HCServer from './models/HCServer';
 import HCRoom from './models/HCRoom';
@@ -8,19 +7,19 @@ import { HCRoomStatus } from './models/HCRoomStatus';
 import * as fs from 'fs';
 import * as path from 'path';
 import HistoricalVote from './models/HistoricalVote';
+import { validateToken } from './auth/auth';
 
-var cors = require('cors');
+const cors = require('cors');
 const userRouter = require("./routes/user")
 const roomRouter = require("./routes/room")
-
 
 const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 
-var expressApp = express()
-var http = require('http').Server(expressApp);
-var proxy = require('express-http-proxy');
+const expressApp = express()
+const http = require('http').Server(expressApp);
+const proxy = require('express-http-proxy');
 const fileUpload = require('express-fileupload');
 new HCServer(http, expressApp)
 HCServer.app.use(cookieParser());
@@ -51,24 +50,32 @@ fs.readdir("public/profile", (err, files) => {
 });
 
 HCServer.io.on("connect", (socket) => {
-	var socketUserId:string
+	let socketUserId:string
 
 	socket.on("disconnect", () => {
-		var user:HCUser = HCUser.get(socketUserId)
+		let user:HCUser = HCUser.get(socketUserId)
 		if (user != undefined){
 			user.online = false
-			var room:HCRoom = HCRoom.get(user.currentRoom)
+			let room:HCRoom = HCRoom.get(user.currentRoom)
 			if (room != undefined){
 				room.emitRoomStateUpdate()
 			}
 		}
 	})
-	socket.on("setSocketId", (userId:string)=>{
+	socket.on("setSocketId", (userId:string, token:string)=>{
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
 		socketUserId = userId
 	})
-	socket.on("joinSocketRoom", (roomId: number, userId:string) => {
-		var user = HCUser.get(userId)
-		var room: HCRoom = HCRoom.get(roomId)
+	socket.on("joinSocketRoom", (roomId: number, userId:string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user = HCUser.get(userId)
+		let room: HCRoom = HCRoom.get(roomId)
 
 		if (roomId == undefined || userId == undefined || user == undefined || room == undefined) {
 			return
@@ -80,16 +87,24 @@ HCServer.io.on("connect", (socket) => {
 		room.emitRoomStateUpdate()
 	})
 	//leaveRoom
-	socket.on("leaveRoom", (roomId: number, userId: string) => {
-		var room: HCRoom = HCRoom.get(roomId)
+	socket.on("leaveRoom", (roomId: number, userId: string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let room: HCRoom = HCRoom.get(roomId)
 		if (room !== undefined){
 			room.removeMember(userId)
 			socket.leave(roomId.toString())
 		}
 	})
-	socket.on("submitVote", (roomId:number, userId: string, vote:string) => {
-		var room:HCRoom = HCRoom.get(roomId)
-		var user:HCUser = HCUser.get(userId);
+	socket.on("submitVote", (roomId:number, userId: string, vote:string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let room:HCRoom = HCRoom.get(roomId)
+		let user:HCUser = HCUser.get(userId);
 		if (room == undefined || user == undefined){
 			return
 		}
@@ -99,10 +114,14 @@ HCServer.io.on("connect", (socket) => {
 
 		room.emitRoomStateUpdate()
 	})
-	socket.on("displayResults", (roomId:number, userId:string) =>{
+	socket.on("displayResults", (roomId:number, userId:string, token:string) =>{
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
 
-		var room:HCRoom = HCRoom.get(roomId)
-		var user:HCUser|undefined = HCUser.get(userId)
+		let room:HCRoom = HCRoom.get(roomId)
+		let user:HCUser|undefined = HCUser.get(userId)
 
 		if (room == undefined || user == undefined){
 			return
@@ -122,10 +141,13 @@ HCServer.io.on("connect", (socket) => {
 		room.emitRoomStateUpdate(true)
 
 	})
-	socket.on("revote", (roomId:number, userId:string, revote:boolean, points:number) => {
-
-		var room:HCRoom = HCRoom.get(roomId)
-		var user:HCUser|undefined = HCUser.get(userId)
+	socket.on("revote", (roomId:number, userId:string, revote:boolean, points:number, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let room:HCRoom = HCRoom.get(roomId)
+		let user:HCUser|undefined = HCUser.get(userId)
 
 		if (room == undefined || user == undefined){
 			return
@@ -144,7 +166,7 @@ HCServer.io.on("connect", (socket) => {
 		{
 			room.history.push(new HistoricalVote)
 		}
-		var HistoricalVoteData:HistoricalVote = room.history[room.history.length - 1]
+		let HistoricalVoteData:HistoricalVote = room.history[room.history.length - 1]
 		HistoricalVoteData.TopicName = room.topicName
 		HistoricalVoteData.Points = points
 		HistoricalVoteData.URL = room.urlName
@@ -162,9 +184,13 @@ HCServer.io.on("connect", (socket) => {
 		});
 		room.emitRoomStateUpdate()
 	})
-	socket.on("coffeebreak", (roomId:number, userId:string, enabled:boolean) => {
-		var room:HCRoom = HCRoom.get(roomId)
-		var user:HCUser|undefined = HCUser.get(userId)
+	socket.on("coffeebreak", (roomId:number, userId:string, enabled:boolean, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let room:HCRoom = HCRoom.get(roomId)
+		let user:HCUser|undefined = HCUser.get(userId)
 
 		if (room == undefined || user == undefined){
 			return
@@ -182,26 +208,34 @@ HCServer.io.on("connect", (socket) => {
 		}
 		room.emitRoomStateUpdate()
 	})
-	socket.on("broadcastRoomStateUpdate", (roomId: number) => {
-		var room:HCRoom = HCRoom.get(roomId)
+	socket.on("broadcastRoomStateUpdate", (roomId: number, token:string) => {
+		let room:HCRoom = HCRoom.get(roomId)
 		if (room != undefined){
 			room.emitRoomStateUpdate()
 		}
 	})
-	socket.on("setMemberName", (roomId:number, userId:string, name:string) => {
-		var user:HCUser = HCUser.get(userId);
+	socket.on("setMemberName", (roomId:number, userId:string, name:string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId);
 
 		if (user !== undefined) {
 			user!.displayName = name
 			if (user?.currentRoom != 0){
-				var room: HCRoom = HCRoom.get(roomId)
+				let room: HCRoom = HCRoom.get(roomId)
 				room.emitRoomStateUpdate()
 			}
 		}
 	})
-	socket.on("setRoomTopicName",(roomId:number, userId:string, topicName:string) => {
-		var user:HCUser = HCUser.get(userId);
-		var room:HCRoom = HCRoom.get(roomId)
+	socket.on("setRoomTopicName",(roomId:number, userId:string, topicName:string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId);
+		let room:HCRoom = HCRoom.get(roomId)
 		
 		if (typeof user !== typeof undefined && room !== undefined){
 			if (user.permissions.host){
@@ -210,9 +244,13 @@ HCServer.io.on("connect", (socket) => {
 			}
 		}
 	})
-	socket.on("setRoomUrl",(roomId:number, userId:string, urlName:string) => {
-		var user:HCUser = HCUser.get(userId);
-		var room:HCRoom = HCRoom.get(roomId)
+	socket.on("setRoomUrl",(roomId:number, userId:string, urlName:string, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId);
+		let room:HCRoom = HCRoom.get(roomId)
 		
 		if (typeof user !== typeof undefined && room !== undefined){
 			if (user.permissions.host){
@@ -222,9 +260,13 @@ HCServer.io.on("connect", (socket) => {
 		}
 	})
 	
-	socket.on("startCount",(roomId:number, userId:string, count:number) => {
-		var user:HCUser = HCUser.get(userId);
-		var room:HCRoom = HCRoom.get(roomId)
+	socket.on("startCount",(roomId:number, userId:string, count:number, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId);
+		let room:HCRoom = HCRoom.get(roomId)
 		
 		if (typeof user !== typeof undefined && room !== undefined){
 			if (user.permissions.host){
@@ -234,9 +276,13 @@ HCServer.io.on("connect", (socket) => {
 		}
 
 	})
-	socket.on("cancelCount",(roomId:number, userId:string, count:number) => {
-		var user:HCUser = HCUser.get(userId);
-		var room:HCRoom = HCRoom.get(roomId)
+	socket.on("cancelCount",(roomId:number, userId:string, count:number, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId);
+		let room:HCRoom = HCRoom.get(roomId)
 		
 		if (typeof user !== typeof undefined && room !== undefined){
 			if (user.permissions.host){
@@ -245,11 +291,15 @@ HCServer.io.on("connect", (socket) => {
 			}
 		}
 	})
-	socket.on("onlinePing", (userId:string, focused:boolean) => {
-		var user:HCUser = HCUser.get(userId)
+	socket.on("onlinePing", (userId:string, focused:boolean, token:string) => {
+		if (!validateToken(token, userId)){
+			socket.emit("invalidToken")
+			return
+		}
+		let user:HCUser = HCUser.get(userId)
 
 		if (user != undefined){
-			var room:HCRoom = HCRoom.get(user.currentRoom)
+			let room:HCRoom = HCRoom.get(user.currentRoom)
 			if (room == undefined){
 				return
 			}
