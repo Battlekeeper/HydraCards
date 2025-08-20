@@ -85,7 +85,7 @@ export default class HCRoom {
 		this.getMembersUserArray().forEach(member => {
 			member.allowAnon = this.allowAnonymousMode
 		});
-		if (!revealVotes){
+		if (!revealVotes  && tempRoom.status != HCRoomStatus.reviewing){
 			tempRoom.votes = new TSMap<string, string>()
 			let UsersArraySanitized:Array<HCUser> = this.getMembersUserArray();
 			UsersArraySanitized.forEach(user => {
