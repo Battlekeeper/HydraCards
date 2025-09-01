@@ -3,7 +3,7 @@ name: Branch Build
 on:
   push:
     branches:
-      - main
+      - actions-testing
 env:
   IMAGE_NAME: hydracards
   REGISTRY: hydracor.azurecr.io
